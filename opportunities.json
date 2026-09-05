@@ -780,7 +780,7 @@
    "Did serious institutions take an allocation?"
   ],
   "sources": [
-   "IndiaIPO"
+   "indiaipo.in"
   ]
  },
  {
@@ -799,7 +799,7 @@
    "Did serious institutions take an allocation?"
   ],
   "sources": [
-   "IndiaIPO"
+   "indiaipo.in"
   ]
  },
  {
@@ -856,7 +856,7 @@
    "Did serious institutions take an allocation?"
   ],
   "sources": [
-   "Startup Fortune"
+   "startupfortune.com"
   ]
  },
  {
@@ -875,11 +875,30 @@
    "Did serious institutions take an allocation?"
   ],
   "sources": [
-   "IndiaIPO"
+   "indiaipo.in"
   ]
  },
  {
   "title": "Paluck Technologies",
+  "kind": "New listing",
+  "colour": "#8b8b9a",
+  "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 0 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
+  "summary": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live.",
+  "money": "0 of a possible 0 points on the ten tests the coverage could answer",
+  "answered": [],
+  "unanswered": [
+   "Does reporting say it makes money?",
+   "Is revenue growing?",
+   "Does the money go into the business?",
+   "Is the price being called reasonable?",
+   "Did serious institutions take an allocation?"
+  ],
+  "sources": [
+   "IPO Watch"
+  ]
+ },
+ {
+  "title": "Kanohar Electricals",
   "kind": "New listing",
   "colour": "#8b8b9a",
   "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 0 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",

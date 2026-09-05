@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-05T13:58:08.172347+00:00",
+  "generated_at": "2026-09-05T14:02:45.977319+00:00",
   "is_sample": false,
   "headline": {
     "models_total": 5,
@@ -18,7 +18,7 @@
       "tier_label": "COLLECTING \u2014 no alert",
       "resolved": 0,
       "made": 22,
-      "last_run": "Last ran 2026-09-05 13:57 UTC, looked at 249 thing(s), 0 cleared its bar.",
+      "last_run": "Last ran 2026-09-05 14:02 UTC, looked at 252 thing(s), 0 cleared its bar.",
       "hit_rate": null,
       "lower_bound": null,
       "needed_for_trade": null,
@@ -212,7 +212,7 @@
       "tier_label": "COLLECTING \u2014 no alert",
       "resolved": 0,
       "made": 0,
-      "last_run": "Last ran 2026-09-05 13:57 UTC, looked at 531 thing(s), 99 cleared its bar.",
+      "last_run": "Last ran 2026-09-05 14:02 UTC, looked at 534 thing(s), 100 cleared its bar.",
       "hit_rate": null,
       "lower_bound": null,
       "needed_for_trade": null,
@@ -3848,7 +3848,7 @@
         "Did serious institutions take an allocation?"
       ],
       "sources": [
-        "IndiaIPO"
+        "indiaipo.in"
       ]
     },
     {
@@ -3867,7 +3867,7 @@
         "Did serious institutions take an allocation?"
       ],
       "sources": [
-        "IndiaIPO"
+        "indiaipo.in"
       ]
     },
     {
@@ -3924,7 +3924,7 @@
         "Did serious institutions take an allocation?"
       ],
       "sources": [
-        "Startup Fortune"
+        "startupfortune.com"
       ]
     },
     {
@@ -3943,11 +3943,30 @@
         "Did serious institutions take an allocation?"
       ],
       "sources": [
-        "IndiaIPO"
+        "indiaipo.in"
       ]
     },
     {
       "title": "Paluck Technologies",
+      "kind": "New listing",
+      "colour": "#8b8b9a",
+      "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 0 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
+      "summary": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live.",
+      "money": "0 of a possible 0 points on the ten tests the coverage could answer",
+      "answered": [],
+      "unanswered": [
+        "Does reporting say it makes money?",
+        "Is revenue growing?",
+        "Does the money go into the business?",
+        "Is the price being called reasonable?",
+        "Did serious institutions take an allocation?"
+      ],
+      "sources": [
+        "IPO Watch"
+      ]
+    },
+    {
+      "title": "Kanohar Electricals",
       "kind": "New listing",
       "colour": "#8b8b9a",
       "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 0 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
