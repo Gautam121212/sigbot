@@ -1,0 +1,14 @@
+{
+  "name": "Sigbot",
+  "short_name": "Sigbot",
+  "description": "Evidence-first market and opportunity monitor",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0a0a0f",
+  "theme_color": "#0a0a0f",
+  "icons": [
+    {"src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable"}
+  ]
+}

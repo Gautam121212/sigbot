@@ -1,0 +1,12 @@
+.env
+.venv/
+__pycache__/
+*.db
+logs/
+.DS_Store
+.last_*
+.seen_*
+scheduler_state.json
+universe.json
+opportunities.json
+app/public/

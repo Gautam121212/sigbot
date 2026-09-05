@@ -1,0 +1,11 @@
+# Everything the models, screens and report need. No network required.
+numpy>=1.26
+pandas>=2.1
+scikit-learn>=1.4
+
+# Running the test suite.
+pytest>=8.0
+
+# Live data and news. Only used once you point it at real markets.
+yfinance>=0.2.40
+feedparser>=6.0
