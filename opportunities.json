@@ -1,39 +1,5 @@
 [
  {
-  "title": "The Iran War Has",
-  "kind": "Market thesis",
-  "colour": "#8b8b9a",
-  "verdict": "Weak sourcing (42%). One outlet, or an outlet without a track record. Read it as a prompt to check elsewhere, nothing more.",
-  "summary": "The Iran War Has Put Venezuela\u2019s Oil Back in the Spotlight",
-  "answered": [],
-  "unanswered": [
-   "the asset is genuinely priced lower in real terms, not just in a depreciating local currency",
-   "there is a liquid, legal exit available to a non-resident",
-   "the dislocation has a plausible resolution path with a timeframe"
-  ],
-  "money": "Not stated. A market thesis says nothing about what acting on it would cost you.",
-  "sources": [
-   "Oilprice.com (2026-09-04)"
-  ]
- },
- {
-  "title": "How Much Oil Is",
-  "kind": "Market thesis",
-  "colour": "#8b8b9a",
-  "verdict": "Weak sourcing (42%). One outlet, or an outlet without a track record. Read it as a prompt to check elsewhere, nothing more.",
-  "summary": "How Much Oil Is Really Getting Through the Strait of Hormuz?",
-  "answered": [],
-  "unanswered": [
-   "the asset is genuinely priced lower in real terms, not just in a depreciating local currency",
-   "there is a liquid, legal exit available to a non-resident",
-   "the dislocation has a plausible resolution path with a timeframe"
-  ],
-  "money": "Not stated. A market thesis says nothing about what acting on it would cost you.",
-  "sources": [
-   "Oilprice.com (2026-09-04)"
-  ]
- },
- {
   "title": "Markets Fed",
   "kind": "Market thesis",
   "colour": "#8b8b9a",
@@ -89,11 +55,11 @@
   ]
  },
  {
-  "title": "Venice Vietnam Reuters",
+  "title": "Venice Vietnam",
   "kind": "Market thesis",
   "colour": "#8b8b9a",
   "verdict": "Weak sourcing (70%). One outlet, or an outlet without a track record. Read it as a prompt to check elsewhere, nothing more.",
-  "summary": "Venice film brings Vietnam veteran's anti-war warning to new generation - Reuters",
+  "summary": "Venice film brings Vietnam veteran's anti-war warning to new generation - reuters.com",
   "answered": [],
   "unanswered": [
    "the asset is genuinely priced lower in real terms, not just in a depreciating local currency",
@@ -102,7 +68,7 @@
   ],
   "money": "Not stated. A market thesis says nothing about what acting on it would cost you.",
   "sources": [
-   "Reuters (2026-09-04)"
+   "reuters.com (2026-09-04)"
   ]
  },
  {
@@ -110,7 +76,7 @@
   "kind": "IPO \u2014 dates unknown",
   "colour": "#8b8b9a",
   "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 0 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
-  "summary": "India's NSE eyes September 21-week listing after regulator clears IPO, sources say - Reuters",
+  "summary": "India's NSE eyes September 21-week listing after regulator clears IPO, sources say - reuters.com",
   "answered": [],
   "unanswered": [
    "Does reporting say it makes money?",
@@ -121,6 +87,7 @@
   ],
   "money": "0 of a possible 0 points on the ten tests the coverage could answer.",
   "sources": [
+   "reuters.com (2026-09-04)",
    "Reuters (2026-09-04)"
   ]
  },
@@ -256,11 +223,11 @@
   ]
  },
  {
-  "title": "US Turkish Iran Reuters",
+  "title": "US Turkish Iran",
   "kind": "Market thesis",
   "colour": "#8b8b9a",
   "verdict": "Weak sourcing (70%). One outlet, or an outlet without a track record. Read it as a prompt to check elsewhere, nothing more.",
-  "summary": "US sanctions Turkish bank, two subsidiaries in latest pressure on Iran - Reuters",
+  "summary": "US sanctions Turkish bank, two subsidiaries in latest pressure on Iran - reuters.com",
   "answered": [],
   "unanswered": [
    "the asset is genuinely priced lower in real terms, not just in a depreciating local currency",
@@ -269,7 +236,7 @@
   ],
   "money": "Not stated. A market thesis says nothing about what acting on it would cost you.",
   "sources": [
-   "Reuters (2026-09-04)"
+   "reuters.com (2026-09-04)"
   ]
  },
  {
@@ -294,7 +261,7 @@
   "kind": "IPO \u2014 dates unknown",
   "colour": "#8b8b9a",
   "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 0 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
-  "summary": "EXCLUSIVE: Nigeria's SEC approves about $1.6bn Dangote Refinery IPO - Reuters",
+  "summary": "EXCLUSIVE: Nigeria's SEC approves about $1.6bn Dangote Refinery IPO - reuters.com",
   "answered": [],
   "unanswered": [
    "Does reporting say it makes money?",
@@ -305,15 +272,15 @@
   ],
   "money": "0 of a possible 0 points on the ten tests the coverage could answer.",
   "sources": [
-   "Reuters (2026-09-04)"
+   "reuters.com (2026-09-04)"
   ]
  },
  {
-  "title": "Nscale Reuters",
+  "title": "Nscale",
   "kind": "IPO \u2014 dates unknown",
   "colour": "#8b8b9a",
   "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 0 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
-  "summary": "Nscale seeks about $3.5 billion pre-IPO funding, source says - Reuters",
+  "summary": "Nscale seeks about $3.5 billion pre-IPO funding, source says - reuters.com",
   "answered": [],
   "unanswered": [
    "Does reporting say it makes money?",
@@ -324,7 +291,7 @@
   ],
   "money": "0 of a possible 0 points on the ten tests the coverage could answer.",
   "sources": [
-   "Reuters (2026-09-04)"
+   "reuters.com (2026-09-04)"
   ]
  },
  {
@@ -345,11 +312,11 @@
   ]
  },
  {
-  "title": "EXCLUSIVE: Anthropic IPO Reuters",
+  "title": "EXCLUSIVE: Anthropic IPO",
   "kind": "IPO \u2014 dates unknown",
   "colour": "#8b8b9a",
   "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 0 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
-  "summary": "EXCLUSIVE: Anthropic IPO launch shifts toward mid-October, sources say - Reuters",
+  "summary": "EXCLUSIVE: Anthropic IPO launch shifts toward mid-October, sources say - reuters.com",
   "answered": [],
   "unanswered": [
    "Does reporting say it makes money?",
@@ -360,7 +327,47 @@
   ],
   "money": "0 of a possible 0 points on the ten tests the coverage could answer.",
   "sources": [
-   "Reuters (2026-09-04)"
+   "reuters.com (2026-09-04)",
+   "Markets-Economic Times (2026-09-05)"
+  ]
+ },
+ {
+  "title": "Anthropic IPO",
+  "kind": "IPO \u2014 dates unknown",
+  "colour": "#8b8b9a",
+  "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 0 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
+  "summary": "Anthropic IPO timeline shifts toward mid-October",
+  "answered": [],
+  "unanswered": [
+   "Does reporting say it makes money?",
+   "Is revenue growing?",
+   "Does the money go into the business?",
+   "Is the price being called reasonable?",
+   "Did serious institutions take an allocation?"
+  ],
+  "money": "0 of a possible 0 points on the ten tests the coverage could answer.",
+  "sources": [
+   "Latest Share Market News, Sensex, Nifty, BSE, NSE Today | The HinduBusinessLine (2026-09-05)"
+  ]
+ },
+ {
+  "title": "Steamhouse India Rs IPO",
+  "kind": "IPO \u2014 dates unknown",
+  "colour": "#8b8b9a",
+  "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 0 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
+  "summary": "Steamhouse India to open Rs 414-crore IPO on September 9 - Moneycontrol.com",
+  "answered": [],
+  "unanswered": [
+   "Does reporting say it makes money?",
+   "Is revenue growing?",
+   "Does the money go into the business?",
+   "Is the price being called reasonable?",
+   "Did serious institutions take an allocation?"
+  ],
+  "money": "0 of a possible 0 points on the ten tests the coverage could answer.",
+  "sources": [
+   "Moneycontrol.com (2026-09-05)",
+   "Whalesbook (2026-09-05)"
   ]
  },
  {
@@ -379,7 +386,7 @@
    "Did serious institutions take an allocation?"
   ],
   "sources": [
-   "Reuters"
+   "reuters.com"
   ]
  },
  {
@@ -398,7 +405,7 @@
    "Did serious institutions take an allocation?"
   ],
   "sources": [
-   "Reuters"
+   "reuters.com"
   ]
  },
  {
@@ -417,7 +424,7 @@
    "Did serious institutions take an allocation?"
   ],
   "sources": [
-   "Reuters"
+   "reuters.com"
   ]
  },
  {
@@ -436,26 +443,28 @@
    "Did serious institutions take an allocation?"
   ],
   "sources": [
-   "Reuters"
+   "reuters.com"
   ]
  },
  {
-  "title": "Deepa Jewellers",
+  "title": "Karamtara Engineering",
   "kind": "New listing",
   "colour": "#8b8b9a",
-  "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 0 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
+  "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 12 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
   "summary": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live.",
-  "money": "0 of a possible 0 points on the ten tests the coverage could answer",
-  "answered": [],
+  "money": "12 of a possible 12 points on the ten tests the coverage could answer",
+  "answered": [
+   "Does the money go into the business?"
+  ],
   "unanswered": [
    "Does reporting say it makes money?",
    "Is revenue growing?",
-   "Does the money go into the business?",
    "Is the price being called reasonable?",
-   "Did serious institutions take an allocation?"
+   "Did serious institutions take an allocation?",
+   "Is the book filling?"
   ],
   "sources": [
-   "Share Market Today"
+   "Markets-Economic Times"
   ]
  },
  {
@@ -474,7 +483,125 @@
    "Did serious institutions take an allocation?"
   ],
   "sources": [
-   "mint - markets"
+   "Markets-Economic Times"
+  ]
+ },
+ {
+  "title": "How the rise of institutional investors is changing the",
+  "kind": "New listing",
+  "colour": "#8b8b9a",
+  "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 10 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
+  "summary": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live.",
+  "money": "10 of a possible 10 points on the ten tests the coverage could answer",
+  "answered": [
+   "Did serious institutions take an allocation?"
+  ],
+  "unanswered": [
+   "Does reporting say it makes money?",
+   "Is revenue growing?",
+   "Does the money go into the business?",
+   "Is the price being called reasonable?",
+   "Is the book filling?"
+  ],
+  "sources": [
+   "Markets-Economic Times"
+  ]
+ },
+ {
+  "title": "Rentomojo set to go public at Rs 4,246 crore valuation, set to raise Rs 1,256 crore via",
+  "kind": "New listing",
+  "colour": "#8b8b9a",
+  "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 14 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
+  "summary": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live.",
+  "money": "14 of a possible 14 points on the ten tests the coverage could answer",
+  "answered": [
+   "Does reporting say it makes money?"
+  ],
+  "unanswered": [
+   "Is revenue growing?",
+   "Does the money go into the business?",
+   "Is the price being called reasonable?",
+   "Did serious institutions take an allocation?",
+   "Is the book filling?"
+  ],
+  "sources": [
+   "Markets-Economic Times"
+  ]
+ },
+ {
+  "title": "Anthropic",
+  "kind": "New listing",
+  "colour": "#8b8b9a",
+  "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 0 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
+  "summary": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live.",
+  "money": "0 of a possible 0 points on the ten tests the coverage could answer",
+  "answered": [],
+  "unanswered": [
+   "Does reporting say it makes money?",
+   "Is revenue growing?",
+   "Does the money go into the business?",
+   "Is the price being called reasonable?",
+   "Did serious institutions take an allocation?"
+  ],
+  "sources": [
+   "Markets-Economic Times"
+  ]
+ },
+ {
+  "title": "Jio",
+  "kind": "New listing",
+  "colour": "#8b8b9a",
+  "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 0 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
+  "summary": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live.",
+  "money": "0 of a possible 0 points on the ten tests the coverage could answer",
+  "answered": [],
+  "unanswered": [
+   "Does reporting say it makes money?",
+   "Is revenue growing?",
+   "Does the money go into the business?",
+   "Is the price being called reasonable?",
+   "Did serious institutions take an allocation?"
+  ],
+  "sources": [
+   "Markets-Economic Times"
+  ]
+ },
+ {
+  "title": "Sebi approves 3 IPOs of Cosmic PV, Monomark, RKB Global along with NSE",
+  "kind": "New listing",
+  "colour": "#8b8b9a",
+  "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 0 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
+  "summary": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live.",
+  "money": "0 of a possible 0 points on the ten tests the coverage could answer",
+  "answered": [],
+  "unanswered": [
+   "Does reporting say it makes money?",
+   "Is revenue growing?",
+   "Does the money go into the business?",
+   "Is the price being called reasonable?",
+   "Did serious institutions take an allocation?"
+  ],
+  "sources": [
+   "Markets-Economic Times"
+  ]
+ },
+ {
+  "title": "NSE likely to price",
+  "kind": "New listing",
+  "colour": "#8b8b9a",
+  "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 0 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
+  "summary": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live.",
+  "money": "0 of a possible 0 points on the ten tests the coverage could answer",
+  "answered": [],
+  "unanswered": [
+   "Does reporting say it makes money?",
+   "Is revenue growing?",
+   "Does the money go into the business?",
+   "Is the price being called reasonable?",
+   "Did serious institutions take an allocation?"
+  ],
+  "sources": [
+   "Markets-Economic Times"
   ]
  },
  {
@@ -630,25 +757,6 @@
    "Does the money go into the business?",
    "Is the price being called reasonable?",
    "Is the book filling?"
-  ],
-  "sources": [
-   "Latest Share Market News, Sensex, Nifty, BSE, NSE Today | The HinduBusinessLine"
-  ]
- },
- {
-  "title": "Anthropic",
-  "kind": "New listing",
-  "colour": "#8b8b9a",
-  "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 0 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
-  "summary": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live.",
-  "money": "0 of a possible 0 points on the ten tests the coverage could answer",
-  "answered": [],
-  "unanswered": [
-   "Does reporting say it makes money?",
-   "Is revenue growing?",
-   "Does the money go into the business?",
-   "Is the price being called reasonable?",
-   "Did serious institutions take an allocation?"
   ],
   "sources": [
    "Latest Share Market News, Sensex, Nifty, BSE, NSE Today | The HinduBusinessLine"
@@ -845,25 +953,6 @@
   ]
  },
  {
-  "title": "NSE Gets SEBI Approval for",
-  "kind": "New listing",
-  "colour": "#8b8b9a",
-  "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 0 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
-  "summary": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live.",
-  "money": "0 of a possible 0 points on the ten tests the coverage could answer",
-  "answered": [],
-  "unanswered": [
-   "Does reporting say it makes money?",
-   "Is revenue growing?",
-   "Does the money go into the business?",
-   "Is the price being called reasonable?",
-   "Did serious institutions take an allocation?"
-  ],
-  "sources": [
-   "Open Magazine"
-  ]
- },
- {
   "title": "Paluck Technologies",
   "kind": "New listing",
   "colour": "#8b8b9a",
@@ -880,25 +969,6 @@
   ],
   "sources": [
    "IPO Watch"
-  ]
- },
- {
-  "title": "NSE likely to price",
-  "kind": "New listing",
-  "colour": "#8b8b9a",
-  "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 0 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
-  "summary": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live.",
-  "money": "0 of a possible 0 points on the ten tests the coverage could answer",
-  "answered": [],
-  "unanswered": [
-   "Does reporting say it makes money?",
-   "Is revenue growing?",
-   "Does the money go into the business?",
-   "Is the price being called reasonable?",
-   "Did serious institutions take an allocation?"
-  ],
-  "sources": [
-   "The Economic Times"
   ]
  },
  {
@@ -936,87 +1006,7 @@
    "Did serious institutions take an allocation?"
   ],
   "sources": [
-   "ET Now"
-  ]
- },
- {
-  "title": "Karamtara Engineering",
-  "kind": "New listing",
-  "colour": "#8b8b9a",
-  "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 12 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
-  "summary": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live.",
-  "money": "12 of a possible 12 points on the ten tests the coverage could answer",
-  "answered": [
-   "Does the money go into the business?"
-  ],
-  "unanswered": [
-   "Does reporting say it makes money?",
-   "Is revenue growing?",
-   "Is the price being called reasonable?",
-   "Did serious institutions take an allocation?",
-   "Is the book filling?"
-  ],
-  "sources": [
-   "IPOs/FPOs-Markets-Economic Times"
-  ]
- },
- {
-  "title": "Rentomojo set to go public at Rs 4,246 crore valuation, set to raise Rs 1,256 crore via",
-  "kind": "New listing",
-  "colour": "#8b8b9a",
-  "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 14 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
-  "summary": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live.",
-  "money": "14 of a possible 14 points on the ten tests the coverage could answer",
-  "answered": [
-   "Does reporting say it makes money?"
-  ],
-  "unanswered": [
-   "Is revenue growing?",
-   "Does the money go into the business?",
-   "Is the price being called reasonable?",
-   "Did serious institutions take an allocation?",
-   "Is the book filling?"
-  ],
-  "sources": [
-   "IPOs/FPOs-Markets-Economic Times"
-  ]
- },
- {
-  "title": "Jio",
-  "kind": "New listing",
-  "colour": "#8b8b9a",
-  "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 0 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
-  "summary": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live.",
-  "money": "0 of a possible 0 points on the ten tests the coverage could answer",
-  "answered": [],
-  "unanswered": [
-   "Does reporting say it makes money?",
-   "Is revenue growing?",
-   "Does the money go into the business?",
-   "Is the price being called reasonable?",
-   "Did serious institutions take an allocation?"
-  ],
-  "sources": [
-   "IPOs/FPOs-Markets-Economic Times"
-  ]
- },
- {
-  "title": "Sebi approves 3 IPOs of Cosmic PV, Monomark, RKB Global along with NSE",
-  "kind": "New listing",
-  "colour": "#8b8b9a",
-  "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 0 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
-  "summary": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live.",
-  "money": "0 of a possible 0 points on the ten tests the coverage could answer",
-  "answered": [],
-  "unanswered": [
-   "Does reporting say it makes money?",
-   "Is revenue growing?",
-   "Does the money go into the business?",
-   "Is the price being called reasonable?",
-   "Did serious institutions take an allocation?"
-  ],
-  "sources": [
-   "IPOs/FPOs-Markets-Economic Times"
+   "etnownews.com"
   ]
  },
  {
