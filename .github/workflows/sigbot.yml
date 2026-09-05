@@ -82,16 +82,22 @@ jobs:
           git config user.name  "sigbot"
           git config user.email "sigbot@users.noreply.github.com"
           # -f because .gitignore excludes these on purpose locally; in this
-          # repository they are the ledger and must persist.
-          git add -f shadow.db patterns.db watchlist.db 2>/dev/null || true
-          git add -f opportunities.json universe.json app/public/index.html 2>/dev/null || true
+          # repository they are the ledger and must persist. One add per file,
+          # so a file that does not exist yet cannot sink the others with it.
+          for f in shadow.db patterns.db watchlist.db opportunities.json \
+                   universe.json app/public/index.html; do
+            git add -f "$f" 2>/dev/null || true
+          done
+          # Then everything else the jobs touched. Run 2 died because the
+          # named list was incomplete: the commit succeeded, a tracked file
+          # stayed modified, and rebase refuses to run over unstaged changes.
+          # -A respects .gitignore, so local-junk categories stay out.
+          git add -A
           git diff --cached --quiet && echo "nothing changed" && exit 0
           git commit -m "tick: ${{ steps.plan.outputs.jobs }}"
-          # Branch-agnostic on purpose: a hardcoded "main" fails with exit 128
-          # the moment the repository's default branch is "master" — which is
-          # exactly how the first run died. GITHUB_REF_NAME is whatever branch
-          # actually triggered this run.
-          git pull --rebase origin "$GITHUB_REF_NAME"
+          # --autostash belts-and-braces the same failure: anything somehow
+          # still dirty is stashed around the rebase instead of aborting it.
+          git pull --rebase --autostash origin "$GITHUB_REF_NAME"
           git push origin HEAD:"$GITHUB_REF_NAME"
 
       - name: Deploy the page to Cloudflare
