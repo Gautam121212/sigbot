@@ -114,8 +114,19 @@ jobs:
           # error, a good token prints the account and the fault is further on.
           set -x
           npm install -g wrangler >/dev/null 2>&1
-          wrangler whoami
-          wrangler pages project list || true
+          # whoami is a probe, not a gate. It needs membership-read permission
+          # the minimal Pages-only token deliberately lacks, so it may print
+          # an error — that is fine and must not fail the build. Run 6 died on
+          # exactly this: the diagnostic outliving its diagnosis. The deploy
+          # commands below take the account from CLOUDFLARE_ACCOUNT_ID and are
+          # the real test.
+          wrangler whoami || true
+          # The account id must exist and be plain ASCII; say so out loud
+          # rather than letting a blank or ghosted secret fail cryptically.
+          if [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
+            echo "CLOUDFLARE_ACCOUNT_ID secret is empty or unset"; exit 1
+          fi
+          echo "account id length: ${#CLOUDFLARE_ACCOUNT_ID}"
           wrangler pages project create sigbot \
             --production-branch "$GITHUB_REF_NAME" \
             || echo "create failed or already exists — see above"
