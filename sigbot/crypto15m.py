@@ -172,15 +172,15 @@ def summarise(forecasts: list[IntradayForecast]) -> str:
                 "the data source did not answer — both are faults, and neither "
                 "is a quiet market.")
     tradeable = [f for f in forecasts if f.tradeable]
-    lines = [f"Crypto 15m — {len(forecasts)} pair(s) scored, "
+    lines = [f"Crypto 3h — {len(forecasts)} pair(s) scored, "
              f"{len(tradeable)} clear costs"]
     for f in sorted(tradeable, key=lambda f: -abs(f.score - 0.5))[:6]:
         lines.append(f"  {f.symbol} {f.side} {f.score:.0%} · {f.reason}")
     if not tradeable:
         lines.append("  Nothing cleared the cost bar. At fifteen minutes most "
                      "moves do not, which is why the bar exists.")
-    lines.append("\nEvery one is recorded and scored in an hour. Ninety-six "
-                 "bars a day per pair is not ninety-six independent facts — "
+    lines.append("\nEvery one is recorded and scored in three hours. Eight "
+                 "forecasts a day per pair still share most of their error — "
                  "check the market-day count in `sigbot.progress` before "
                  "reading a large number of checks as a large sample.")
     return "\n".join(lines)

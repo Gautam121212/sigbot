@@ -1,0 +1,4802 @@
+[
+ {
+  "symbol": "360ONE.NS",
+  "name": "360 ONE WAM Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "3MINDIA.NS",
+  "name": "3M India Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "ABB.NS",
+  "name": "ABB India Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "ACC.NS",
+  "name": "ACC Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "ACMESOLAR.NS",
+  "name": "ACME Solar Holdings Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "AIAENG.NS",
+  "name": "AIA Engineering Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "APLAPOLLO.NS",
+  "name": "APL Apollo Tubes Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "AUBANK.NS",
+  "name": "AU Small Finance Bank Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "AWL.NS",
+  "name": "AWL Agri Business Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "AADHARHFC.NS",
+  "name": "Aadhar Housing Finance Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "AARTIIND.NS",
+  "name": "Aarti Industries Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "AAVAS.NS",
+  "name": "Aavas Financiers Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "ABBOTINDIA.NS",
+  "name": "Abbott India Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "ACE.NS",
+  "name": "Action Construction Equipment Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "ACUTAAS.NS",
+  "name": "Acutaas Chemicals Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "ADANIENSOL.NS",
+  "name": "Adani Energy Solutions Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "ADANIENT.NS",
+  "name": "Adani Enterprises Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "ADANIGREEN.NS",
+  "name": "Adani Green Energy Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "ADANIPORTS.NS",
+  "name": "Adani Ports and Special Economic Zone Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "ADANIPOWER.NS",
+  "name": "Adani Power Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "ATGL.NS",
+  "name": "Adani Total Gas Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "ABCAPITAL.NS",
+  "name": "Aditya Birla Capital Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "ABFRL.NS",
+  "name": "Aditya Birla Fashion and Retail Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "ABLBL.NS",
+  "name": "Aditya Birla Lifestyle Brands Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "ABREL.NS",
+  "name": "Aditya Birla Real Estate Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "ABSLAMC.NS",
+  "name": "Aditya Birla Sun Life AMC Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "CPPLUS.NS",
+  "name": "Aditya Infotech Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "AEGISLOG.NS",
+  "name": "Aegis Logistics Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "AEGISVOPAK.NS",
+  "name": "Aegis Vopak Terminals Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "AFCONS.NS",
+  "name": "Afcons Infrastructure Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "AFFLE.NS",
+  "name": "Affle 3i Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "AJANTPHARM.NS",
+  "name": "Ajanta Pharmaceuticals Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "ALKEM.NS",
+  "name": "Alkem Laboratories Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "ABDL.NS",
+  "name": "Allied Blenders and Distillers Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "ARE&M.NS",
+  "name": "Amara Raja Energy & Mobility Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "AMBER.NS",
+  "name": "Amber Enterprises India Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "AMBUJACEM.NS",
+  "name": "Ambuja Cements Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "ANANDRATHI.NS",
+  "name": "Anand Rathi Wealth Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "ANANTRAJ.NS",
+  "name": "Anant Raj Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "ANGELONE.NS",
+  "name": "Angel One Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "ANTHEM.NS",
+  "name": "Anthem Biosciences Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "ANURAS.NS",
+  "name": "Anupam Rasayan India Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "APARINDS.NS",
+  "name": "Apar Industries Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "APOLLOHOSP.NS",
+  "name": "Apollo Hospitals Enterprise Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "APOLLOTYRE.NS",
+  "name": "Apollo Tyres Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "APTUS.NS",
+  "name": "Aptus Value Housing Finance India Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "ASAHIINDIA.NS",
+  "name": "Asahi India Glass Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "ASHOKLEY.NS",
+  "name": "Ashok Leyland Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "ASIANPAINT.NS",
+  "name": "Asian Paints Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "ASTERDM.NS",
+  "name": "Aster DM Quality Care Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "ASTRAL.NS",
+  "name": "Astral Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "ATHERENERG.NS",
+  "name": "Ather Energy Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "ATUL.NS",
+  "name": "Atul Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "AUROPHARMA.NS",
+  "name": "Aurobindo Pharma Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "AIIL.NS",
+  "name": "Authum Investment & Infrastructure Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "DMART.NS",
+  "name": "Avenue Supermarts Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "AXISBANK.NS",
+  "name": "Axis Bank Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "BEML.NS",
+  "name": "BEML Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "BLS.NS",
+  "name": "BLS International Services Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "BSE.NS",
+  "name": "BSE Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "BAJAJ-AUTO.NS",
+  "name": "Bajaj Auto Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "BAJFINANCE.NS",
+  "name": "Bajaj Finance Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "BAJAJFINSV.NS",
+  "name": "Bajaj Finserv Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "BAJAJHLDNG.NS",
+  "name": "Bajaj Holdings & Investment Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "BAJAJHFL.NS",
+  "name": "Bajaj Housing Finance Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "BALKRISIND.NS",
+  "name": "Balkrishna Industries Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "BALRAMCHIN.NS",
+  "name": "Balrampur Chini Mills Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "BANDHANBNK.NS",
+  "name": "Bandhan Bank Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "BANKBARODA.NS",
+  "name": "Bank of Baroda",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "BANKINDIA.NS",
+  "name": "Bank of India",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "MAHABANK.NS",
+  "name": "Bank of Maharashtra",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "BATAINDIA.NS",
+  "name": "Bata India Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "BAYERCROP.NS",
+  "name": "Bayer Cropscience Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "BELRISE.NS",
+  "name": "Belrise Industries Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "BERGEPAINT.NS",
+  "name": "Berger Paints India Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "BDL.NS",
+  "name": "Bharat Dynamics Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "BEL.NS",
+  "name": "Bharat Electronics Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "BHARATFORG.NS",
+  "name": "Bharat Forge Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "BHEL.NS",
+  "name": "Bharat Heavy Electricals Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "BPCL.NS",
+  "name": "Bharat Petroleum Corporation Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "BHARTIARTL.NS",
+  "name": "Bharti Airtel Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "BHARTIHEXA.NS",
+  "name": "Bharti Hexacom Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "BIKAJI.NS",
+  "name": "Bikaji Foods International Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "GROWW.NS",
+  "name": "Billionbrains Garage Ventures Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "BIOCON.NS",
+  "name": "Biocon Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "BSOFT.NS",
+  "name": "Birlasoft Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "BLUEDART.NS",
+  "name": "Blue Dart Express Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "BLUEJET.NS",
+  "name": "Blue Jet Healthcare Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "BLUESTARCO.NS",
+  "name": "Blue Star Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "BBTC.NS",
+  "name": "Bombay Burmah Trading Corporation Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "BOSCHLTD.NS",
+  "name": "Bosch Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "FIRSTCRY.NS",
+  "name": "Brainbees Solutions Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "BRIGADE.NS",
+  "name": "Brigade Enterprises Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "BRITANNIA.NS",
+  "name": "Britannia Industries Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "MAPMYINDIA.NS",
+  "name": "C.E. Info Systems Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "CCL.NS",
+  "name": "CCL Products (I) Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "CESC.NS",
+  "name": "CESC Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "CGPOWER.NS",
+  "name": "CG Power and Industrial Solutions Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "CIEINDIA.NS",
+  "name": "CIE Automotive India Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "CRISIL.NS",
+  "name": "CRISIL Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "CANFINHOME.NS",
+  "name": "Can Fin Homes Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "CANBK.NS",
+  "name": "Canara Bank",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "CANHLIFE.NS",
+  "name": "Canara HSBC Life Insurance Company Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "CAPLIPOINT.NS",
+  "name": "Caplin Point Laboratories Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "CGCL.NS",
+  "name": "Capri Global Capital Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "CARBORUNIV.NS",
+  "name": "Carborundum Universal Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "CARTRADE.NS",
+  "name": "Cartrade Tech Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "CASTROLIND.NS",
+  "name": "Castrol India Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "CEATLTD.NS",
+  "name": "Ceat Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "CEMPRO.NS",
+  "name": "Cemindia Projects Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "CENTRALBK.NS",
+  "name": "Central Bank of India",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "CDSL.NS",
+  "name": "Central Depository Services (India) Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "CHALET.NS",
+  "name": "Chalet Hotels Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "CHAMBLFERT.NS",
+  "name": "Chambal Fertilizers & Chemicals Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "CHENNPETRO.NS",
+  "name": "Chennai Petroleum Corporation Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "CHOICEIN.NS",
+  "name": "Choice International Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "CHOLAHLDNG.NS",
+  "name": "Cholamandalam Financial Holdings Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "CHOLAFIN.NS",
+  "name": "Cholamandalam Investment and Finance Company Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "CIPLA.NS",
+  "name": "Cipla Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "CUB.NS",
+  "name": "City Union Bank Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "CLEAN.NS",
+  "name": "Clean Science and Technology Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "COALINDIA.NS",
+  "name": "Coal India Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "COCHINSHIP.NS",
+  "name": "Cochin Shipyard Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "COFORGE.NS",
+  "name": "Coforge Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "COHANCE.NS",
+  "name": "Cohance Lifesciences Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "COLPAL.NS",
+  "name": "Colgate Palmolive (India) Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "CAMS.NS",
+  "name": "Computer Age Management Services Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "CONCORDBIO.NS",
+  "name": "Concord Biotech Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "CONCOR.NS",
+  "name": "Container Corporation of India Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "COROMANDEL.NS",
+  "name": "Coromandel International Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "CRAFTSMAN.NS",
+  "name": "Craftsman Automation Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "CREDITACC.NS",
+  "name": "CreditAccess Grameen Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "CROMPTON.NS",
+  "name": "Crompton Greaves Consumer Electricals Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "CUMMINSIND.NS",
+  "name": "Cummins India Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "CYIENT.NS",
+  "name": "Cyient Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "DCMSHRIRAM.NS",
+  "name": "DCM Shriram Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "DLF.NS",
+  "name": "DLF Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "DOMS.NS",
+  "name": "DOMS Industries Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "DABUR.NS",
+  "name": "Dabur India Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "DALBHARAT.NS",
+  "name": "Dalmia Bharat Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "DATAPATTNS.NS",
+  "name": "Data Patterns (India) Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "DEEPAKFERT.NS",
+  "name": "Deepak Fertilisers & Petrochemicals Corp. Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "DEEPAKNTR.NS",
+  "name": "Deepak Nitrite Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "DELHIVERY.NS",
+  "name": "Delhivery Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "DEVYANI.NS",
+  "name": "Devyani International Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "DIVISLAB.NS",
+  "name": "Divi's Laboratories Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "DIXON.NS",
+  "name": "Dixon Technologies (India) Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "LALPATHLAB.NS",
+  "name": "Dr. Lal Path Labs Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "DRREDDY.NS",
+  "name": "Dr. Reddy's Laboratories Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "EIDPARRY.NS",
+  "name": "E.I.D. Parry (India) Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "EIHOTEL.NS",
+  "name": "EIH Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "EICHERMOT.NS",
+  "name": "Eicher Motors Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "ELECON.NS",
+  "name": "Elecon Engineering Co. Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "ELGIEQUIP.NS",
+  "name": "Elgi Equipments Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "EMAMILTD.NS",
+  "name": "Emami Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "EMCURE.NS",
+  "name": "Emcure Pharmaceuticals Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "EMMVEE.NS",
+  "name": "Emmvee Photovoltaic Power Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "ENDURANCE.NS",
+  "name": "Endurance Technologies Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "ENGINERSIN.NS",
+  "name": "Engineers India Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "ERIS.NS",
+  "name": "Eris Lifesciences Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "ESCORTS.NS",
+  "name": "Escorts Kubota Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "ETERNAL.NS",
+  "name": "Eternal Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "EXIDEIND.NS",
+  "name": "Exide Industries Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "NYKAA.NS",
+  "name": "FSN E-Commerce Ventures Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "FEDERALBNK.NS",
+  "name": "Federal Bank Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "FACT.NS",
+  "name": "Fertilisers and Chemicals Travancore Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "FINCABLES.NS",
+  "name": "Finolex Cables Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "FSL.NS",
+  "name": "Firstsource Solutions Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "FIVESTAR.NS",
+  "name": "Five-Star Business Finance Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "FORCEMOT.NS",
+  "name": "Force Motors Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "FORTIS.NS",
+  "name": "Fortis Healthcare Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "GAIL.NS",
+  "name": "GAIL (India) Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "GVT&D.NS",
+  "name": "GE Vernova T&D India Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "GMRAIRPORT.NS",
+  "name": "GMR Airports Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "GABRIEL.NS",
+  "name": "Gabriel India Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "GALLANTT.NS",
+  "name": "Gallantt Ispat Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "GRSE.NS",
+  "name": "Garden Reach Shipbuilders & Engineers Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "GICRE.NS",
+  "name": "General Insurance Corporation of India",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "GILLETTE.NS",
+  "name": "Gillette India Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "GLAND.NS",
+  "name": "Gland Pharma Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "GLAXO.NS",
+  "name": "Glaxosmithkline Pharmaceuticals Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "GLENMARK.NS",
+  "name": "Glenmark Pharmaceuticals Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "MEDANTA.NS",
+  "name": "Global Health Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "GODIGIT.NS",
+  "name": "Go Digit General Insurance Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "GPIL.NS",
+  "name": "Godawari Power & Ispat Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "GODFRYPHLP.NS",
+  "name": "Godfrey Phillips India Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "GODREJCP.NS",
+  "name": "Godrej Consumer Products Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "GODREJIND.NS",
+  "name": "Godrej Industries Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "GODREJPROP.NS",
+  "name": "Godrej Properties Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "GRANULES.NS",
+  "name": "Granules India Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "GRAPHITE.NS",
+  "name": "Graphite India Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "GRASIM.NS",
+  "name": "Grasim Industries Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "GRAVITA.NS",
+  "name": "Gravita India Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "GESHIP.NS",
+  "name": "Great Eastern Shipping Co. Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "FLUOROCHEM.NS",
+  "name": "Gujarat Fluorochemicals Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "GMDCLTD.NS",
+  "name": "Gujarat Mineral Development Corporation Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "HEG.NS",
+  "name": "H.E.G. Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "HBLENGINE.NS",
+  "name": "HBL Engineering Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "HCLTECH.NS",
+  "name": "HCL Technologies Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "HDBFS.NS",
+  "name": "HDB Financial Services Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "HDFCAMC.NS",
+  "name": "HDFC Asset Management Company Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "HDFCBANK.NS",
+  "name": "HDFC Bank Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "HDFCLIFE.NS",
+  "name": "HDFC Life Insurance Company Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "HFCL.NS",
+  "name": "HFCL Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "HAVELLS.NS",
+  "name": "Havells India Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "HEROMOTOCO.NS",
+  "name": "Hero MotoCorp Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "HEXT.NS",
+  "name": "Hexaware Technologies Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "HSCL.NS",
+  "name": "Himadri Speciality Chemical Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "HINDALCO.NS",
+  "name": "Hindalco Industries Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "HAL.NS",
+  "name": "Hindustan Aeronautics Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "HINDCOPPER.NS",
+  "name": "Hindustan Copper Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "HINDPETRO.NS",
+  "name": "Hindustan Petroleum Corporation Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "HINDUNILVR.NS",
+  "name": "Hindustan Unilever Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "HINDZINC.NS",
+  "name": "Hindustan Zinc Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "POWERINDIA.NS",
+  "name": "Hitachi Energy India Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "HOMEFIRST.NS",
+  "name": "Home First Finance Company India Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "HONASA.NS",
+  "name": "Honasa Consumer Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "HONAUT.NS",
+  "name": "Honeywell Automation India Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "HUDCO.NS",
+  "name": "Housing & Urban Development Corporation Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "HYUNDAI.NS",
+  "name": "Hyundai Motor India Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "ICICIBANK.NS",
+  "name": "ICICI Bank Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "ICICIGI.NS",
+  "name": "ICICI Lombard General Insurance Company Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "ICICIAMC.NS",
+  "name": "ICICI Prudential Asset Management Company Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "ICICIPRULI.NS",
+  "name": "ICICI Prudential Life Insurance Company Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "IDBI.NS",
+  "name": "IDBI Bank Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "IDFCFIRSTB.NS",
+  "name": "IDFC First Bank Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "IFCI.NS",
+  "name": "IFCI Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "IIFL.NS",
+  "name": "IIFL Finance Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "IRB.NS",
+  "name": "IRB Infrastructure Developers Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "IRCON.NS",
+  "name": "IRCON International Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "ITCHOTELS.NS",
+  "name": "ITC Hotels Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "ITC.NS",
+  "name": "ITC Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "ITI.NS",
+  "name": "ITI Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "INDGN.NS",
+  "name": "Indegene Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "INDIACEM.NS",
+  "name": "India Cements Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "INDIAMART.NS",
+  "name": "Indiamart Intermesh Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "INDIANB.NS",
+  "name": "Indian Bank",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "IEX.NS",
+  "name": "Indian Energy Exchange Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "INDHOTEL.NS",
+  "name": "Indian Hotels Co. Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "IOC.NS",
+  "name": "Indian Oil Corporation Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "IOB.NS",
+  "name": "Indian Overseas Bank",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "IRCTC.NS",
+  "name": "Indian Railway Catering And Tourism Corporation Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "IRFC.NS",
+  "name": "Indian Railway Finance Corporation Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "IREDA.NS",
+  "name": "Indian Renewable Energy Development Agency Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "IGL.NS",
+  "name": "Indraprastha Gas Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "INDUSTOWER.NS",
+  "name": "Indus Towers Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "INDUSINDBK.NS",
+  "name": "IndusInd Bank Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "NAUKRI.NS",
+  "name": "Info Edge (India) Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "INFY.NS",
+  "name": "Infosys Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "INOXWIND.NS",
+  "name": "Inox Wind Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "INTELLECT.NS",
+  "name": "Intellect Design Arena Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "INDIGO.NS",
+  "name": "InterGlobe Aviation Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "IGIL.NS",
+  "name": "International Gemological Institute Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "IKS.NS",
+  "name": "Inventurus Knowledge Solutions Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "IPCALAB.NS",
+  "name": "Ipca Laboratories Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "JKCEMENT.NS",
+  "name": "J.K. Cement Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "JBMA.NS",
+  "name": "JBM Auto Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "JKTYRE.NS",
+  "name": "JK Tyre & Industries Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "JMFINANCIL.NS",
+  "name": "JM Financial Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "JSWCEMENT.NS",
+  "name": "JSW Cement Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "JSWDULUX.NS",
+  "name": "JSW Dulux Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "JSWENERGY.NS",
+  "name": "JSW Energy Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "JSWINFRA.NS",
+  "name": "JSW Infrastructure Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "JSWSTEEL.NS",
+  "name": "JSW Steel Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "JAINREC.NS",
+  "name": "Jain Resource Recycling Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "JPPOWER.NS",
+  "name": "Jaiprakash Power Ventures Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "J&KBANK.NS",
+  "name": "Jammu & Kashmir Bank Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "JINDALSAW.NS",
+  "name": "Jindal Saw Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "JSL.NS",
+  "name": "Jindal Stainless Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "JINDALSTEL.NS",
+  "name": "Jindal Steel Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "JIOFIN.NS",
+  "name": "Jio Financial Services Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "JUBLFOOD.NS",
+  "name": "Jubilant Foodworks Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "JUBLINGREA.NS",
+  "name": "Jubilant Ingrevia Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "JUBLPHARMA.NS",
+  "name": "Jubilant Pharmova Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "JWL.NS",
+  "name": "Jupiter Wagons Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "JYOTICNC.NS",
+  "name": "Jyoti CNC Automation Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "KPRMILL.NS",
+  "name": "K.P.R. Mill Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "KEI.NS",
+  "name": "KEI Industries Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "KPITTECH.NS",
+  "name": "KPIT Technologies Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "KAJARIACER.NS",
+  "name": "Kajaria Ceramics Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "KPIL.NS",
+  "name": "Kalpataru Projects International Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "KALYANKJIL.NS",
+  "name": "Kalyan Jewellers India Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "KARURVYSYA.NS",
+  "name": "Karur Vysya Bank Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "KAYNES.NS",
+  "name": "Kaynes Technology India Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "KEC.NS",
+  "name": "Kec International Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "KFINTECH.NS",
+  "name": "Kfin Technologies Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "KIRLOSENG.NS",
+  "name": "Kirloskar Oil Eng Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "KOTAKBANK.NS",
+  "name": "Kotak Mahindra Bank Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "KIMS.NS",
+  "name": "Krishna Institute of Medical Sciences Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "LTF.NS",
+  "name": "L&T Finance Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "LTTS.NS",
+  "name": "L&T Technology Services Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "LGEINDIA.NS",
+  "name": "LG Electronics India Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "LICHSGFIN.NS",
+  "name": "LIC Housing Finance Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "LTFOODS.NS",
+  "name": "LT Foods Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "LTM.NS",
+  "name": "LTM Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "LT.NS",
+  "name": "Larsen & Toubro Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "LATENTVIEW.NS",
+  "name": "Latent View Analytics Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "LAURUSLABS.NS",
+  "name": "Laurus Labs Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "THELEELA.NS",
+  "name": "Leela Palaces Hotels & Resorts Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "LEMONTREE.NS",
+  "name": "Lemon Tree Hotels Ltd.",
+  "kind": "equity",
+  "exchange": "NSE",
+  "market_cap": 0.0,
+  "volume": 0.0
+ },
+ {
+  "symbol": "PCG",
+  "name": "Pacific Gas & Electric Co. Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 37682353574.0,
+  "volume": 144517972.0
+ },
+ {
+  "symbol": "NVDA",
+  "name": "NVIDIA Corporation Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 5240304000000.0,
+  "volume": 109310776.0
+ },
+ {
+  "symbol": "NIO",
+  "name": "NIO Inc. American depositary shares each  representing one Class A ordinary share",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 10173008109.0,
+  "volume": 80917046.0
+ },
+ {
+  "symbol": "INTC",
+  "name": "Intel Corporation Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 470212634394.0,
+  "volume": 73635690.0
+ },
+ {
+  "symbol": "ONDS",
+  "name": "Ondas Inc. Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 4023040778.0,
+  "volume": 68401185.0
+ },
+ {
+  "symbol": "NU",
+  "name": "Nu Holdings Ltd. Class A Ordinary Shares",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 70213040719.0,
+  "volume": 67497597.0
+ },
+ {
+  "symbol": "RZLV",
+  "name": "Rezolve AI PLC Ordinary Shares",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 956936321.0,
+  "volume": 64349769.0
+ },
+ {
+  "symbol": "PATH",
+  "name": "UiPath Inc. Class A Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 9398701625.0,
+  "volume": 63769590.0
+ },
+ {
+  "symbol": "AAL",
+  "name": "American Airlines Group Inc. Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 8572510865.0,
+  "volume": 63182570.0
+ },
+ {
+  "symbol": "NOK",
+  "name": "Nokia Corporation Sponsored American Depositary Shares",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 57020440181.0,
+  "volume": 61423059.0
+ },
+ {
+  "symbol": "SPCX",
+  "name": "Space Exploration Technologies Corp. Class A Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 1930462419724.0,
+  "volume": 53566399.0
+ },
+ {
+  "symbol": "AAPL",
+  "name": "Apple Inc. Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 4745005743400.0,
+  "volume": 53038062.0
+ },
+ {
+  "symbol": "F",
+  "name": "Ford Motor Company Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 54207731299.0,
+  "volume": 48423633.0
+ },
+ {
+  "symbol": "PLUG",
+  "name": "Plug Power Inc. Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 2920138131.0,
+  "volume": 46500920.0
+ },
+ {
+  "symbol": "BTG",
+  "name": "B2Gold Corp Common shares (Canada)",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 6869567962.0,
+  "volume": 43998816.0
+ },
+ {
+  "symbol": "PFE",
+  "name": "Pfizer Inc. Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 162725680966.0,
+  "volume": 42467113.0
+ },
+ {
+  "symbol": "CDE",
+  "name": "Coeur Mining Inc. Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 20764286960.0,
+  "volume": 42132874.0
+ },
+ {
+  "symbol": "SOFI",
+  "name": "SoFi Technologies Inc. Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 22021274024.0,
+  "volume": 41616030.0
+ },
+ {
+  "symbol": "BMNR",
+  "name": "BitMine Immersion Technologies Inc. Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 14097400828.0,
+  "volume": 40026302.0
+ },
+ {
+  "symbol": "GRAB",
+  "name": "Grab Holdings Limited Class A Ordinary Shares",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 14187666969.0,
+  "volume": 38920693.0
+ },
+ {
+  "symbol": "RIG",
+  "name": "Transocean Ltd (Switzerland) Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 6611930103.0,
+  "volume": 36545380.0
+ },
+ {
+  "symbol": "OWL",
+  "name": "Blue Owl Capital Inc. Class A Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 18210197165.0,
+  "volume": 36134413.0
+ },
+ {
+  "symbol": "TSLA",
+  "name": "Tesla Inc. Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 1406394331529.0,
+  "volume": 36073069.0
+ },
+ {
+  "symbol": "FRVO",
+  "name": "Fervo Energy Company Class A common stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 5821573180.0,
+  "volume": 35135468.0
+ },
+ {
+  "symbol": "IREN",
+  "name": "IREN Limited Ordinary Shares",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 14509239419.0,
+  "volume": 33345077.0
+ },
+ {
+  "symbol": "T",
+  "name": "AT&T Inc.",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 178162026900.0,
+  "volume": 32800618.0
+ },
+ {
+  "symbol": "AMZN",
+  "name": "Amazon.com Inc. Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 2749647055774.0,
+  "volume": 31586673.0
+ },
+ {
+  "symbol": "BBD",
+  "name": "Banco Bradesco Sa American Depositary Shares",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 37134844844.0,
+  "volume": 31082755.0
+ },
+ {
+  "symbol": "PBR",
+  "name": "Petroleo Brasileiro S.A. Petrobras ADS",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 131013968526.0,
+  "volume": 31039646.0
+ },
+ {
+  "symbol": "CNH",
+  "name": "CNH Industrial N.V. Common Shares",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 15471574475.0,
+  "volume": 30933777.0
+ },
+ {
+  "symbol": "HL",
+  "name": "Hecla Mining Company Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 12837494716.0,
+  "volume": 30796508.0
+ },
+ {
+  "symbol": "SNAP",
+  "name": "Snap Inc. Class A Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 9047907759.0,
+  "volume": 30678025.0
+ },
+ {
+  "symbol": "MARA",
+  "name": "MARA Holdings Inc. Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 3951841808.0,
+  "volume": 30138400.0
+ },
+ {
+  "symbol": "OPEN",
+  "name": "Opendoor Technologies Inc Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 2952116792.0,
+  "volume": 29502540.0
+ },
+ {
+  "symbol": "ALMS",
+  "name": "Alumis Inc. Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 1225751713.0,
+  "volume": 28319364.0
+ },
+ {
+  "symbol": "ABEV",
+  "name": "Ambev S.A. American Depositary Shares (Each representing 1 Common Share)",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 45551136005.0,
+  "volume": 27954299.0
+ },
+ {
+  "symbol": "MU",
+  "name": "Micron Technology Inc. Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 1054220742869.0,
+  "volume": 27619599.0
+ },
+ {
+  "symbol": "VALE",
+  "name": "VALE S.A.  American Depositary Shares Each Representing one common share",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 64555057017.0,
+  "volume": 27270170.0
+ },
+ {
+  "symbol": "SMCI",
+  "name": "Super Micro Computer Inc. Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 23745216560.0,
+  "volume": 26500556.0
+ },
+ {
+  "symbol": "SOUN",
+  "name": "SoundHound AI Inc Class A Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 3042152431.0,
+  "volume": 26364948.0
+ },
+ {
+  "symbol": "WULF",
+  "name": "TeraWulf Inc. Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 7309891118.0,
+  "volume": 26243600.0
+ },
+ {
+  "symbol": "HBAN",
+  "name": "Huntington Bancshares Incorporated Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 33175211443.0,
+  "volume": 25909717.0
+ },
+ {
+  "symbol": "MRNA",
+  "name": "Moderna Inc. Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 61590120596.0,
+  "volume": 25729716.0
+ },
+ {
+  "symbol": "ORCL",
+  "name": "Oracle Corporation Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 407068161720.0,
+  "volume": 25344870.0
+ },
+ {
+  "symbol": "CCL",
+  "name": "Carnival Corporation Ltd. Common Shares",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 31816949034.0,
+  "volume": 25337715.0
+ },
+ {
+  "symbol": "EIX",
+  "name": "Edison International Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 22627061965.0,
+  "volume": 24582593.0
+ },
+ {
+  "symbol": "BAC",
+  "name": "Bank of America Corporation Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 433480471146.0,
+  "volume": 24444953.0
+ },
+ {
+  "symbol": "PLTR",
+  "name": "Palantir Technologies Inc. Class A Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 432177462122.0,
+  "volume": 24436187.0
+ },
+ {
+  "symbol": "PURR",
+  "name": "Hyperliquid Strategies Inc Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 2246445914.0,
+  "volume": 24132824.0
+ },
+ {
+  "symbol": "GOOGL",
+  "name": "Alphabet Inc. Class A Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 4097294600000.0,
+  "volume": 23067188.0
+ },
+ {
+  "symbol": "DNN",
+  "name": "Denison Mines Corp Ordinary Shares (Canada)",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 2896691606.0,
+  "volume": 22870588.0
+ },
+ {
+  "symbol": "KEEL",
+  "name": "Keel Infrastructure Corp. Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 1895949761.0,
+  "volume": 22635028.0
+ },
+ {
+  "symbol": "HOOD",
+  "name": "Robinhood Markets Inc. Class A Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 93064006078.0,
+  "volume": 22561776.0
+ },
+ {
+  "symbol": "NCLH",
+  "name": "Norwegian Cruise Line Holdings Ltd. Ordinary Shares",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 7085268464.0,
+  "volume": 22528956.0
+ },
+ {
+  "symbol": "JOBY",
+  "name": "Joby Aviation Inc. Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 6617241146.0,
+  "volume": 22170166.0
+ },
+ {
+  "symbol": "NKE",
+  "name": "Nike Inc. Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 56550970558.0,
+  "volume": 22132318.0
+ },
+ {
+  "symbol": "MSTR",
+  "name": "Strategy Inc Common Stock Class A",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 47982111785.0,
+  "volume": 22112240.0
+ },
+ {
+  "symbol": "MRVL",
+  "name": "Marvell Technology Inc. Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 184490991000.0,
+  "volume": 22082320.0
+ },
+ {
+  "symbol": "WMT",
+  "name": "Walmart Inc. Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 840342401847.0,
+  "volume": 21978397.0
+ },
+ {
+  "symbol": "KVUE",
+  "name": "Kenvue Inc. Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 36014502506.0,
+  "volume": 21751357.0
+ },
+ {
+  "symbol": "AUR",
+  "name": "Aurora Innovation Inc. Class A Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 10942687763.0,
+  "volume": 21723107.0
+ },
+ {
+  "symbol": "RKT",
+  "name": "Rocket Companies Inc. Class A Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 36896300746.0,
+  "volume": 21575401.0
+ },
+ {
+  "symbol": "NFLX",
+  "name": "Netflix Inc. Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 336487965218.0,
+  "volume": 21117960.0
+ },
+ {
+  "symbol": "MSFT",
+  "name": "Microsoft Corporation Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 3720346801901.0,
+  "volume": 20402650.0
+ },
+ {
+  "symbol": "VZ",
+  "name": "Verizon Communications Inc. Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 208985192661.0,
+  "volume": 20183820.0
+ },
+ {
+  "symbol": "ACHR",
+  "name": "Archer Aviation Inc. Class A Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 4327265006.0,
+  "volume": 20149243.0
+ },
+ {
+  "symbol": "CIFR",
+  "name": "Cipher Digital Inc. Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 6063598848.0,
+  "volume": 19908047.0
+ },
+ {
+  "symbol": "STLA",
+  "name": "Stellantis N.V. Common Shares",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 15501535099.0,
+  "volume": 19548715.0
+ },
+ {
+  "symbol": "CMCSA",
+  "name": "Comcast Corporation Class A Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 93329141870.0,
+  "volume": 19358364.0
+ },
+ {
+  "symbol": "WFC",
+  "name": "Wells Fargo & Company Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 263208902205.0,
+  "volume": 19316480.0
+ },
+ {
+  "symbol": "HPE",
+  "name": "Hewlett Packard Enterprise Company Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 67362233113.0,
+  "volume": 19194835.0
+ },
+ {
+  "symbol": "AVGO",
+  "name": "Broadcom Inc. Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 1758782247597.0,
+  "volume": 19182514.0
+ },
+ {
+  "symbol": "MDT",
+  "name": "Medtronic plc. Ordinary Shares",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 117809438446.0,
+  "volume": 18834787.0
+ },
+ {
+  "symbol": "SLB",
+  "name": "SLB Limited Common Shares",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 84818785652.0,
+  "volume": 18343915.0
+ },
+ {
+  "symbol": "UMC",
+  "name": "United Microelectronics Corporation (NEW) Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 51535912076.0,
+  "volume": 17943976.0
+ },
+ {
+  "symbol": "SMR",
+  "name": "NuScale Power Corporation Class A Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 3957751335.0,
+  "volume": 17561151.0
+ },
+ {
+  "symbol": "JBLU",
+  "name": "JetBlue Airways Corporation Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 1686585449.0,
+  "volume": 17439864.0
+ },
+ {
+  "symbol": "CPNG",
+  "name": "Coupang Inc. Class A Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 28400684892.0,
+  "volume": 17122642.0
+ },
+ {
+  "symbol": "BBAI",
+  "name": "BigBear.ai Inc. Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 1414508754.0,
+  "volume": 17027679.0
+ },
+ {
+  "symbol": "NOW",
+  "name": "ServiceNow Inc. Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 147758600000.0,
+  "volume": 16880059.0
+ },
+ {
+  "symbol": "ERIC",
+  "name": "Ericsson American Depositary Shares",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 33915798454.0,
+  "volume": 16609141.0
+ },
+ {
+  "symbol": "TTD",
+  "name": "The Trade Desk Inc. Class A Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 6474949073.0,
+  "volume": 16421670.0
+ },
+ {
+  "symbol": "INFY",
+  "name": "Infosys Limited American Depositary Shares",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 48676321092.0,
+  "volume": 16393777.0
+ },
+ {
+  "symbol": "FRMI",
+  "name": "Fermi Inc. Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 2965363821.0,
+  "volume": 16340629.0
+ },
+ {
+  "symbol": "SUNB",
+  "name": "Sunbelt Rentals Holdings Inc. Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 27482642369.0,
+  "volume": 16178046.0
+ },
+ {
+  "symbol": "AMD",
+  "name": "Advanced Micro Devices Inc. Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 750301854054.0,
+  "volume": 16164952.0
+ },
+ {
+  "symbol": "TE",
+  "name": "T1 Energy Inc. Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 1260359527.0,
+  "volume": 16151177.0
+ },
+ {
+  "symbol": "RIVN",
+  "name": "Rivian Automotive Inc. Class A Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 22492514887.0,
+  "volume": 16134601.0
+ },
+ {
+  "symbol": "AGNC",
+  "name": "AGNC Investment Corp. Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 12566103338.0,
+  "volume": 16118822.0
+ },
+ {
+  "symbol": "AMC",
+  "name": "AMC Entertainment Holdings Inc. Class A Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 2302919966.0,
+  "volume": 16032385.0
+ },
+ {
+  "symbol": "GOOG",
+  "name": "Alphabet Inc. Class C Capital Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 4060726900000.0,
+  "volume": 15905622.0
+ },
+ {
+  "symbol": "BTE",
+  "name": "Baytex Energy Corp Common Shares",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 3544440000.0,
+  "volume": 15865129.0
+ },
+ {
+  "symbol": "BP",
+  "name": "BP p.l.c. Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 116419364932.0,
+  "volume": 15792596.0
+ },
+ {
+  "symbol": "CRWV",
+  "name": "CoreWeave Inc. Class A Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 45143270874.0,
+  "volume": 15773154.0
+ },
+ {
+  "symbol": "META",
+  "name": "Meta Platforms Inc. Class A Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 1473834251412.0,
+  "volume": 15759392.0
+ },
+ {
+  "symbol": "CSX",
+  "name": "CSX Corporation Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 90215528458.0,
+  "volume": 15748117.0
+ },
+ {
+  "symbol": "ITUB",
+  "name": "Itau Unibanco Banco Holding SA American Depositary Shares (Each repstg 500 Preferred shares)",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 84683708390.0,
+  "volume": 15570590.0
+ },
+ {
+  "symbol": "CRM",
+  "name": "Salesforce Inc. Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 212424530000.0,
+  "volume": 15563685.0
+ },
+ {
+  "symbol": "HTZ",
+  "name": "Hertz Global Holdings Inc Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 798451120.0,
+  "volume": 15213761.0
+ },
+ {
+  "symbol": "APLD",
+  "name": "Applied Digital Corporation Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 7079784730.0,
+  "volume": 15098484.0
+ },
+ {
+  "symbol": "RIOT",
+  "name": "Riot Platforms Inc. Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 6675856454.0,
+  "volume": 14964062.0
+ },
+ {
+  "symbol": "DELL",
+  "name": "Dell Technologies Inc. Class C Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 275445896175.0,
+  "volume": 14869300.0
+ },
+ {
+  "symbol": "HPQ",
+  "name": "HP Inc. Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 28244093149.0,
+  "volume": 14866490.0
+ },
+ {
+  "symbol": "WBD",
+  "name": "Warner Bros. Discovery Inc. Series A Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 71103117852.0,
+  "volume": 14724512.0
+ },
+ {
+  "symbol": "LUMN",
+  "name": "Lumen Technologies Inc. Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 6580621678.0,
+  "volume": 14497355.0
+ },
+ {
+  "symbol": "SBS",
+  "name": "Companhia de saneamento Basico Do Estado De Sao Paulo - Sabesp American Depositary Shares (Each repstg 250 Common Shares)",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 17164480702.0,
+  "volume": 14418703.0
+ },
+ {
+  "symbol": "RKLB",
+  "name": "Rocket Lab Corporation Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 37427672077.0,
+  "volume": 14161850.0
+ },
+ {
+  "symbol": "CSCO",
+  "name": "Cisco Systems Inc. Common Stock (DE)",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 432533040137.0,
+  "volume": 14156725.0
+ },
+ {
+  "symbol": "KHC",
+  "name": "The Kraft Heinz Company Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 30677260619.0,
+  "volume": 14086814.0
+ },
+ {
+  "symbol": "IONQ",
+  "name": "IonQ Inc. Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 14394267423.0,
+  "volume": 14049075.0
+ },
+ {
+  "symbol": "KO",
+  "name": "Coca-Cola Company (The) Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 378624333384.0,
+  "volume": 13917540.0
+ },
+ {
+  "symbol": "VG",
+  "name": "Venture Global Inc. Class A common stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 37776402979.0,
+  "volume": 13862903.0
+ },
+ {
+  "symbol": "ZETA",
+  "name": "Zeta Global Holdings Corp. Class A Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 7921989374.0,
+  "volume": 13859817.0
+ },
+ {
+  "symbol": "QXO",
+  "name": "QXO Inc. Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 13362880332.0,
+  "volume": 13734723.0
+ },
+ {
+  "symbol": "CRWD",
+  "name": "CrowdStrike Holdings Inc. Class A Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 220217666469.0,
+  "volume": 13688903.0
+ },
+ {
+  "symbol": "CRCL",
+  "name": "Circle Internet Group Inc. Class A Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 22716813832.0,
+  "volume": 13617475.0
+ },
+ {
+  "symbol": "EOSE",
+  "name": "Eos Energy Enterprises Inc. Class A Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 1107069942.0,
+  "volume": 13520632.0
+ },
+ {
+  "symbol": "RGTI",
+  "name": "Rigetti Computing Inc. Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 5003193518.0,
+  "volume": 13070947.0
+ },
+ {
+  "symbol": "FCX",
+  "name": "Freeport-McMoRan Inc. Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 104068189892.0,
+  "volume": 12794193.0
+ },
+ {
+  "symbol": "IAUX",
+  "name": "i-80 Gold Corp. Common Shares",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 1472032861.0,
+  "volume": 12641439.0
+ },
+ {
+  "symbol": "HIVE",
+  "name": "HIVE Digital Technologies Ltd. Common Shares",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 724092172.0,
+  "volume": 12630383.0
+ },
+ {
+  "symbol": "HDB",
+  "name": "HDFC Bank Limited Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 117759267709.0,
+  "volume": 12607771.0
+ },
+ {
+  "symbol": "UWMC",
+  "name": "UWM Holdings Corporation Class A Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 2197770985.0,
+  "volume": 12502041.0
+ },
+ {
+  "symbol": "AG",
+  "name": "First Majestic Silver Corp. Ordinary Shares (Canada)",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 9789120766.0,
+  "volume": 12406293.0
+ },
+ {
+  "symbol": "COMP",
+  "name": "Compass Inc. Class A Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 7825204295.0,
+  "volume": 12261641.0
+ },
+ {
+  "symbol": "BSX",
+  "name": "Boston Scientific Corporation Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 69678955610.0,
+  "volume": 12000100.0
+ },
+ {
+  "symbol": "CAG",
+  "name": "ConAgra Brands Inc. Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 7733889374.0,
+  "volume": 11952537.0
+ },
+ {
+  "symbol": "CLSK",
+  "name": "CleanSpark Inc. Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 2840396827.0,
+  "volume": 11942724.0
+ },
+ {
+  "symbol": "EQX",
+  "name": "Equinox Gold Corp. Common Shares",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 14219660632.0,
+  "volume": 11903269.0
+ },
+ {
+  "symbol": "QBTS",
+  "name": "D-Wave Quantum Inc. Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 6107623864.0,
+  "volume": 11787438.0
+ },
+ {
+  "symbol": "GME",
+  "name": "GameStop Corporation Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 8439882544.0,
+  "volume": 11715990.0
+ },
+ {
+  "symbol": "KOS",
+  "name": "Kosmos Energy Ltd. Common Shares (DE)",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 1756688570.0,
+  "volume": 11702189.0
+ },
+ {
+  "symbol": "SNDK",
+  "name": "Sandisk Corporation Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 225026970067.0,
+  "volume": 11673462.0
+ },
+ {
+  "symbol": "LCID",
+  "name": "Lucid Group Inc. Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 1793019301.0,
+  "volume": 11664726.0
+ },
+ {
+  "symbol": "CORZ",
+  "name": "Core Scientific Inc. Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 5163940887.0,
+  "volume": 11613957.0
+ },
+ {
+  "symbol": "PR",
+  "name": "Permian Resources Corporation Class A Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 19925481720.0,
+  "volume": 11476511.0
+ },
+ {
+  "symbol": "XOM",
+  "name": "ExxonMobil Holdings Corporation Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 676615113018.0,
+  "volume": 11307687.0
+ },
+ {
+  "symbol": "VICI",
+  "name": "VICI Properties Inc. Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 28121520933.0,
+  "volume": 11277251.0
+ },
+ {
+  "symbol": "HLN",
+  "name": "Haleon plc American Depositary Shares (Each representing two Ordinary Shares)",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 44844083952.0,
+  "volume": 11244075.0
+ },
+ {
+  "symbol": "CRK",
+  "name": "Comstock Resources Inc. Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 4703801179.0,
+  "volume": 11220415.0
+ },
+ {
+  "symbol": "UBER",
+  "name": "Uber Technologies Inc. Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 153682223504.0,
+  "volume": 11202562.0
+ },
+ {
+  "symbol": "B",
+  "name": "Barrick Mining Corporation Common Shares",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 70937618459.0,
+  "volume": 11189999.0
+ },
+ {
+  "symbol": "NEE",
+  "name": "NextEra Energy Inc. Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 172990172872.0,
+  "volume": 11155758.0
+ },
+ {
+  "symbol": "SHEL",
+  "name": "Shell PLC American Depositary Shares (each representing two (2) Ordinary Shares)",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 266030885031.0,
+  "volume": 11083653.0
+ },
+ {
+  "symbol": "QS",
+  "name": "QuantumScape Corporation Class A Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 3386550883.0,
+  "volume": 10978825.0
+ },
+ {
+  "symbol": "ASST",
+  "name": "Strive Inc. Class A Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 2152402152.0,
+  "volume": 10872800.0
+ },
+ {
+  "symbol": "GGB",
+  "name": "Gerdau S.A. Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 9276904650.0,
+  "volume": 10836511.0
+ },
+ {
+  "symbol": "NBIS",
+  "name": "Nebius Group N.V. Class A Ordinary Shares",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 54245990200.0,
+  "volume": 10783262.0
+ },
+ {
+  "symbol": "WU",
+  "name": "Western Union Company (The) Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 2201865606.0,
+  "volume": 10767133.0
+ },
+ {
+  "symbol": "SKHY",
+  "name": "SK hynix Inc. American Depositary Shares",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 1171869950900.0,
+  "volume": 10764186.0
+ },
+ {
+  "symbol": "MPT",
+  "name": "Medical Properties Trust Inc. common stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 2406716000.0,
+  "volume": 10751500.0
+ },
+ {
+  "symbol": "BE",
+  "name": "Bloom Energy Corporation Class A Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 62919876926.0,
+  "volume": 10741344.0
+ },
+ {
+  "symbol": "FIG",
+  "name": "Figma Inc. Class A Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 14497868382.0,
+  "volume": 10614544.0
+ },
+ {
+  "symbol": "GLW",
+  "name": "Corning Incorporated Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 125383685460.0,
+  "volume": 10563281.0
+ },
+ {
+  "symbol": "GTLB",
+  "name": "GitLab Inc. Class A Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 7615701000.0,
+  "volume": 10556112.0
+ },
+ {
+  "symbol": "CMG",
+  "name": "Chipotle Mexican Grill Inc. Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 47465829180.0,
+  "volume": 10541766.0
+ },
+ {
+  "symbol": "BULL",
+  "name": "Webull Corporation Class A Ordinary Shares",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 4836749072.0,
+  "volume": 10503118.0
+ },
+ {
+  "symbol": "PSKY",
+  "name": "Paramount Skydance Corporation Class B Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 11836527968.0,
+  "volume": 10426610.0
+ },
+ {
+  "symbol": "KLAC",
+  "name": "KLA Corporation Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 223275779747.0,
+  "volume": 10398840.0
+ },
+ {
+  "symbol": "KEY",
+  "name": "KeyCorp Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 22633796630.0,
+  "volume": 10386095.0
+ },
+ {
+  "symbol": "LYFT",
+  "name": "Lyft Inc. Class A Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 6348119976.0,
+  "volume": 10264270.0
+ },
+ {
+  "symbol": "CLF",
+  "name": "Cleveland-Cliffs Inc. Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 6584032142.0,
+  "volume": 10255947.0
+ },
+ {
+  "symbol": "DVN",
+  "name": "Devon Energy Corporation Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 53955000000.0,
+  "volume": 10235692.0
+ },
+ {
+  "symbol": "KVYO",
+  "name": "Klaviyo Inc. Series A Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 5876774300.0,
+  "volume": 10224842.0
+ },
+ {
+  "symbol": "MCHP",
+  "name": "Microchip Technology Incorporated Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 38776250624.0,
+  "volume": 10114039.0
+ },
+ {
+  "symbol": "NVAX",
+  "name": "Novavax Inc. Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 1669250747.0,
+  "volume": 10020396.0
+ },
+ {
+  "symbol": "PPL",
+  "name": "PPL Corporation Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 25940220669.0,
+  "volume": 9994547.0
+ },
+ {
+  "symbol": "RXRX",
+  "name": "Recursion Pharmaceuticals Inc. Class A Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 1782689426.0,
+  "volume": 9982760.0
+ },
+ {
+  "symbol": "PYPL",
+  "name": "PayPal Holdings Inc. Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 44826149798.0,
+  "volume": 9917961.0
+ },
+ {
+  "symbol": "LYG",
+  "name": "Lloyds Banking Group Plc American Depositary Shares",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 87592192232.0,
+  "volume": 9904744.0
+ },
+ {
+  "symbol": "NVTS",
+  "name": "Navitas Semiconductor Corporation Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 2856362759.0,
+  "volume": 9841807.0
+ },
+ {
+  "symbol": "USAR",
+  "name": "USA Rare Earth Inc. Class A Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 4223868909.0,
+  "volume": 9839452.0
+ },
+ {
+  "symbol": "PINS",
+  "name": "Pinterest Inc. Class A Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 12034151824.0,
+  "volume": 9830439.0
+ },
+ {
+  "symbol": "MO",
+  "name": "Altria Group Inc.",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 116164084932.0,
+  "volume": 9816975.0
+ },
+ {
+  "symbol": "BABA",
+  "name": "Alibaba Group Holding Limited American Depositary Shares each representing eight Ordinary share",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 273377547131.0,
+  "volume": 9780053.0
+ },
+ {
+  "symbol": "XE",
+  "name": "X-Energy Inc. Class A Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 7481200048.0,
+  "volume": 9759899.0
+ },
+ {
+  "symbol": "MRK",
+  "name": "Merck & Company Inc. Common Stock (new)",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 369730341671.0,
+  "volume": 9649969.0
+ },
+ {
+  "symbol": "FLO",
+  "name": "Flowers Foods Inc. Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 1418664126.0,
+  "volume": 9643992.0
+ },
+ {
+  "symbol": "BTDR",
+  "name": "Bitdeer Technologies Group Class A Ordinary Shares",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 2812946236.0,
+  "volume": 9613465.0
+ },
+ {
+  "symbol": "GIS",
+  "name": "General Mills Inc. Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 21967925004.0,
+  "volume": 9607936.0
+ },
+ {
+  "symbol": "BB",
+  "name": "BlackBerry Limited Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 4588860817.0,
+  "volume": 9502197.0
+ },
+ {
+  "symbol": "IQ",
+  "name": "iQIYI Inc. American Depositary Shares",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 872285858.0,
+  "volume": 9484082.0
+ },
+ {
+  "symbol": "UEC",
+  "name": "Uranium Energy Corp. Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 5735570722.0,
+  "volume": 9339876.0
+ },
+ {
+  "symbol": "NVO",
+  "name": "Novo Nordisk A/S Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 199788225062.0,
+  "volume": 9308266.0
+ },
+ {
+  "symbol": "NWL",
+  "name": "Newell Brands Inc. Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 2529846000.0,
+  "volume": 9245585.0
+ },
+ {
+  "symbol": "RBLX",
+  "name": "Roblox Corporation Class A Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 29053669520.0,
+  "volume": 9231324.0
+ },
+ {
+  "symbol": "ET",
+  "name": "Energy Transfer LP Common Units",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 73755477453.0,
+  "volume": 9230107.0
+ },
+ {
+  "symbol": "PTON",
+  "name": "Peloton Interactive Inc. Class A Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 2233857467.0,
+  "volume": 9226470.0
+ },
+ {
+  "symbol": "SHOP",
+  "name": "Shopify Inc. Class A Subordinate Voting Shares",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 181180297516.0,
+  "volume": 9147241.0
+ },
+ {
+  "symbol": "PANW",
+  "name": "Palo Alto Networks Inc. Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 295103350000.0,
+  "volume": 9099744.0
+ },
+ {
+  "symbol": "MOS",
+  "name": "Mosaic Company (The) Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 7877454108.0,
+  "volume": 9023792.0
+ },
+ {
+  "symbol": "U",
+  "name": "Unity Software Inc. Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 18008439138.0,
+  "volume": 9019425.0
+ },
+ {
+  "symbol": "BZ",
+  "name": "KANZHUN LIMITED American Depository Shares",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 8122240088.0,
+  "volume": 8992612.0
+ },
+ {
+  "symbol": "HAL",
+  "name": "Halliburton Company Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 30659197506.0,
+  "volume": 8963346.0
+ },
+ {
+  "symbol": "UAMY",
+  "name": "United States Antimony Corporation Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 700452717.0,
+  "volume": 8958249.0
+ },
+ {
+  "symbol": "CRDO",
+  "name": "Credo Technology Group Holding Ltd Ordinary Shares",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 38832940036.0,
+  "volume": 8917768.0
+ },
+ {
+  "symbol": "QCOM",
+  "name": "QUALCOMM Incorporated Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 174979473578.0,
+  "volume": 8892404.0
+ },
+ {
+  "symbol": "DKNG",
+  "name": "DraftKings Inc. Class A Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 11636882885.0,
+  "volume": 8866816.0
+ },
+ {
+  "symbol": "KMI",
+  "name": "Kinder Morgan Inc. Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 71480347057.0,
+  "volume": 8854636.0
+ },
+ {
+  "symbol": "CTMX",
+  "name": "CytomX Therapeutics Inc. Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 799690372.0,
+  "volume": 8818669.0
+ },
+ {
+  "symbol": "SAN",
+  "name": "Banco Santander S.A. Sponsored ADR (Spain)",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 211232414439.0,
+  "volume": 8677465.0
+ },
+ {
+  "symbol": "CVS",
+  "name": "CVS Health Corporation Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 124827508014.0,
+  "volume": 8603916.0
+ },
+ {
+  "symbol": "WIT",
+  "name": "Wipro Limited Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 18123496129.0,
+  "volume": 8575151.0
+ },
+ {
+  "symbol": "CVX",
+  "name": "Chevron Corporation Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 416986527378.0,
+  "volume": 8543699.0
+ },
+ {
+  "symbol": "ASTS",
+  "name": "AST SpaceMobile Inc. Class A Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 21715546165.0,
+  "volume": 8528818.0
+ },
+ {
+  "symbol": "PG",
+  "name": "Procter & Gamble Company (The) Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 339855357703.0,
+  "volume": 8498934.0
+ },
+ {
+  "symbol": "VISN",
+  "name": "Vistance Networks Inc. Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 1434496283.0,
+  "volume": 8439375.0
+ },
+ {
+  "symbol": "STM",
+  "name": "STMicroelectronics N.V. Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 44091733226.0,
+  "volume": 8413402.0
+ },
+ {
+  "symbol": "COIN",
+  "name": "Coinbase Global Inc. Class A Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 46651644725.0,
+  "volume": 8390482.0
+ },
+ {
+  "symbol": "LRCX",
+  "name": "Lam Research Corporation Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 363133354200.0,
+  "volume": 8243121.0
+ },
+ {
+  "symbol": "UAA",
+  "name": "Under Armour Inc. Class A Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 2113364062.0,
+  "volume": 8240527.0
+ },
+ {
+  "symbol": "CRNX",
+  "name": "Crinetics Pharmaceuticals Inc. Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 9010241204.0,
+  "volume": 8208426.0
+ },
+ {
+  "symbol": "LAC",
+  "name": "Lithium Americas Corp. Common Shares",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 1078237541.0,
+  "volume": 8181836.0
+ },
+ {
+  "symbol": "SCHW",
+  "name": "Charles Schwab Corporation (The) Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 187252471112.0,
+  "volume": 8170760.0
+ },
+ {
+  "symbol": "SW",
+  "name": "Smurfit WestRock plc Ordinary Shares",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 23829075710.0,
+  "volume": 8169489.0
+ },
+ {
+  "symbol": "AXTI",
+  "name": "AXT Inc Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 3679312925.0,
+  "volume": 8117876.0
+ },
+ {
+  "symbol": "RDW",
+  "name": "Redwire Corporation Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 2564924168.0,
+  "volume": 8107526.0
+ },
+ {
+  "symbol": "CHYM",
+  "name": "Chime Financial Inc. Class A Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 11986004614.0,
+  "volume": 8099604.0
+ },
+ {
+  "symbol": "TME",
+  "name": "Tencent Music Entertainment Group American Depositary Shares each representing two Class A Ordinary Shares",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 13047668305.0,
+  "volume": 8006369.0
+ },
+ {
+  "symbol": "NEM",
+  "name": "Newmont Corporation",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 129214283193.0,
+  "volume": 7971478.0
+ },
+ {
+  "symbol": "BW",
+  "name": "Babcock & Wilcox Enterprises Inc. Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 1018921051.0,
+  "volume": 7967873.0
+ },
+ {
+  "symbol": "MDLN",
+  "name": "Medline Inc. Class A Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 46159380044.0,
+  "volume": 7943859.0
+ },
+ {
+  "symbol": "EXK",
+  "name": "Endeavour Silver Corporation Ordinary Shares (Canada)",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 3031744532.0,
+  "volume": 7925929.0
+ },
+ {
+  "symbol": "AFRM",
+  "name": "Affirm Holdings Inc. Class A Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 23599242645.0,
+  "volume": 7916301.0
+ },
+ {
+  "symbol": "TSM",
+  "name": "Taiwan Semiconductor Manufacturing Company Ltd.",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 2147213030256.0,
+  "volume": 7913235.0
+ },
+ {
+  "symbol": "VFC",
+  "name": "V.F. Corporation Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 5146131521.0,
+  "volume": 7851555.0
+ },
+ {
+  "symbol": "OKLO",
+  "name": "Oklo Inc. Class A common stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 7167260055.0,
+  "volume": 7779577.0
+ },
+ {
+  "symbol": "PL",
+  "name": "Planet Labs PBC Class A Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 6864312651.0,
+  "volume": 7777041.0
+ },
+ {
+  "symbol": "MDLZ",
+  "name": "Mondelez International Inc. Class A Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 78633339392.0,
+  "volume": 7747571.0
+ },
+ {
+  "symbol": "ON",
+  "name": "ON Semiconductor Corporation Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 28283997234.0,
+  "volume": 7721277.0
+ },
+ {
+  "symbol": "PTEN",
+  "name": "Patterson-UTI Energy Inc. Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 4877912538.0,
+  "volume": 7685306.0
+ },
+ {
+  "symbol": "DOW",
+  "name": "Dow Inc. Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 22002498057.0,
+  "volume": 7678210.0
+ },
+ {
+  "symbol": "ESI",
+  "name": "Element Solutions Inc. Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 8373219805.0,
+  "volume": 7651962.0
+ },
+ {
+  "symbol": "APH",
+  "name": "Amphenol Corporation Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 201198240513.0,
+  "volume": 7650798.0
+ },
+ {
+  "symbol": "POET",
+  "name": "POET Technologies Inc. Common Shares",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 1228712425.0,
+  "volume": 7598106.0
+ },
+ {
+  "symbol": "JHX",
+  "name": "James Hardie Industries plc. Ordinary Shares",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 16585527482.0,
+  "volume": 7538430.0
+ },
+ {
+  "symbol": "TSCO",
+  "name": "Tractor Supply Company Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 18085303155.0,
+  "volume": 7522909.0
+ },
+ {
+  "symbol": "ASX",
+  "name": "ASE Technology Holding Co. Ltd. American Depositary Shares (each representing Two Common Shares)",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 83352821747.0,
+  "volume": 7406196.0
+ },
+ {
+  "symbol": "XEL",
+  "name": "Xcel Energy Inc. Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 47403497482.0,
+  "volume": 7397956.0
+ },
+ {
+  "symbol": "KGC",
+  "name": "Kinross Gold Corporation Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 35142363000.0,
+  "volume": 7371124.0
+ },
+ {
+  "symbol": "EXC",
+  "name": "Exelon Corporation Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 45243691374.0,
+  "volume": 7310767.0
+ },
+ {
+  "symbol": "CXM",
+  "name": "Sprinklr Inc. Class A Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 1780138591.0,
+  "volume": 7305033.0
+ },
+ {
+  "symbol": "TOST",
+  "name": "Toast Inc. Class A Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 19415020000.0,
+  "volume": 7304963.0
+ },
+ {
+  "symbol": "KR",
+  "name": "Kroger Company (The) Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 35496783519.0,
+  "volume": 7303426.0
+ },
+ {
+  "symbol": "GAP",
+  "name": "Gap Inc. (The) Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 7727943014.0,
+  "volume": 7290541.0
+ },
+ {
+  "symbol": "HIMS",
+  "name": "Hims & Hers Health Inc. Class A Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 6635433466.0,
+  "volume": 7282207.0
+ },
+ {
+  "symbol": "ALM",
+  "name": "Almonty Industries Inc. Common Shares",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 5087358026.0,
+  "volume": 7260839.0
+ },
+ {
+  "symbol": "SG",
+  "name": "Sweetgreen Inc. Class A Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 770197308.0,
+  "volume": 7243156.0
+ },
+ {
+  "symbol": "M",
+  "name": "Macy's Inc Common Stock",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 5768422331.0,
+  "volume": 7236751.0
+ },
+ {
+  "symbol": "AS",
+  "name": "Amer Sports Inc. Ordinary Shares",
+  "kind": "equity",
+  "exchange": "NASDAQ",
+  "market_cap": 16428881221.0,
+  "volume": 7234314.0
+ },
+ {
+  "symbol": "BTC-USD",
+  "name": "Bitcoin",
+  "kind": "crypto",
+  "exchange": "CRYPTO",
+  "market_cap": 1548888387700.0,
+  "volume": 29828764015.0
+ },
+ {
+  "symbol": "ETH-USD",
+  "name": "Ethereum",
+  "kind": "crypto",
+  "exchange": "CRYPTO",
+  "market_cap": 290912697778.0,
+  "volume": 12293923658.0
+ },
+ {
+  "symbol": "SOL-USD",
+  "name": "Solana",
+  "kind": "crypto",
+  "exchange": "CRYPTO",
+  "market_cap": 58148512104.0,
+  "volume": 3319191171.0
+ },
+ {
+  "symbol": "XRP-USD",
+  "name": "XRP",
+  "kind": "crypto",
+  "exchange": "CRYPTO",
+  "market_cap": 84474183231.0,
+  "volume": 1978215862.0
+ },
+ {
+  "symbol": "USDG-USD",
+  "name": "Global Dollar",
+  "kind": "crypto",
+  "exchange": "CRYPTO",
+  "market_cap": 3289564266.0,
+  "volume": 1559980406.0
+ },
+ {
+  "symbol": "HYPE-USD",
+  "name": "Hyperliquid",
+  "kind": "crypto",
+  "exchange": "CRYPTO",
+  "market_cap": 18256754530.0,
+  "volume": 1399329166.0
+ },
+ {
+  "symbol": "FIGR_HELOC-USD",
+  "name": "Figure Heloc",
+  "kind": "crypto",
+  "exchange": "CRYPTO",
+  "market_cap": 22323414604.0,
+  "volume": 893539603.0
+ },
+ {
+  "symbol": "UNI-USD",
+  "name": "Uniswap",
+  "kind": "crypto",
+  "exchange": "CRYPTO",
+  "market_cap": 3570992511.0,
+  "volume": 885222551.0
+ },
+ {
+  "symbol": "ENA-USD",
+  "name": "Ethena",
+  "kind": "crypto",
+  "exchange": "CRYPTO",
+  "market_cap": 1547975640.0,
+  "volume": 732224274.0
+ },
+ {
+  "symbol": "BNB-USD",
+  "name": "BNB",
+  "kind": "crypto",
+  "exchange": "CRYPTO",
+  "market_cap": 90526880437.0,
+  "volume": 688884051.0
+ },
+ {
+  "symbol": "TRX-USD",
+  "name": "TRON",
+  "kind": "crypto",
+  "exchange": "CRYPTO",
+  "market_cap": 30664573182.0,
+  "volume": 603723277.0
+ },
+ {
+  "symbol": "DOGE-USD",
+  "name": "Dogecoin",
+  "kind": "crypto",
+  "exchange": "CRYPTO",
+  "market_cap": 12685440588.0,
+  "volume": 519946905.0
+ },
+ {
+  "symbol": "ZEC-USD",
+  "name": "Zcash",
+  "kind": "crypto",
+  "exchange": "CRYPTO",
+  "market_cap": 13905810591.0,
+  "volume": 515724382.0
+ },
+ {
+  "symbol": "ARB-USD",
+  "name": "Arbitrum",
+  "kind": "crypto",
+  "exchange": "CRYPTO",
+  "market_cap": 719572304.0,
+  "volume": 509306890.0
+ },
+ {
+  "symbol": "LINK-USD",
+  "name": "Chainlink",
+  "kind": "crypto",
+  "exchange": "CRYPTO",
+  "market_cap": 8353558704.0,
+  "volume": 400151943.0
+ },
+ {
+  "symbol": "SUI-USD",
+  "name": "Sui",
+  "kind": "crypto",
+  "exchange": "CRYPTO",
+  "market_cap": 2938118140.0,
+  "volume": 373857609.0
+ },
+ {
+  "symbol": "ADA-USD",
+  "name": "Cardano",
+  "kind": "crypto",
+  "exchange": "CRYPTO",
+  "market_cap": 7326035577.0,
+  "volume": 341142061.0
+ },
+ {
+  "symbol": "NEAR-USD",
+  "name": "NEAR Protocol",
+  "kind": "crypto",
+  "exchange": "CRYPTO",
+  "market_cap": 2466875387.0,
+  "volume": 337151804.0
+ },
+ {
+  "symbol": "XAUT-USD",
+  "name": "Tether Gold",
+  "kind": "crypto",
+  "exchange": "CRYPTO",
+  "market_cap": 2659709504.0,
+  "volume": 284874466.0
+ },
+ {
+  "symbol": "LTC-USD",
+  "name": "Litecoin",
+  "kind": "crypto",
+  "exchange": "CRYPTO",
+  "market_cap": 3849353875.0,
+  "volume": 266245790.0
+ },
+ {
+  "symbol": "AAVE-USD",
+  "name": "Aave",
+  "kind": "crypto",
+  "exchange": "CRYPTO",
+  "market_cap": 1939008447.0,
+  "volume": 255679096.0
+ },
+ {
+  "symbol": "TRUMP-USD",
+  "name": "Official Trump",
+  "kind": "crypto",
+  "exchange": "CRYPTO",
+  "market_cap": 593407458.0,
+  "volume": 209500034.0
+ },
+ {
+  "symbol": "PEPE-USD",
+  "name": "Pepe",
+  "kind": "crypto",
+  "exchange": "CRYPTO",
+  "market_cap": 1455148089.0,
+  "volume": 207294976.0
+ },
+ {
+  "symbol": "CRV-USD",
+  "name": "Curve DAO",
+  "kind": "crypto",
+  "exchange": "CRYPTO",
+  "market_cap": 570455522.0,
+  "volume": 199174339.0
+ },
+ {
+  "symbol": "U-USD",
+  "name": "United Stables",
+  "kind": "crypto",
+  "exchange": "CRYPTO",
+  "market_cap": 1278350033.0,
+  "volume": 192628914.0
+ },
+ {
+  "symbol": "AVAX-USD",
+  "name": "Avalanche",
+  "kind": "crypto",
+  "exchange": "CRYPTO",
+  "market_cap": 3106496274.0,
+  "volume": 181878275.0
+ },
+ {
+  "symbol": "FIL-USD",
+  "name": "Filecoin",
+  "kind": "crypto",
+  "exchange": "CRYPTO",
+  "market_cap": 638902915.0,
+  "volume": 173749138.0
+ },
+ {
+  "symbol": "PAXG-USD",
+  "name": "PAX Gold",
+  "kind": "crypto",
+  "exchange": "CRYPTO",
+  "market_cap": 1875781300.0,
+  "volume": 154197619.0
+ },
+ {
+  "symbol": "PENGU-USD",
+  "name": "Pudgy Penguins",
+  "kind": "crypto",
+  "exchange": "CRYPTO",
+  "market_cap": 529613468.0,
+  "volume": 151251645.0
+ },
+ {
+  "symbol": "PUMP-USD",
+  "name": "Pump.fun",
+  "kind": "crypto",
+  "exchange": "CRYPTO",
+  "market_cap": 1714996071.0,
+  "volume": 147817709.0
+ },
+ {
+  "symbol": "DOT-USD",
+  "name": "Polkadot",
+  "kind": "crypto",
+  "exchange": "CRYPTO",
+  "market_cap": 1465321053.0,
+  "volume": 142391915.0
+ },
+ {
+  "symbol": "XMR-USD",
+  "name": "Monero",
+  "kind": "crypto",
+  "exchange": "CRYPTO",
+  "market_cap": 9301515665.0,
+  "volume": 141191031.0
+ },
+ {
+  "symbol": "DASH-USD",
+  "name": "Dash",
+  "kind": "crypto",
+  "exchange": "CRYPTO",
+  "market_cap": 558777559.0,
+  "volume": 127715120.0
+ },
+ {
+  "symbol": "WLD-USD",
+  "name": "Worldcoin",
+  "kind": "crypto",
+  "exchange": "CRYPTO",
+  "market_cap": 1302131589.0,
+  "volume": 121269656.0
+ },
+ {
+  "symbol": "TAO-USD",
+  "name": "Bittensor",
+  "kind": "crypto",
+  "exchange": "CRYPTO",
+  "market_cap": 2112062646.0,
+  "volume": 115307795.0
+ },
+ {
+  "symbol": "HTX-USD",
+  "name": "HTX DAO",
+  "kind": "crypto",
+  "exchange": "CRYPTO",
+  "market_cap": 1447076656.0,
+  "volume": 114133460.0
+ },
+ {
+  "symbol": "BCH-USD",
+  "name": "Bitcoin Cash",
+  "kind": "crypto",
+  "exchange": "CRYPTO",
+  "market_cap": 4923428130.0,
+  "volume": 113713234.0
+ },
+ {
+  "symbol": "XLM-USD",
+  "name": "Stellar",
+  "kind": "crypto",
+  "exchange": "CRYPTO",
+  "market_cap": 6083864928.0,
+  "volume": 112398840.0
+ },
+ {
+  "symbol": "ASTER-USD",
+  "name": "Aster",
+  "kind": "crypto",
+  "exchange": "CRYPTO",
+  "market_cap": 1858436934.0,
+  "volume": 100974451.0
+ },
+ {
+  "symbol": "LIT-USD",
+  "name": "Lighter",
+  "kind": "crypto",
+  "exchange": "CRYPTO",
+  "market_cap": 904158325.0,
+  "volume": 83890022.0
+ },
+ {
+  "symbol": "WBT-USD",
+  "name": "WhiteBIT Coin",
+  "kind": "crypto",
+  "exchange": "CRYPTO",
+  "market_cap": 8376176532.0,
+  "volume": 81478799.0
+ },
+ {
+  "symbol": "ONDO-USD",
+  "name": "Ondo",
+  "kind": "crypto",
+  "exchange": "CRYPTO",
+  "market_cap": 1654750828.0,
+  "volume": 80635216.0
+ },
+ {
+  "symbol": "SHIB-USD",
+  "name": "Shiba Inu",
+  "kind": "crypto",
+  "exchange": "CRYPTO",
+  "market_cap": 3016908997.0,
+  "volume": 73756330.0
+ },
+ {
+  "symbol": "POL-USD",
+  "name": "POL (ex-MATIC)",
+  "kind": "crypto",
+  "exchange": "CRYPTO",
+  "market_cap": 952458430.0,
+  "volume": 68798630.0
+ },
+ {
+  "symbol": "JUP-USD",
+  "name": "Jupiter",
+  "kind": "crypto",
+  "exchange": "CRYPTO",
+  "market_cap": 715115550.0,
+  "volume": 68433953.0
+ },
+ {
+  "symbol": "CAKE-USD",
+  "name": "PancakeSwap",
+  "kind": "crypto",
+  "exchange": "CRYPTO",
+  "market_cap": 578020620.0,
+  "volume": 62377607.0
+ },
+ {
+  "symbol": "HBAR-USD",
+  "name": "Hedera",
+  "kind": "crypto",
+  "exchange": "CRYPTO",
+  "market_cap": 3244734011.0,
+  "volume": 60252338.0
+ },
+ {
+  "symbol": "ETHFI-USD",
+  "name": "Ether.fi",
+  "kind": "crypto",
+  "exchange": "CRYPTO",
+  "market_cap": 544957234.0,
+  "volume": 56153412.0
+ },
+ {
+  "symbol": "GRAM-USD",
+  "name": "Gram (prev. Toncoin)",
+  "kind": "crypto",
+  "exchange": "CRYPTO",
+  "market_cap": 3671800878.0,
+  "volume": 51656731.0
+ },
+ {
+  "symbol": "JST-USD",
+  "name": "JUST",
+  "kind": "crypto",
+  "exchange": "CRYPTO",
+  "market_cap": 839939467.0,
+  "volume": 46457968.0
+ }
+]

@@ -181,9 +181,28 @@ def _cite(article) -> str:
     """
     source = getattr(article, "source", None)
     if source is None:
-        return str(article)
+        return _tidy(str(article))
     when = getattr(article, "published_at", None)
-    return f"{source} ({when:%Y-%m-%d})" if when else str(source)
+    cited = f"{source} ({when:%Y-%m-%d})" if when else str(source)
+    return _tidy(cited)
+
+
+def _tidy(cited: str) -> str:
+    """Repair source lines written before the outlet fix.
+
+    Stored cards from earlier runs carry the raw aggregator query and a
+    200-character redirect URL where an outlet name belongs. New cards are
+    clean at the source; old ones are cleaned at render, because a store full
+    of history should not have to be deleted to fix its display.
+    """
+    import re
+
+    cited = re.sub(r"https?://\S+", "", cited)
+    match = re.search(r"site:([\w.-]+)", cited)
+    if match:
+        date = re.search(r"\((\d{4}-\d{2}-\d{2})\)", cited)
+        return match.group(1) + (f" ({date.group(1)})" if date else "")
+    return " ".join(cited.split())
 
 
 LISTING_WORDS = ("ipo", "listing", "allotment", "gmp", "subscription",
@@ -239,7 +258,11 @@ def from_thesis(card) -> PlainCard:
         return PlainCard(
             title=title_text or "Untitled",
             kind=kind_label, colour=colour, verdict=verdict,
-            summary=(window.note + " " if window else "") + claim_text,
+            # The verdict already carries the window note for non-actionable
+            # cards; repeating it in the summary printed the same sentence
+            # twice back to back.
+            summary=((window.note + " ") if window and window.actionable
+                     else "") + claim_text,
             answered=[r.question for r in scored.results
                       if r.observed and r.favourable][:5],
             unanswered=[r.question for r in scored.results
@@ -312,6 +335,20 @@ def stale(card, today=None) -> bool:
     return (now - published).days > shelf_life(text)
 
 
+def _newest_source_date(card):
+    """The most recent publication date found in the card's source lines."""
+    import re
+    from datetime import date
+
+    newest = None
+    for source in (getattr(card, "sources", None) or []):
+        match = re.search(r"\((\d{4})-(\d{2})-(\d{2})\)", str(source))
+        if match:
+            seen = date(*map(int, match.groups()))
+            newest = seen if newest is None or seen > newest else newest
+    return newest
+
+
 def expired(card) -> bool:
     """Whether this card describes something that has already happened.
 
@@ -333,7 +370,10 @@ def expired(card) -> bool:
     text = " ".join(str(x) for x in (
         getattr(card, "title", ""), getattr(card, "summary", ""),
         getattr(card, "verdict", "")))
-    window = read_window(text)
+    # Anchor relative words to the article's publication date where we have
+    # one — "today" in an old article is that day, not this one.
+    published = _newest_source_date(card)
+    window = read_window(text, today=published)
     if window.state == "closed":
         return True
 

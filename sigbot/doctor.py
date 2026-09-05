@@ -264,7 +264,10 @@ def check_ledger() -> Check:
 
 
 def check_report() -> Check:
-    page = ROOT / "app" / "sigbot-report.html"
+    # publish writes app/public/index.html and deletes the old telegram-named
+    # copy — checking the deleted name reported "not built yet" at a page
+    # built four minutes earlier.
+    page = ROOT / "app" / "public" / "index.html"
     if not page.exists():
         return Check("The page", WARN, "not built yet",
                      "run: python -m sigbot.runner publish")

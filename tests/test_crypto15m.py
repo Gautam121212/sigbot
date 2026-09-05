@@ -72,7 +72,7 @@ def test_the_summary_warns_that_checks_are_not_independent():
     """Ninety-six bars from one asset on one day are closer to one fact than
     ninety-six, and the count is the most available way to mislead yourself."""
     text = summarise([forecast("LIVELY-USD", _bars(vol=0.004))])
-    assert "not ninety-six independent facts" in text
+    assert "share most of their error" in text
     assert "market-day count" in text
 
 

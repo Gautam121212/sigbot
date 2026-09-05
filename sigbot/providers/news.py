@@ -114,6 +114,17 @@ def dedupe(articles: Sequence[Article], threshold: float = 0.55) -> list[list[Ar
     return clusters
 
 
+def _outlet(entry, feed_url: str) -> str:
+    """The outlet behind a Google News proxy entry."""
+    tagged = (entry.get("source") or {}).get("title", "")
+    if tagged and "google" not in tagged.lower():
+        return tagged
+    match = re.search(r"site:([\w.-]+)", feed_url)
+    if match:
+        return match.group(1)
+    return "Google News"
+
+
 class RSSProvider:
     def __init__(self, feeds: Iterable[str] | None = None):
         self.feeds = list(feeds or DEFAULT_FEEDS)
@@ -181,10 +192,15 @@ class RSSProvider:
                         title=title,
                         summary=re.sub(r"<[^>]+>", " ", e.get("summary", ""))[:1200],
                         url=link,
-                        # The link, not just the feed name. On an aggregator
-                        # the feed title is the aggregator; the link carries
-                        # the outlet that actually reported it.
-                        source=f"{source} {link}" if "news.google" in url else source,
+                        # On an aggregator the feed title is the raw query —
+                        # '"when:1d site:moneycontrol.com" - Google News' — and
+                        # the links are opaque redirects. An earlier version
+                        # appended that redirect to the source, so cards showed
+                        # a 200-character URL where an outlet name belonged.
+                        # The real outlet is in the entry's own source tag, or
+                        # failing that in the feed URL's site: filter.
+                        source=(_outlet(e, url) if "news.google" in url
+                                else source),
                         published_at=ts,
                         ingested_at=now,
                     )

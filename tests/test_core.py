@@ -412,3 +412,25 @@ def test_scanned_universe_rows_become_real_assets(monkeypatch, tmp_path):
     extra = next(a for a in seen["universe"] if a.symbol == "OFFBOARD.NS")
     assert "offboard industries" in extra.match_terms(), (
         "a scanned row must match on its company name, not only its ticker")
+
+
+def test_google_news_sources_name_the_outlet_not_the_query():
+    """'"when:1d site:moneycontrol.com" - Google News' plus a 200-character
+    redirect URL is what cards showed where an outlet name belonged."""
+    from sigbot.providers.news import _outlet
+
+    assert _outlet({"source": {"title": "Moneycontrol"}}, "x") == "Moneycontrol"
+    assert _outlet({}, "https://news.google.com/rss/search?q=when:1d+"
+                       "site:moneycontrol.com") == "moneycontrol.com"
+    assert _outlet({}, "https://news.google.com/rss/other") == "Google News"
+
+
+def test_old_stored_cards_are_repaired_at_render():
+    """A store full of history should not have to be deleted to fix its
+    display."""
+    from sigbot.plain_opportunities import _tidy
+
+    ugly = ('"when:1d site:moneycontrol.com" - Google News '
+            'https://news.google.com/rss/articles/CBMi0gFBVV95c (2026-09-04)')
+    assert _tidy(ugly) == "moneycontrol.com (2026-09-04)"
+    assert _tidy("Reuters (2026-09-01)") == "Reuters (2026-09-01)"

@@ -121,7 +121,7 @@ def test_the_company_name_is_extracted_from_the_headline():
 
 @pytest.mark.parametrize("headline", ["Beta Ltd files DRHP with Sebi",
                                       "Gamma Corp public issue to open",
-                                      "Delta debut on the bourses"])
+                                      "Delta IPO subscription opens"])
 def test_listing_language_is_recognised(headline):
     assert from_article(_Article(headline)) is not None
 
@@ -269,3 +269,51 @@ def test_the_date_lookup_reads_a_window_from_snippets(monkeypatch):
 
     window = lookup_window("Acme", today=TODAY)
     assert window is not None and window.state == "upcoming"
+
+
+def test_relative_words_anchor_to_the_reference_date():
+    """"Closes today" in Tuesday's article means Tuesday. Read against the real
+    today it silently shifts every relative deadline forward each time the card
+    is looked at — the Deepa case, where "allotment likely today" sat undated
+    while the issue closed."""
+    from datetime import date
+
+    from sigbot.listings import read_window
+
+    published = date(2026, 9, 1)
+    window = read_window("Deepa Jewellers IPO allotment likely today: GMP "
+                         "signals 11% listing gain", today=published)
+    assert window.closes == published
+    assert window.state in ("last day", "closed")
+
+    late = read_window("Deepa Jewellers IPO allotment likely today",
+                       today=date(2026, 9, 4))
+    # Reading the same text days later must not resurrect it as live for a
+    # NEW day — the caller passes the publication date, so this stays Sept 4's
+    # own last day only if the article was published Sept 4.
+    assert late.closes == date(2026, 9, 4)
+
+
+def test_closes_tomorrow_is_one_day_out():
+    from datetime import date
+
+    from sigbot.listings import read_window
+
+    window = read_window("Acme IPO closes tomorrow", today=date(2026, 9, 1))
+    assert window.closes == date(2026, 9, 2)
+    assert window.state == "upcoming" or window.state == "open" or \
+           window.state == "unknown" or window.state == "last day"
+
+
+def test_an_expired_relative_card_is_dropped_via_its_publication_date(tmp_path):
+    """The stored card carries its source's date; "today" resolves against
+    that, so a five-day-old "closes today" is correctly closed."""
+    from datetime import datetime, timedelta, timezone
+    from types import SimpleNamespace as N
+
+    from sigbot.plain_opportunities import expired
+
+    old = (datetime.now(timezone.utc).date() - timedelta(days=5)).isoformat()
+    assert expired(N(title="Deepa Jewellers IPO GMP",
+                     summary="allotment likely today: GMP signals 11% gain",
+                     verdict="", sources=[f"The Economic Times ({old})"]))

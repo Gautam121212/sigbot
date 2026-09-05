@@ -93,7 +93,8 @@ def test_a_synced_documents_folder_gets_the_extra_note(monkeypatch):
 def test_a_sample_page_is_called_out(monkeypatch, tmp_path):
     app = tmp_path / "app"
     app.mkdir()
-    (app / "sigbot-report.html").write_text("<html>SAMPLE DATA here</html>")
+    public = app / "public"; public.mkdir()
+    (public / "index.html").write_text("<html>SAMPLE DATA here</html>")
     monkeypatch.setattr(doctor, "ROOT", tmp_path)
     c = doctor.check_report()
     assert c.status == doctor.WARN
@@ -105,7 +106,8 @@ def test_a_page_with_javascript_is_a_failure(monkeypatch, tmp_path):
     """It would open blank on the iPhone, which is the whole point of the page."""
     app = tmp_path / "app"
     app.mkdir()
-    (app / "sigbot-report.html").write_text("<html><script>x</script></html>")
+    public = app / "public"; public.mkdir()
+    (public / "index.html").write_text("<html><script>x</script></html>")
     monkeypatch.setattr(doctor, "ROOT", tmp_path)
     c = doctor.check_report()
     assert c.status == doctor.FAIL and "blank on an iPhone" in c.detail

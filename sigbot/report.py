@@ -245,6 +245,20 @@ nav a span{display:block;font-size:11px}
 .card.foot{margin-top:24px;padding:26px 28px;border-color:var(--line2);
   align-items:flex-start;
   background:linear-gradient(135deg,rgba(72,216,192,.035),rgba(125,167,255,.025)),var(--panel3)}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:12px;margin:14px 0 26px}
+.stats .stat{min-height:105px;display:flex;flex-direction:column;
+  justify-content:center;padding:20px;background:var(--panel);
+  border:1px solid var(--line);border-radius:var(--r-md);
+  box-shadow:var(--shadow-soft)}
+.stats .stat b{display:block;margin-bottom:4px;color:var(--text);
+  font-size:28px;line-height:1;letter-spacing:-.03em;
+  font-variant-numeric:tabular-nums}
+.stats .stat span{color:var(--faint);font-size:11px;
+  text-transform:uppercase;letter-spacing:.08em}
+@media(max-width:420px){.stats{gap:7px}
+  .stats .stat{min-height:90px;padding:13px 10px}
+  .stats .stat b{font-size:20px}}
 .board-status{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 16px}
 .board-status span{display:inline-flex;align-items:center;gap:8px;
   padding:8px 11px;background:rgba(255,255,255,.035);

@@ -1,0 +1,100 @@
+# Sigbot on GitHub's machines. Replaces the Mac coordinator entirely: the
+# ledger, board and site live in this repository, every run pulls the latest
+# state, does its work, commits the state back, and deploys the page.
+#
+# Design constraints this encodes, so future edits do not break them silently:
+#
+# * State is the repository. shadow.db, patterns.db, watchlist.db,
+#   opportunities.json and universe.json are force-added (-f) because
+#   .gitignore excludes them locally — locally they are junk to keep out of
+#   commits; here they ARE the product and must persist between runs.
+#
+# * One run at a time. Two ticks writing shadow.db concurrently would fork the
+#   ledger; the concurrency group serialises them and never cancels, because a
+#   cancelled half-written commit is worse than a late one.
+#
+# * Cron is approximate. GitHub schedules can lag by many minutes under load.
+#   Every job here tolerates that: resolve scores whatever is due whenever it
+#   runs, and a late crypto tick simply records one fewer forecast. Nothing
+#   assumes punctuality.
+#
+# * The minutes budget is real. Private repos get 2,000 free minutes/month.
+#   The 3-hour tick (~4 min x 8/day x 30) plus the daily job stays near half
+#   of that. Tightening any cron below this multiplies the bill — check the
+#   arithmetic before you do.
+
+name: sigbot
+
+on:
+  schedule:
+    # Every 3 hours: resolve due predictions, crypto tick, news sweep,
+    # opportunities, rebuild and deploy the page.
+    - cron: "10 */3 * * *"
+    # Once per NSE session, inside the window (05:00 UTC = 10:30 IST), Mon-Fri:
+    # the daily stock outlook and the contagion scan.
+    - cron: "0 5 * * 1-5"
+    # Weekly, Sunday: the board cycle (rotation, universe refresh).
+    - cron: "30 2 * * 0"
+  workflow_dispatch: {}    # the Run workflow button, for testing by hand
+
+concurrency:
+  group: sigbot-state
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  tick:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - run: pip install -r requirements.txt
+
+      - name: Decide what this trigger runs
+        id: plan
+        run: |
+          # One workflow, three schedules. The cron string that fired tells us
+          # which duty this run carries; manual runs do the full tick.
+          case "${{ github.event.schedule }}" in
+            "0 5 * * 1-5")  echo "jobs=daily contagion resolve publish" >> "$GITHUB_OUTPUT" ;;
+            "30 2 * * 0")   echo "jobs=cycle resolve publish"           >> "$GITHUB_OUTPUT" ;;
+            *)              echo "jobs=resolve crypto15m news opportunities publish" >> "$GITHUB_OUTPUT" ;;
+          esac
+
+      - name: Run the jobs
+        run: |
+          set -e
+          for job in ${{ steps.plan.outputs.jobs }}; do
+            echo "=== $job ==="
+            python -m sigbot.runner "$job"
+          done
+
+      - name: Commit the state back
+        run: |
+          git config user.name  "sigbot"
+          git config user.email "sigbot@users.noreply.github.com"
+          # -f because .gitignore excludes these on purpose locally; in this
+          # repository they are the ledger and must persist.
+          git add -f shadow.db patterns.db watchlist.db 2>/dev/null || true
+          git add -f opportunities.json universe.json app/public/index.html 2>/dev/null || true
+          git diff --cached --quiet && echo "nothing changed" && exit 0
+          git commit -m "tick: ${{ steps.plan.outputs.jobs }}"
+          # Another tick may have pushed while this one ran; rebase keeps both.
+          git pull --rebase origin main
+          git push origin main
+
+      - name: Deploy the page to Cloudflare
+        if: hashFiles('app/public/index.html') != ''
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy app/public --project-name=sigbot --commit-dirty=true

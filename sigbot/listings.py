@@ -48,7 +48,7 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass, field
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 
 GREEN, AMBER, GREY = "#00e676", "#ffd93d", "#8b8b9a"
 
@@ -180,6 +180,22 @@ def read_window(text: str, today: date | None = None) -> Window:
     today = today or datetime.now(timezone.utc).date()
     opens = _find_date(text, DATE_PATTERNS, today)
     closes = _find_date(text, CLOSE_PATTERNS, today)
+
+    # Relative words, anchored to the reference date the caller supplies —
+    # which, for a stored card, is the article's own publication date. "Closes
+    # today" in Tuesday's article means Tuesday, and reading it against the
+    # real today silently shifts every relative deadline forward each time the
+    # card is looked at. This is the Deepa case: "allotment likely today" had
+    # no absolute date to find, so the card sat undated while the issue closed.
+    lowered = text.lower()
+    if closes is None:
+        if re.search(r"clos(?:e|es|ing)\s+today", lowered) or \
+           re.search(r"(?:allotment|listing)\s+(?:likely\s+)?today", lowered):
+            closes = today
+        elif re.search(r"clos(?:e|es|ing)\s+tomorrow", lowered):
+            closes = today + timedelta(days=1)
+    if opens is None and re.search(r"open(?:s|ed)?\s+today", lowered):
+        opens = today
 
     if opens is None and closes is None:
         return Window(None, None, "unknown",
@@ -340,8 +356,12 @@ def from_article(article) -> ListingScore | None:
     title = getattr(article, "title", "") or ""
     summary = getattr(article, "summary", "") or ""
     body = f"{title} {summary}"
-    if not re.search(r"\b(ipo|listing|lists on|debut|public issue|drhp|rhp)\b",
-                     body, re.I):
+    # "debut" and bare "listing" matched film premieres and EV launches.
+    # A listing card needs a market word, not a synonym for "first".
+    if not re.search(r"\b(ipo|public issue|drhp|rhp|price band|"
+                     r"lists on (?:nse|bse|nyse|nasdaq)|"
+                     r"listing gain|subscription|allotment|gmp|"
+                     r"anchor investor)\b", body, re.I):
         return None
 
     name = re.split(r"\b(ipo|listing|files|opens|debut)\b", title, flags=re.I)[0]
