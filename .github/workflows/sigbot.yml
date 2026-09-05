@@ -106,14 +106,18 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
-          # A plain script instead of the packaged action, for one reason:
-          # when this fails, the log says which command failed and why,
-          # instead of "npx failed with exit code 1". Run 3 died exactly
-          # there — deploying to a Pages project that did not exist yet,
-          # which the packaged action cannot create non-interactively.
+          # Self-diagnosing on purpose. Earlier versions suppressed stderr on
+          # the create call — silencing the very command being debugged — so a
+          # failure read as "exit 1" with no cause. Every command below prints
+          # what it did; whoami runs first because it separates the two
+          # failure families in one line: a bad token dies here with an auth
+          # error, a good token prints the account and the fault is further on.
+          set -x
           npm install -g wrangler >/dev/null 2>&1
+          wrangler whoami
+          wrangler pages project list || true
           wrangler pages project create sigbot \
-            --production-branch "$GITHUB_REF_NAME" 2>/dev/null \
-            || echo "project exists — fine"
+            --production-branch "$GITHUB_REF_NAME" \
+            || echo "create failed or already exists — see above"
           wrangler pages deploy app/public \
             --project-name sigbot --commit-dirty=true
