@@ -102,8 +102,18 @@ jobs:
 
       - name: Deploy the page to Cloudflare
         if: hashFiles('app/public/index.html') != ''
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy app/public --project-name=sigbot --commit-dirty=true
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          # A plain script instead of the packaged action, for one reason:
+          # when this fails, the log says which command failed and why,
+          # instead of "npx failed with exit code 1". Run 3 died exactly
+          # there — deploying to a Pages project that did not exist yet,
+          # which the packaged action cannot create non-interactively.
+          npm install -g wrangler >/dev/null 2>&1
+          wrangler pages project create sigbot \
+            --production-branch "$GITHUB_REF_NAME" 2>/dev/null \
+            || echo "project exists — fine"
+          wrangler pages deploy app/public \
+            --project-name sigbot --commit-dirty=true
