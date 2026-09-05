@@ -428,7 +428,7 @@ def test_google_news_sources_name_the_outlet_not_the_query():
 def test_old_stored_cards_are_repaired_at_render():
     """A store full of history should not have to be deleted to fix its
     display."""
-    from sigbot.plain_opportunities import _tidy
+    from sigbot.plain_opportunities import tidy_source as _tidy
 
     ugly = ('"when:1d site:moneycontrol.com" - Google News '
             'https://news.google.com/rss/articles/CBMi0gFBVV95c (2026-09-04)')

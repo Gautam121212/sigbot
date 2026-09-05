@@ -181,13 +181,13 @@ def _cite(article) -> str:
     """
     source = getattr(article, "source", None)
     if source is None:
-        return _tidy(str(article))
+        return tidy_source(str(article))
     when = getattr(article, "published_at", None)
     cited = f"{source} ({when:%Y-%m-%d})" if when else str(source)
-    return _tidy(cited)
+    return tidy_source(cited)
 
 
-def _tidy(cited: str) -> str:
+def tidy_source(cited: str) -> str:
     """Repair source lines written before the outlet fix.
 
     Stored cards from earlier runs carry the raw aggregator query and a

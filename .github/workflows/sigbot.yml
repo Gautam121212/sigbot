@@ -87,9 +87,12 @@ jobs:
           git add -f opportunities.json universe.json app/public/index.html 2>/dev/null || true
           git diff --cached --quiet && echo "nothing changed" && exit 0
           git commit -m "tick: ${{ steps.plan.outputs.jobs }}"
-          # Another tick may have pushed while this one ran; rebase keeps both.
-          git pull --rebase origin main
-          git push origin main
+          # Branch-agnostic on purpose: a hardcoded "main" fails with exit 128
+          # the moment the repository's default branch is "master" — which is
+          # exactly how the first run died. GITHUB_REF_NAME is whatever branch
+          # actually triggered this run.
+          git pull --rebase origin "$GITHUB_REF_NAME"
+          git push origin HEAD:"$GITHUB_REF_NAME"
 
       - name: Deploy the page to Cloudflare
         if: hashFiles('app/public/index.html') != ''

@@ -23,6 +23,8 @@ highlight reel, and the reason for keeping a ledger is that it is not one.
 from __future__ import annotations
 
 import html
+
+from .plain_opportunities import tidy_source
 import json
 from pathlib import Path
 
@@ -79,7 +81,7 @@ CSS = """
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
-body{color:var(--text);
+body{overflow-wrap:anywhere;color:var(--text);
   background:var(--bg);
   background-image:radial-gradient(1100px 500px at 85% -10%,rgba(129,140,248,.06),transparent 60%),
                    radial-gradient(900px 420px at -10% 0%,rgba(45,212,191,.05),transparent 55%);
@@ -647,7 +649,7 @@ def build_report(data: dict) -> str:
    ''.join(f'<li>{_e(q)}</li>' for q in o['unanswered']) + '</ul></div>'
    if o['unanswered'] else ''}
   <h4>Where it came from</h4>
-  <div class="card"><p>{_e('; '.join(o['sources'][:3]) or 'no source recorded')}</p>
+  <div class="card"><p>{_e('; '.join(tidy_source(x) for x in o['sources'][:3]) or 'no source recorded')}</p>
     <p style="margin-top:10px">This is not a forecast. It is a case someone
     could make, with the parts that are settled separated from the parts that
     are not.</p></div>
