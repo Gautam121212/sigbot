@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-07T19:11:01.981165+00:00",
+  "generated_at": "2026-09-07T23:29:22.730156+00:00",
   "is_sample": false,
   "headline": {
     "models_total": 5,
@@ -17,8 +17,8 @@
       "tier": "SILENT",
       "tier_label": "COLLECTING \u2014 no alert",
       "resolved": 20,
-      "made": 31,
-      "last_run": "Last ran 2026-09-07 19:09 UTC, looked at 528 thing(s), 2 cleared its bar.",
+      "made": 32,
+      "last_run": "Last ran 2026-09-07 23:28 UTC, looked at 322 thing(s), 1 cleared its bar.",
       "hit_rate": 0.65,
       "lower_bound": 0.4665,
       "needed_for_trade": 244,
@@ -261,7 +261,7 @@
       "tier_label": "COLLECTING \u2014 no alert",
       "resolved": 0,
       "made": 0,
-      "last_run": "Last ran 2026-09-07 19:10 UTC, looked at 763 thing(s), 143 cleared its bar.",
+      "last_run": "Last ran 2026-09-07 23:29 UTC, looked at 756 thing(s), 144 cleared its bar.",
       "hit_rate": null,
       "lower_bound": null,
       "needed_for_trade": null,
@@ -2008,6 +2008,23 @@
       ]
     },
     {
+      "title": "Takaichi's Bank Japan September",
+      "kind": "Market thesis",
+      "colour": "#8b8b9a",
+      "verdict": "Weak sourcing (70%). One outlet, or an outlet without a track record. Read it as a prompt to check elsewhere, nothing more.",
+      "summary": "Takaichi's reflationist aide projects Bank of Japan rate hike in September - Reuters",
+      "answered": [],
+      "unanswered": [
+        "the asset is genuinely priced lower in real terms, not just in a depreciating local currency",
+        "there is a liquid, legal exit available to a non-resident",
+        "the dislocation has a plausible resolution path with a timeframe"
+      ],
+      "money": "Not stated. A market thesis says nothing about what acting on it would cost you.",
+      "sources": [
+        "Reuters (2026-09-07)"
+      ]
+    },
+    {
       "title": "Ship Reuters",
       "kind": "Market thesis",
       "colour": "#8b8b9a",
@@ -2046,7 +2063,7 @@
       "kind": "IPO \u2014 dates unknown",
       "colour": "#8b8b9a",
       "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 0 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
-      "summary": "India IPO Listing-Day Gains Surge as Bigger Deals Loom - Bloomberg.com",
+      "summary": "India IPO Listing-Day Gains Surge as Bigger Deals Loom - bloomberg.com",
       "answered": [],
       "unanswered": [
         "Does reporting say it makes money?",
@@ -2057,15 +2074,15 @@
       ],
       "money": "0 of a possible 0 points on the ten tests the coverage could answer.",
       "sources": [
-        "Bloomberg.com (2026-09-07)"
+        "bloomberg.com (2026-09-07)"
       ]
     },
     {
-      "title": "Pranav Constructions IPO LIVE:",
+      "title": "Pranav Constructions IPO Day",
       "kind": "IPO \u2014 dates unknown",
       "colour": "#8b8b9a",
       "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 10 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
-      "summary": "Pranav Constructions IPO LIVE: Issue subscribed 3.25x so far. GMP hints 35% listing gain on Day 1. Apply or not? - Livemint",
+      "summary": "Pranav Constructions IPO Day 1: Issue subscribed 5.70x. GMP hints 35% listing gain. Apply or not? - Livemint",
       "answered": [
         "Is the book filling?"
       ],
@@ -2336,26 +2353,6 @@
       "money": "0 of a possible 0 points on the ten tests the coverage could answer.",
       "sources": [
         "Latest Share Market News, Sensex, Nifty, BSE, NSE Today | The HinduBusinessLine (2026-09-07)"
-      ]
-    },
-    {
-      "title": "Tepid Purple Style Labs",
-      "kind": "IPO \u2014 dates unknown",
-      "colour": "#8b8b9a",
-      "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 0 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
-      "summary": "Tepid debut: Purple Style Labs shares list at 7% discount to IPO price on NSE - Moneycontrol.com",
-      "answered": [],
-      "unanswered": [
-        "Does reporting say it makes money?",
-        "Is revenue growing?",
-        "Does the money go into the business?",
-        "Is the price being called reasonable?",
-        "Did serious institutions take an allocation?"
-      ],
-      "money": "0 of a possible 0 points on the ten tests the coverage could answer.",
-      "sources": [
-        "Moneycontrol.com (2026-09-07)",
-        "Moneycontrol.com (2026-09-07)"
       ]
     },
     {
@@ -2900,7 +2897,7 @@
         "Did serious institutions take an allocation?"
       ],
       "sources": [
-        "India IPO"
+        "indiaipo.in"
       ]
     },
     {
@@ -2938,7 +2935,7 @@
         "Did serious institutions take an allocation?"
       ],
       "sources": [
-        "India IPO"
+        "indiaipo.in"
       ]
     },
     {
@@ -2980,25 +2977,6 @@
       ]
     },
     {
-      "title": "India's",
-      "kind": "New listing",
-      "colour": "#8b8b9a",
-      "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 0 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
-      "summary": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live.",
-      "money": "0 of a possible 0 points on the ten tests the coverage could answer",
-      "answered": [],
-      "unanswered": [
-        "Does reporting say it makes money?",
-        "Is revenue growing?",
-        "Does the money go into the business?",
-        "Is the price being called reasonable?",
-        "Did serious institutions take an allocation?"
-      ],
-      "sources": [
-        "India Today"
-      ]
-    },
-    {
       "title": "Steamhouse India",
       "kind": "New listing",
       "colour": "#8b8b9a",
@@ -3015,6 +2993,25 @@
       ],
       "sources": [
         "IPO Watch"
+      ]
+    },
+    {
+      "title": "India's",
+      "kind": "New listing",
+      "colour": "#8b8b9a",
+      "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 0 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
+      "summary": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live.",
+      "money": "0 of a possible 0 points on the ten tests the coverage could answer",
+      "answered": [],
+      "unanswered": [
+        "Does reporting say it makes money?",
+        "Is revenue growing?",
+        "Does the money go into the business?",
+        "Is the price being called reasonable?",
+        "Did serious institutions take an allocation?"
+      ],
+      "sources": [
+        "India Today"
       ]
     },
     {
@@ -3071,7 +3068,7 @@
         "Did serious institutions take an allocation?"
       ],
       "sources": [
-        "Bloomberg.com"
+        "bloomberg.com"
       ]
     },
     {
@@ -3166,7 +3163,7 @@
         "Did serious institutions take an allocation?"
       ],
       "sources": [
-        "NDTV Profit"
+        "ndtvprofit.com"
       ]
     },
     {
