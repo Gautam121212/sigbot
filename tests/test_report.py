@@ -100,9 +100,18 @@ def test_sizing_never_exceeds_the_cap(report):
 
 
 def test_no_fabricated_figures(report):
+    """The original ban on "portfolio" existed because the page once invented
+    one, with holdings nobody held. There is now a real portfolio — replayed
+    from scored predictions at recorded prices — so the guard is re-aimed at
+    what it was always for: invented figures, and an empty state that reports
+    a return instead of admitting it has not run."""
     h = report[0].lower()
-    for banned in ("portfolio", "847", "accuracy"):
+    for banned in ("847", "accuracy"):
         assert banned not in h
+    if "paper portfolio" in h:
+        assert "not run yet" in h or "round trips" in h, (
+            "the paper page must either say it has not run or show a real "
+            "replay — never a figure with nothing behind it")
 
 
 def test_html_is_escaped(tmp_path):

@@ -1199,6 +1199,20 @@ def run_report(settings=SETTINGS) -> None:
                 ledger.failure_modes(model, symbol)).replace("\n", "\n  "))
 
 
+def run_paper() -> None:
+    """The sixth model: replay the ledger as a portfolio and report the money.
+
+    Reads only prices already stored by the other five. No broker, no key, no
+    network — so this job cannot place an order even by accident, and it
+    produces the same answer on any machine given the same ledger.
+    """
+    from . import paper
+
+    book = paper.replay(SETTINGS.shadow_db)
+    print(paper.summary(book))
+    paper.write_state(book)
+
+
 def main(argv: list[str]) -> int:
     cmd = argv[1] if len(argv) > 1 else "daily"
     jobs: dict[str, Callable[[], None]] = {
@@ -1212,6 +1226,7 @@ def main(argv: list[str]) -> int:
         "publish": run_publish,
         "day_summary": run_day_summary,
         "crypto15m": run_crypto15m,
+        "paper": run_paper,
     }
     if cmd not in jobs:
         print(f"usage: python -m sigbot.runner [{'|'.join(jobs)}]")

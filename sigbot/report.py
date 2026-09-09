@@ -779,6 +779,18 @@ def build_report(data: dict) -> str:
 </div></div>
 {"".join(_learned_detail(e) for e in learning)}
 
+<div class="page" id="paper"><div class="wrap">
+  <div class="top"><span class="brand">Paper portfolio</span>
+    <span class="stamp">{_e(_paper_stamp(data))}</span></div>
+  <p class="lead">Being right and making money are different questions. This
+  replays every scored prediction as a position, charges real costs both ways,
+  and reports what the signals would actually have paid. No broker is
+  connected and no order was placed.</p>
+  {_paper_body(data)}
+  <p class="note">The replay follows models that have not cleared their skill
+  gate. Finding out whether they are worth money is exactly what it is for,
+  and the answer is allowed to be no.</p>
+</div></div>
 <div class="page" id="missed"><div class="wrap">
   <div class="top"><span class="brand">Where it missed</span>
     <span class="stamp">{len(failures)} misses</span></div>
@@ -794,6 +806,7 @@ def build_report(data: dict) -> str:
   <a class="n-board" href="#board"><b>&#9636;</b><span>Board</span></a>
   <a class="n-ideas" href="#ideas"><b>&#10022;</b><span>Ideas</span></a>
   <a class="n-learn" href="#learned"><b>&#8599;</b><span>Top picks</span></a>
+  <a class="n-paper" href="#paper"><b>&#8942;</b><span>Paper</span></a>
   <a class="n-miss" href="#missed"><b>&#8961;</b><span>Missed</span></a>
 </nav>
 </body></html>"""
@@ -815,3 +828,46 @@ if __name__ == "__main__":
     dst = sys.argv[2] if len(sys.argv) > 2 else "app/sigbot-report.html"
     p = write_report(src, dst)
     print(f"wrote {p} ({p.stat().st_size / 1024:.0f} KB, no JavaScript)")
+
+def _paper_stamp(data: dict) -> str:
+    state = data.get("paper")
+    if not state:
+        return "not run yet"
+    return f"{state.get('trades', 0):,} round trips"
+
+
+def _paper_body(data: dict) -> str:
+    """The portfolio, or an honest empty state — never zeros standing in for
+    a result that does not exist."""
+    state = data.get("paper")
+    if not state:
+        return ('<div class="card"><p>The paper model has not run yet. It '
+                'appears here once the first scored predictions carry both an '
+                'entry and an exit price.</p></div>')
+
+    ret = state.get("total_return") or 0.0
+    colour = "var(--green)" if ret > 0 else "var(--red)" if ret < 0 else "var(--dim)"
+    wr = state.get("win_rate")
+    rows = "".join(
+        '''<div class="tile"><span class="pip" style="background:'''
+        + ("var(--green)" if row["pnl"] > 0 else "var(--red)") + '''"></span>
+        <b>{_e(model)}</b><div class="grow">
+        <p>{row["pnl"]:+,.0f} over {row["trades"]:,} trade(s)</p>
+        <p>{(row.get("win_rate") or 0) * 100:.0f}% of them in profit,
+        {row.get("costs", 0):,.0f} paid in costs</p></div></div>'''
+        for model, row in sorted((state.get("by_model") or {}).items(),
+                                 key=lambda kv: -kv[1]["pnl"]))
+
+    return f'''
+  <div class="card call"><h1 style="color:{colour}">{ret * 100:+.2f}%</h1>
+    <p class="lead">{_e(state.get("verdict", ""))}</p></div>
+  <div class="stats">
+    <div class="stat"><b>{state.get("equity", 0):,.0f}</b><span>Ending equity</span></div>
+    <div class="stat"><b>{state.get("total_costs", 0):,.0f}</b><span>Costs paid</span></div>
+    <div class="stat"><b>{(state.get("max_drawdown") or 0) * 100:.1f}%</b><span>Worst fall</span></div>
+  </div>
+  <h2>Which model paid</h2>
+  <div class="tiles-grid">{rows or "<p>No trades yet.</p>"}</div>
+  <p class="what-sm">Started from {state.get("starting_cash", 0):,.0f} in
+  notional cash. {state.get("wins", 0):,} of {state.get("trades", 0):,} round
+  trips ended in profit''' + (f", {wr * 100:.0f}%." if wr else ".") + "</p>"

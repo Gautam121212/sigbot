@@ -283,6 +283,18 @@ def build_export(db_path: str = "shadow.db", patterns_path: str = "patterns.db",
 
     board = _board(ledger, watchlist_path)
     learning = _learning_feed(ledger)
+
+    # The sixth model's state, if it has run. Absent is a normal state and
+    # renders as "not run yet" rather than as zeros, which would read as a
+    # flat return that never happened.
+    paper_state = None
+    try:
+        import json as _json
+        _pf = Path("paper.json")
+        if _pf.exists():
+            paper_state = _json.loads(_pf.read_text())
+    except Exception:  # noqa: BLE001  # handled: absent or unreadable state renders as "not run yet"
+        paper_state = None
     failures = _failure_feed(ledger)
     alertable = sum(1 for m in models if m.tier in ("CAUTION", "TRADE"))
     return {
@@ -305,6 +317,7 @@ def build_export(db_path: str = "shadow.db", patterns_path: str = "patterns.db",
         "charts": charts or [],
         "opportunities": opportunities or [],
         "learning": learning,
+        "paper": paper_state,
         "failures": failures,
         "alerts": all_alerts[:max_alerts],
         "patterns": patterns,

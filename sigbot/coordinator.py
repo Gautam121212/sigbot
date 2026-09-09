@@ -59,6 +59,8 @@ JOBS: list[tuple[str, str, timedelta, Venue | None]] = [
     # every page unreadable. The horizon is one hour, so scoring once per
     # horizon loses nothing that mattered.
     ("crypto15m", "run_crypto15m", timedelta(hours=3), None),
+    # After resolve, so it replays predictions scored in the same cycle.
+    ("paper", "run_paper", timedelta(hours=3), None),
     ("resolve", "run_resolve", timedelta(minutes=30), None),
     ("daily", "run_daily", timedelta(hours=24), None),
     ("contagion", "run_contagion", timedelta(hours=24), None),
