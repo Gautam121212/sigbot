@@ -261,6 +261,9 @@ nav a span{display:block;font-size:11px}
 @media(max-width:420px){.stats{gap:7px}
   .stats .stat{min-height:90px;padding:13px 10px}
   .stats .stat b{font-size:20px}}
+.hbadge{display:inline-block;margin-top:8px;padding:3px 10px;
+  border:1px solid var(--line);border-radius:999px;font-size:11px;
+  font-weight:600;letter-spacing:.02em}
 .board-status{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 16px}
 .board-status span{display:inline-flex;align-items:center;gap:8px;
   padding:8px 11px;background:rgba(255,255,255,.035);
@@ -441,6 +444,9 @@ def _model_page(m: dict) -> str:
   <a class="back" href="#home">&lsaquo; Home</a>
   <div class="card"><h1>{_e(m['name'])}</h1>
     <p style="margin-bottom:10px">{_e(m['subtitle'])}</p>
+    <span class="hbadge" style="color:{_e(m.get('badge_colour', 'var(--faint)'))};
+      border-color:{_e(m.get('badge_colour', 'var(--line)'))}33">
+      {_e(m.get('badge', ''))} · {_e(m.get('window', ''))}</span>
     <span class="badge" style="background:{tc}1f;color:{tc}">{_e(TIER_PLAIN.get(m['tier'], m['tier']))}</span>
     <div class="meter"><i style="width:{(m.get('lower_bound') or 0) * 100:.0f}%;background:{tc}"></i></div>
     <p>{_e(m['status_line'])}</p>
@@ -454,6 +460,8 @@ def _model_page(m: dict) -> str:
     <div class="stat"><b>{_pct(m.get('hit_rate'))}</b><span>Right</span></div>
     <div class="stat"><b style="color:{tc}">{_pct(m.get('lower_bound'))}</b><span>Worst case</span></div>
   </div>
+  <h4>What would prove this wrong</h4>
+  <div class="card"><p>{_e(m.get('falsifier', ''))}</p></div>
   <h2>What it is watching</h2>
   {rows or '<div class="card"><p>Nothing has been checked for this one yet. It stays quiet until it has something to show.</p></div>'}
   <p class="note">Tap any row for the full reasoning.</p>
@@ -558,6 +566,9 @@ def build_report(data: dict) -> str:
         border-color:{ACCENT.get(m['accent'], '#00d4aa')}59;
         color:{ACCENT.get(m['accent'], '#00d4aa')}">{_e(m['name'][0])}</div>
       <div class="grow"><h3>{_e(m['name'])}</h3><p>{_e(m['subtitle'])}</p>
+        <span class="hbadge" style="color:{_e(m.get('badge_colour', 'var(--faint)'))};
+          border-color:{_e(m.get('badge_colour', 'var(--line)'))}33">
+          {_e(m.get('badge', ''))} · {_e(m.get('window', ''))}</span>
         <span class="badge" style="background:{TIER_COLOR.get(m['tier'])}1f;
           color:{TIER_COLOR.get(m['tier'])};margin-top:5px">
           {_e(TIER_PLAIN.get(m['tier'], m['tier']))}</span></div>

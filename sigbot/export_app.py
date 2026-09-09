@@ -48,6 +48,8 @@ MISS_PLAIN = {
     "win": ("Worked", "It moved the way we expected, by enough to matter."),
 }
 
+from .horizons import horizon_for
+
 MODEL_META = {
     "news": ("News scanner", "Scores stories for whether they move an asset"),
     "daily": ("Daily outlook", "Next-session direction on the watchlist"),
@@ -77,6 +79,12 @@ class ModelView:
     needed_for_trade: int | None
     status_line: str
     alerts: list[dict]
+    # Defaults go last: a dataclass rejects a non-default field after a
+    # defaulted one, which is what the first attempt at this hit.
+    badge: str = ""
+    window: str = ""
+    badge_colour: str = ""
+    falsifier: str = ""
 
     def to_dict(self) -> dict:
         return self.__dict__.copy()
@@ -256,6 +264,10 @@ def build_export(db_path: str = "shadow.db", patterns_path: str = "patterns.db",
 
         models.append(ModelView(
             id=model_id, name=name, subtitle=subtitle, accent=ACCENTS[model_id],
+            badge=horizon_for(model_id).badge,
+            window=horizon_for(model_id).window,
+            badge_colour=horizon_for(model_id).colour,
+            falsifier=horizon_for(model_id).falsifier,
             made=activity_made, last_run=activity_line,
             tier=tier.value, tier_label=tier.label, resolved=n,
             hit_rate=round(rate, 4) if n else None,
