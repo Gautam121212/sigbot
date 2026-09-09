@@ -260,7 +260,7 @@
   "kind": "IPO \u2014 dates unknown",
   "colour": "#8b8b9a",
   "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 10 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
-  "summary": "Arcil IPO subscribed 38% on Day 1; GMP signals 20% listing premium - Moneycontrol.com",
+  "summary": "Arcil IPO subscribed 26% so far on Day 1; GMP signals 20% listing premium - Moneycontrol.com",
   "answered": [
    "Is the book filling?"
   ],
@@ -293,23 +293,6 @@
   "money": "0 of a possible 0 points on the ten tests the coverage could answer.",
   "sources": [
    "Moneycontrol.com (2026-09-09)"
-  ]
- },
- {
-  "title": "India\u2019s Refineries Run Up",
-  "kind": "Market thesis",
-  "colour": "#8b8b9a",
-  "verdict": "Weak sourcing (42%). One outlet, or an outlet without a track record. Read it as a prompt to check elsewhere, nothing more.",
-  "summary": "India\u2019s Refineries Run at Up to 108% as Diesel Demand Surges",
-  "answered": [],
-  "unanswered": [
-   "the asset is genuinely priced lower in real terms, not just in a depreciating local currency",
-   "there is a liquid, legal exit available to a non-resident",
-   "the dislocation has a plausible resolution path with a timeframe"
-  ],
-  "money": "Not stated. A market thesis says nothing about what acting on it would cost you.",
-  "sources": [
-   "Oilprice.com (2026-09-09)"
   ]
  },
  {
@@ -382,6 +365,23 @@
   "money": "0 of a possible 0 points on the ten tests the coverage could answer.",
   "sources": [
    "Latest Share Market News, Sensex, Nifty, BSE, NSE Today | The HinduBusinessLine (2026-09-09)"
+  ]
+ },
+ {
+  "title": "Bank England Warns Iran",
+  "kind": "Market thesis",
+  "colour": "#8b8b9a",
+  "verdict": "Weak sourcing (42%). One outlet, or an outlet without a track record. Read it as a prompt to check elsewhere, nothing more.",
+  "summary": "Bank of England Warns Iran War Could Push UK Inflation Above 4%",
+  "answered": [],
+  "unanswered": [
+   "the asset is genuinely priced lower in real terms, not just in a depreciating local currency",
+   "there is a liquid, legal exit available to a non-resident",
+   "the dislocation has a plausible resolution path with a timeframe"
+  ],
+  "money": "Not stated. A market thesis says nothing about what acting on it would cost you.",
+  "sources": [
+   "Oilprice.com (2026-09-09)"
   ]
  },
  {
@@ -671,7 +671,7 @@
   ]
  },
  {
-  "title": "SME-to-mainboard migration rate drops on tighter",
+  "title": "AI-Driven",
   "kind": "New listing",
   "colour": "#8b8b9a",
   "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 0 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
@@ -690,15 +690,13 @@
   ]
  },
  {
-  "title": "IPO Rush: Rentomojo, LCC Projects, Karamtara fully subscribe",
+  "title": "Mahatransco likely to target $1 billion in first",
   "kind": "New listing",
   "colour": "#8b8b9a",
-  "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 10 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
+  "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 0 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
   "summary": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live.",
-  "money": "10 of a possible 10 points on the ten tests the coverage could answer",
-  "answered": [
-   "Is the book filling?"
-  ],
+  "money": "0 of a possible 0 points on the ten tests the coverage could answer",
+  "answered": [],
   "unanswered": [
    "Does reporting say it makes money?",
    "Is revenue growing?",
@@ -711,13 +709,15 @@
   ]
  },
  {
-  "title": "Mahatransco likely to target $1 billion in first",
+  "title": "IPO Rush: Rentomojo, LCC Projects, Karamtara fully subscribe",
   "kind": "New listing",
   "colour": "#8b8b9a",
-  "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 0 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
+  "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 10 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
   "summary": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live.",
-  "money": "0 of a possible 0 points on the ten tests the coverage could answer",
-  "answered": [],
+  "money": "10 of a possible 10 points on the ten tests the coverage could answer",
+  "answered": [
+   "Is the book filling?"
+  ],
   "unanswered": [
    "Does reporting say it makes money?",
    "Is revenue growing?",
@@ -886,27 +886,6 @@
   ]
  },
  {
-  "title": "Arcil",
-  "kind": "New listing",
-  "colour": "#8b8b9a",
-  "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 10 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
-  "summary": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live.",
-  "money": "10 of a possible 10 points on the ten tests the coverage could answer",
-  "answered": [
-   "Is the book filling?"
-  ],
-  "unanswered": [
-   "Does reporting say it makes money?",
-   "Is revenue growing?",
-   "Does the money go into the business?",
-   "Is the price being called reasonable?",
-   "Did serious institutions take an allocation?"
-  ],
-  "sources": [
-   "Moneycontrol.com"
-  ]
- },
- {
   "title": "Manipal Payment",
   "kind": "New listing",
   "colour": "#8b8b9a",
@@ -929,10 +908,12 @@
   "title": "Asset Reconstruction",
   "kind": "New listing",
   "colour": "#8b8b9a",
-  "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 0 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
+  "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 10 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
   "summary": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live.",
-  "money": "0 of a possible 0 points on the ten tests the coverage could answer",
-  "answered": [],
+  "money": "10 of a possible 10 points on the ten tests the coverage could answer",
+  "answered": [
+   "Is the book filling?"
+  ],
   "unanswered": [
    "Does reporting say it makes money?",
    "Is revenue growing?",
@@ -941,7 +922,7 @@
    "Did serious institutions take an allocation?"
   ],
   "sources": [
-   "IPO Watch"
+   "NDTV Profit"
   ]
  },
  {
@@ -1001,6 +982,27 @@
   ],
   "sources": [
    "Livemint"
+  ]
+ },
+ {
+  "title": "Arcil",
+  "kind": "New listing",
+  "colour": "#8b8b9a",
+  "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 10 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
+  "summary": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live.",
+  "money": "10 of a possible 10 points on the ten tests the coverage could answer",
+  "answered": [
+   "Is the book filling?"
+  ],
+  "unanswered": [
+   "Does reporting say it makes money?",
+   "Is revenue growing?",
+   "Does the money go into the business?",
+   "Is the price being called reasonable?",
+   "Did serious institutions take an allocation?"
+  ],
+  "sources": [
+   "Moneycontrol.com"
   ]
  },
  {

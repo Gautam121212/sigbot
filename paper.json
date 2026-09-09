@@ -1,13 +1,13 @@
 {
-  "generated_at": "2026-09-09T20:54:07.286098+00:00",
+  "generated_at": "2026-09-09T23:12:17.680726+00:00",
   "starting_cash": 100000.0,
-  "equity": 53370.548737065496,
-  "total_pnl": -46629.451262934504,
-  "total_return": -0.46629451262934507,
-  "total_costs": 19426.967017228253,
-  "trades": 8435,
-  "wins": 3102,
-  "win_rate": 0.36775340841730886,
+  "equity": 53460.15931463881,
+  "total_pnl": -46539.84068536119,
+  "total_return": -0.4653984068536119,
+  "total_costs": 19433.373758627986,
+  "trades": 8439,
+  "wins": 3106,
+  "win_rate": 0.3680530868586325,
   "max_drawdown": 0.48441026802635745,
   "skipped_no_price": 0,
   "by_model": {
@@ -26,67 +26,15 @@
       "win_rate": 0.452779380650125
     },
     "news": {
-      "trades": 37,
-      "pnl": 1153.077139294273,
-      "wins": 20,
-      "costs": 64.73614986376701,
-      "win_rate": 0.5405405405405406
+      "trades": 41,
+      "pnl": 1242.6877168675876,
+      "wins": 24,
+      "costs": 71.14289126350235,
+      "win_rate": 0.5853658536585366
     }
   },
-  "verdict": "Following every signal would have LOST 46.63% over 8,435 round trips. Costs alone took 19,427. Worst peak-to-trough fall along the way: 48.4%.",
+  "verdict": "Following every signal would have LOST 46.54% over 8,439 round trips. Costs alone took 19,433. Worst peak-to-trough fall along the way: 48.4%.",
   "recent_trades": [
-    {
-      "prediction_id": 10661,
-      "model": "daily",
-      "symbol": "SPY",
-      "side": "BUY",
-      "entry_price": 770.1900024414062,
-      "exit_price": 765.9600219726562,
-      "size": 1066.1248257220536,
-      "gross_ret": -0.0054921259109329545,
-      "cost": 1.5991872385830805,
-      "pnl": -7.454479018220052,
-      "opened_at": "2026-09-08T09:31:50.480484+00:00"
-    },
-    {
-      "prediction_id": 10662,
-      "model": "daily",
-      "symbol": "TCS.NS",
-      "side": "SELL",
-      "entry_price": 2262.199951171875,
-      "exit_price": 2209.699951171875,
-      "size": 1065.9757361416894,
-      "gross_ret": 0.023207497627609652,
-      "cost": 1.5989636042125341,
-      "pnl": 23.139665763385175,
-      "opened_at": "2026-09-08T09:31:50.787222+00:00"
-    },
-    {
-      "prediction_id": 10663,
-      "model": "daily",
-      "symbol": "TIA-USD",
-      "side": "SELL",
-      "entry_price": 0.4221999943256378,
-      "exit_price": 0.40529999136924744,
-      "size": 1066.438529456957,
-      "gross_ret": 0.04002843008888246,
-      "cost": 1.5996577941854355,
-      "pnl": 41.08820232627299,
-      "opened_at": "2026-09-08T09:31:52.072342+00:00"
-    },
-    {
-      "prediction_id": 10664,
-      "model": "daily",
-      "symbol": "TLT",
-      "side": "SELL",
-      "entry_price": 82.20999908447266,
-      "exit_price": 82.19999694824219,
-      "size": 1067.2602935034824,
-      "gross_ret": 0.00012166568959803836,
-      "cost": 1.6008904402552238,
-      "pnl": -1.4710414806655177,
-      "opened_at": "2026-09-08T09:31:52.371924+00:00"
-    },
     {
       "prediction_id": 10665,
       "model": "daily",
@@ -359,6 +307,58 @@
       "cost": 1.6008993025244638,
       "pnl": 7.238652916703272,
       "opened_at": "2026-09-08T16:35:23.897918+00:00"
+    },
+    {
+      "prediction_id": 10686,
+      "model": "news",
+      "symbol": "HAL",
+      "side": "BUY",
+      "entry_price": 36.79999923706055,
+      "exit_price": 37.130001068115234,
+      "size": 1067.41097474131,
+      "gross_ret": 0.008967441247182073,
+      "cost": 1.601116462111965,
+      "pnl": 7.970828740478079,
+      "opened_at": "2026-09-08T21:06:29.231662+00:00"
+    },
+    {
+      "prediction_id": 10687,
+      "model": "news",
+      "symbol": "AMZN",
+      "side": "SELL",
+      "entry_price": 256.9700012207031,
+      "exit_price": 252.39999389648438,
+      "size": 1067.5703913161194,
+      "gross_ret": 0.01778420555905169,
+      "cost": 1.6013555869741791,
+      "pnl": 17.38453570094894,
+      "opened_at": "2026-09-08T21:06:29.403691+00:00"
+    },
+    {
+      "prediction_id": 10688,
+      "model": "news",
+      "symbol": "T",
+      "side": "SELL",
+      "entry_price": 25.600000381469727,
+      "exit_price": 25.149999618530273,
+      "size": 1067.9180820301385,
+      "gross_ret": 0.01757815454038747,
+      "cost": 1.6018771230452078,
+      "pnl": 17.170151959354747,
+      "opened_at": "2026-09-08T21:06:29.712927+00:00"
+    },
+    {
+      "prediction_id": 10689,
+      "model": "news",
+      "symbol": "GAP",
+      "side": "SELL",
+      "entry_price": 22.3799991607666,
+      "exit_price": 21.360000610351562,
+      "size": 1068.2614850693255,
+      "gross_ret": 0.04557634444433556,
+      "cost": 1.6023922276039884,
+      "pnl": 47.085061172533024,
+      "opened_at": "2026-09-08T21:06:29.969265+00:00"
     }
   ]
 }
