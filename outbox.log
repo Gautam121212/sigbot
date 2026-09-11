@@ -16202,3 +16202,16 @@ From: Markets-Economic Times
 
 This is a reading of press coverage, not of the prospectus. Nothing here has been checked against how any listing actually performed, and a single listing has no base rate to be checked against.
 
+Daily 24h outlook — 2026-09-11 09:30 UTC
+
+▼ ICP-USD — SELL
+24h expected move: -1.30%  (10–90% range -4.62% to +5.13%)
+Score: 73%  (91 calibration samples behind it)
+  · P(down) lower bound 64.3% >= 62%
+  · expected move -1.30% clears 0.35% costs
+  · base rate here is 46.7%
+Live track record: 33 resolved, 24% hit rate (90% lower bound 14%)
+as of close 2026-09-11
+
+Contagion scan: 610 live link(s), but nothing cleared the 2σ trigger and the gates today.
+
