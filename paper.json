@@ -1,13 +1,13 @@
 {
-  "generated_at": "2026-09-11T11:13:57.949286+00:00",
+  "generated_at": "2026-09-11T16:25:07.443040+00:00",
   "starting_cash": 100000.0,
-  "equity": 54610.30377812282,
-  "total_pnl": -45389.69622187718,
-  "total_return": -0.45389696221877185,
-  "total_costs": 19792.228311928764,
-  "trades": 8660,
-  "wins": 3211,
-  "win_rate": 0.3707852193995381,
+  "equity": 54613.40994862085,
+  "total_pnl": -45386.59005137915,
+  "total_return": -0.4538659005137915,
+  "total_costs": 19795.505335325823,
+  "trades": 8662,
+  "wins": 3212,
+  "win_rate": 0.3708150542599861,
   "max_drawdown": 0.48441026802635745,
   "skipped_no_price": 0,
   "by_model": {
@@ -26,41 +26,15 @@
       "win_rate": 0.452779380650125
     },
     "news": {
-      "trades": 62,
-      "pnl": 1266.049393445127,
-      "wins": 31,
-      "costs": 105.19405957119761,
+      "trades": 64,
+      "pnl": 1269.1555639431633,
+      "wins": 32,
+      "costs": 108.4710829682572,
       "win_rate": 0.5
     }
   },
-  "verdict": "Following every signal would have LOST 45.39% over 8,660 round trips. Costs alone took 19,792. Worst peak-to-trough fall along the way: 48.4%.",
+  "verdict": "Following every signal would have LOST 45.39% over 8,662 round trips. Costs alone took 19,796. Worst peak-to-trough fall along the way: 48.4%.",
   "recent_trades": [
-    {
-      "prediction_id": 10886,
-      "model": "daily",
-      "symbol": "RELIANCE.NS",
-      "side": "SELL",
-      "entry_price": 1269.199951171875,
-      "exit_price": 1257.5,
-      "size": 1086.1546580145496,
-      "gross_ret": 0.009218367177742381,
-      "cost": 1.6292319870218244,
-      "pnl": 8.3833404623715,
-      "opened_at": "2026-09-10T09:34:34.448637+00:00"
-    },
-    {
-      "prediction_id": 10887,
-      "model": "daily",
-      "symbol": "RENDER-USD",
-      "side": "SELL",
-      "entry_price": 1.4244999885559082,
-      "exit_price": 1.3575999736785889,
-      "size": 1086.3223248237969,
-      "gross_ret": 0.04696385778503198,
-      "cost": 1.6294834872356954,
-      "pnl": 49.38840368449442,
-      "opened_at": "2026-09-10T09:34:34.923520+00:00"
-    },
     {
       "prediction_id": 10888,
       "model": "daily",
@@ -359,6 +333,32 @@
       "cost": 1.6382520344162692,
       "pnl": 1.902630913845084,
       "opened_at": "2026-09-10T11:12:41.189369+00:00"
+    },
+    {
+      "prediction_id": 10911,
+      "model": "news",
+      "symbol": "SBIN.NS",
+      "side": "SELL",
+      "entry_price": 1009.7000122070312,
+      "exit_price": 995.7000122070312,
+      "size": 1092.2060755624564,
+      "gross_ret": 0.01386550443769774,
+      "cost": 1.6383091133436847,
+      "pnl": 13.505679074247988,
+      "opened_at": "2026-09-10T16:21:16.358463+00:00"
+    },
+    {
+      "prediction_id": 10912,
+      "model": "news",
+      "symbol": "JST-USD",
+      "side": "BUY",
+      "entry_price": 0.10386502742767334,
+      "exit_price": 0.10303211212158203,
+      "size": 1092.4761891439414,
+      "gross_ret": -0.0080192084546582,
+      "cost": 1.638714283715912,
+      "pnl": -10.399508576211776,
+      "opened_at": "2026-09-10T16:21:16.631119+00:00"
     }
   ]
 }
