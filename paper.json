@@ -1,13 +1,13 @@
 {
-  "generated_at": "2026-09-11T16:25:07.443040+00:00",
+  "generated_at": "2026-09-11T20:55:22.643422+00:00",
   "starting_cash": 100000.0,
-  "equity": 54613.40994862085,
-  "total_pnl": -45386.59005137915,
-  "total_return": -0.4538659005137915,
-  "total_costs": 19795.505335325823,
-  "trades": 8662,
-  "wins": 3212,
-  "win_rate": 0.3708150542599861,
+  "equity": 54619.15010300279,
+  "total_pnl": -45380.84989699721,
+  "total_return": -0.4538084989699721,
+  "total_costs": 19798.781789454908,
+  "trades": 8664,
+  "wins": 3213,
+  "win_rate": 0.37084487534626037,
   "max_drawdown": 0.48441026802635745,
   "skipped_no_price": 0,
   "by_model": {
@@ -26,41 +26,15 @@
       "win_rate": 0.452779380650125
     },
     "news": {
-      "trades": 64,
-      "pnl": 1269.1555639431633,
-      "wins": 32,
-      "costs": 108.4710829682572,
+      "trades": 66,
+      "pnl": 1274.8957183251014,
+      "wins": 33,
+      "costs": 111.74753709734047,
       "win_rate": 0.5
     }
   },
-  "verdict": "Following every signal would have LOST 45.39% over 8,662 round trips. Costs alone took 19,796. Worst peak-to-trough fall along the way: 48.4%.",
+  "verdict": "Following every signal would have LOST 45.38% over 8,664 round trips. Costs alone took 19,799. Worst peak-to-trough fall along the way: 48.4%.",
   "recent_trades": [
-    {
-      "prediction_id": 10888,
-      "model": "daily",
-      "symbol": "RUNE-USD",
-      "side": "BUY",
-      "entry_price": 0.48670774698257446,
-      "exit_price": 0.49768924713134766,
-      "size": 1087.3100928974868,
-      "gross_ret": 0.02256282176902835,
-      "cost": 1.6309651393462303,
-      "pnl": 22.901818694365424,
-      "opened_at": "2026-09-10T09:34:35.445805+00:00"
-    },
-    {
-      "prediction_id": 10889,
-      "model": "daily",
-      "symbol": "SBIN.NS",
-      "side": "BUY",
-      "entry_price": 1002.5,
-      "exit_price": 995.7000122070312,
-      "size": 1087.7681292713742,
-      "gross_ret": -0.006783030217425212,
-      "cost": 1.6316521939070612,
-      "pnl": -9.010016284306888,
-      "opened_at": "2026-09-10T09:34:36.000467+00:00"
-    },
     {
       "prediction_id": 10890,
       "model": "daily",
@@ -359,6 +333,32 @@
       "cost": 1.638714283715912,
       "pnl": -10.399508576211776,
       "opened_at": "2026-09-10T16:21:16.631119+00:00"
+    },
+    {
+      "prediction_id": 10913,
+      "model": "news",
+      "symbol": "SBIN.NS",
+      "side": "SELL",
+      "entry_price": 1000.5,
+      "exit_price": 1009.7000122070312,
+      "size": 1092.268198972417,
+      "gross_ret": -0.009195414499781451,
+      "cost": 1.6384022984586255,
+      "pnl": -11.68226113293976,
+      "opened_at": "2026-09-10T20:49:14.785427+00:00"
+    },
+    {
+      "prediction_id": 10914,
+      "model": "news",
+      "symbol": "AAPL",
+      "side": "BUY",
+      "entry_price": 326.57000732421875,
+      "exit_price": 332.2699890136719,
+      "size": 1092.0345537497583,
+      "gross_ret": 0.017454088133066703,
+      "cost": 1.6380518306246374,
+      "pnl": 17.422415514877812,
+      "opened_at": "2026-09-10T20:49:15.059489+00:00"
     }
   ]
 }
