@@ -1,13 +1,13 @@
 {
-  "generated_at": "2026-09-12T20:31:20.727789+00:00",
+  "generated_at": "2026-09-12T23:01:15.029533+00:00",
   "starting_cash": 100000.0,
-  "equity": 54783.59922286668,
-  "total_pnl": -45216.40077713332,
-  "total_return": -0.45216400777133325,
-  "total_costs": 19971.27894680075,
-  "trades": 8769,
+  "equity": 54780.88658247226,
+  "total_pnl": -45219.11341752774,
+  "total_return": -0.45219113417527745,
+  "total_costs": 19974.565930679186,
+  "trades": 8771,
   "wins": 3267,
-  "win_rate": 0.37256243585357507,
+  "win_rate": 0.372477482613157,
   "max_drawdown": 0.48441026802635745,
   "skipped_no_price": 0,
   "by_model": {
@@ -26,41 +26,15 @@
       "win_rate": 0.452779380650125
     },
     "news": {
-      "trades": 71,
-      "pnl": 1330.5915071083582,
+      "trades": 73,
+      "pnl": 1327.87886671394,
       "wins": 35,
-      "costs": 119.95820694588046,
-      "win_rate": 0.49295774647887325
+      "costs": 123.24519082431767,
+      "win_rate": 0.4794520547945205
     }
   },
-  "verdict": "Following every signal would have LOST 45.22% over 8,769 round trips. Costs alone took 19,971. Worst peak-to-trough fall along the way: 48.4%.",
+  "verdict": "Following every signal would have LOST 45.22% over 8,771 round trips. Costs alone took 19,975. Worst peak-to-trough fall along the way: 48.4%.",
   "recent_trades": [
-    {
-      "prediction_id": 10995,
-      "model": "daily",
-      "symbol": "SBIN.NS",
-      "side": "BUY",
-      "entry_price": 996.0,
-      "exit_price": 995.7000122070312,
-      "size": 1095.4764406886513,
-      "gross_ret": -0.00030119256322158616,
-      "cost": 1.643214661032977,
-      "pnl": -1.9731640181528518,
-      "opened_at": "2026-09-11T09:30:48.687963+00:00"
-    },
-    {
-      "prediction_id": 10996,
-      "model": "daily",
-      "symbol": "SCHW",
-      "side": "BUY",
-      "entry_price": 107.33000183105469,
-      "exit_price": 107.25,
-      "size": 1095.4369774082882,
-      "gross_ret": -0.0007453818102101106,
-      "cost": 1.6431554661124324,
-      "pnl": -2.459674263304114,
-      "opened_at": "2026-09-11T09:30:49.007168+00:00"
-    },
     {
       "prediction_id": 10997,
       "model": "daily",
@@ -359,6 +333,32 @@
       "cost": 1.643687709805559,
       "pnl": -5.991103985282961,
       "opened_at": "2026-09-11T16:24:52.452272+00:00"
+    },
+    {
+      "prediction_id": 11020,
+      "model": "news",
+      "symbol": "BTC-USD",
+      "side": "SELL",
+      "entry_price": 77261.6328125,
+      "exit_price": 77221.1328125,
+      "size": 1095.6719844573336,
+      "gross_ret": 0.0005241929082483443,
+      "cost": 1.6435079766860003,
+      "pnl": -1.0691644926670758,
+      "opened_at": "2026-09-11T20:55:05.612219+00:00"
+    },
+    {
+      "prediction_id": 11021,
+      "model": "news",
+      "symbol": "CRM",
+      "side": "BUY",
+      "entry_price": 247.72000122070312,
+      "exit_price": 247.72000122070312,
+      "size": 1095.6506011674803,
+      "gross_ret": 0.0,
+      "cost": 1.6434759017512206,
+      "pnl": -1.6434759017512206,
+      "opened_at": "2026-09-11T20:55:05.800584+00:00"
     }
   ]
 }

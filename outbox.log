@@ -17625,3 +17625,191 @@ From: Markets-Economic Times
 
 This is a reading of press coverage, not of the prospectus. Nothing here has been checked against how any listing actually performed, and a single listing has no base rate to be checked against.
 
+NEWS — recorded and scored in 24 hours
+
+BTC-USD SELL — the model reads today's coverage as moving it down (amber)
+    Bitcoin Suisse plans to cut up to half its Swiss jobs as it shifts work abroad
+      CoinDesk: Bitcoin, Ethereum, Crypto News and Price Data, 21:09 UTC
+    Because: lexicon 0 bullish / 1 bearish terms, relevance 1.0, novelty 1.00
+    3 checked so far — too few to say whether this model is right about anything, so this is a thing to look at, not a probability.
+
+NEWS — recorded and scored in 24 hours
+
+OPEN BUY — the model reads today's coverage as moving it up (amber)
+    Promoting Fair and Open Competitive Bidding in the E-Rate Program; Schools and Libraries Universal Service Support Mechanism
+      Federal Register Documents published on or after 08/13/2026 and of type Rule, 04:00 UTC
+    Because: lexicon 1 bullish / 0 bearish terms, relevance 1.0, novelty 1.00
+    2 checked so far — too few to say whether this model is right about anything, so this is a thing to look at, not a probability.
+
+NEWS — recorded and scored in 24 hours
+
+SAN BUY — the model reads today's coverage as moving it up (amber)
+    Approval and Promulgation of Implementation Plans; California; San Joaquin Valley, Revisions to Motor Vehicle Emissions Budgets for Ozone
+      Federal Register Documents published on or after 08/13/2026 and of type Rule, 04:00 UTC
+    Because: lexicon 2 bullish / 0 bearish terms, relevance 1.0, novelty 0.96
+    0 checked so far — too few to say whether this model is right about anything, so this is a thing to look at, not a probability.
+
+Opportunity scan — 2026-09-12 23:01 UTC
+
+46 thing(s) worth a look — showing the 6 with the most complete case; the rest are on the Ideas tab.
+
+
+IPO — DATES UNKNOWN — Nvidia Anthropic’s IPO
+
+The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 0 points' worth of the ten tests could be answered from the coverage. That is too little to say anything — it is a gap in reporting, not a judgement on the company.
+
+Nvidia in talks to invest in Anthropic’s mega IPO
+
+Money: 0 of a possible 0 points on the ten tests the coverage could answer.
+
+You would have to find out:
+  · Does reporting say it makes money?
+  · Is revenue growing?
+  · Does the money go into the business?
+  · Is the price being called reasonable?
+
+From: Latest Share Market News, Sensex, Nifty, BSE, NSE Today | The HinduBusinessLine (2026-09-11)
+
+MARKET THESIS — India-China Reuters
+
+Weak sourcing (70%). One outlet, or an outlet without a track record. Read it as a prompt to check elsewhere, nothing more.
+
+India-China relations, from conflict to cautious thaw - Reuters
+
+Money: Not stated. A market thesis says nothing about what acting on it would cost you.
+
+You would have to find out:
+  · the asset is genuinely priced lower in real terms, not just in a depreciating local currency
+  · there is a liquid, legal exit available to a non-resident
+  · the dislocation has a plausible resolution path with a timeframe
+
+From: Reuters (2026-09-12)
+
+MARKET THESIS — Xi Middle East BRICS
+
+Weak sourcing (45%). One outlet, or an outlet without a track record. Read it as a prompt to check elsewhere, nothing more.
+
+Xi speaks out against Middle East war, urges BRICS nations to 'stand on right side of history' - Moneycontrol.com
+
+Money: Not stated. A market thesis says nothing about what acting on it would cost you.
+
+You would have to find out:
+  · the asset is genuinely priced lower in real terms, not just in a depreciating local currency
+  · there is a liquid, legal exit available to a non-resident
+  · the dislocation has a plausible resolution path with a timeframe
+
+From: Moneycontrol.com (2026-09-12)
+
+MARKET THESIS — BRICS CBAM-style Moneycontrol.com
+
+Weak sourcing (45%). One outlet, or an outlet without a track record. Read it as a prompt to check elsewhere, nothing more.
+
+BRICS condemns unilateral tariffs, warns against CBAM-style protectionism - Moneycontrol.com
+
+Money: Not stated. A market thesis says nothing about what acting on it would cost you.
+
+You would have to find out:
+  · the asset is genuinely priced lower in real terms, not just in a depreciating local currency
+  · there is a liquid, legal exit available to a non-resident
+  · the dislocation has a plausible resolution path with a timeframe
+
+From: Moneycontrol.com (2026-09-12)
+
+IPO — DATES UNKNOWN — LIC NSE IPO; ADIA,
+
+The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 10 points' worth of the ten tests could be answered from the coverage. That is too little to say anything — it is a gap in reporting, not a judgement on the company.
+
+LIC may emerge top investor in anchor book of NSE IPO; ADIA, Carmignac may also bet big - Moneycontrol.com
+
+Money: 10 of a possible 10 points on the ten tests the coverage could answer.
+
+Already answered:
+  · Did serious institutions take an allocation?
+
+You would have to find out:
+  · Does reporting say it makes money?
+  · Is revenue growing?
+  · Does the money go into the business?
+  · Is the price being called reasonable?
+
+From: Moneycontrol.com (2026-09-12)
+
+MARKET THESIS — BRICS New Delhi Declaration:
+
+Weak sourcing (45%). One outlet, or an outlet without a track record. Read it as a prompt to check elsewhere, nothing more.
+
+BRICS New Delhi Declaration: Cross-border terror, India's UNSC bid, tariffs, WTO reform and nuclear safety... - Moneycontrol.com
+
+Money: Not stated. A market thesis says nothing about what acting on it would cost you.
+
+You would have to find out:
+  · the asset is genuinely priced lower in real terms, not just in a depreciating local currency
+  · there is a liquid, legal exit available to a non-resident
+  · the dislocation has a plausible resolution path with a timeframe
+
+From: Moneycontrol.com (2026-09-12)
+
+Colours describe how complete the case is, not how likely it is to work. Nothing here has been checked against what actually happened, and single events never can be — each one happens once.
+
+NEW LISTING — LIC may emerge top investor in anchor book of NSE
+
+The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live.
+
+10 out of a possible 10 (10% of the tests could be answered)
+
+The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 10 points' worth of the ten tests could be answered from the coverage. That is too little to say anything — it is a gap in reporting, not a judgement on the company.
+
+In its favour:
+  · Did serious institutions take an allocation? yes
+
+The coverage did not say:
+  · Does reporting say it makes money?
+  · Is revenue growing?
+  · Does the money go into the business?
+  · Is the price being called reasonable?
+  · Is the book filling?
+
+From: Moneycontrol.com
+
+This is a reading of press coverage, not of the prospectus. Nothing here has been checked against how any listing actually performed, and a single listing has no base rate to be checked against.
+
+NEW LISTING — OpenAI
+
+The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live.
+
+0 out of a possible 0 (0% of the tests could be answered)
+
+The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 0 points' worth of the ten tests could be answered from the coverage. That is too little to say anything — it is a gap in reporting, not a judgement on the company.
+
+
+The coverage did not say:
+  · Does reporting say it makes money?
+  · Is revenue growing?
+  · Does the money go into the business?
+  · Is the price being called reasonable?
+  · Did serious institutions take an allocation?
+
+From: Reuters
+
+This is a reading of press coverage, not of the prospectus. Nothing here has been checked against how any listing actually performed, and a single listing has no base rate to be checked against.
+
+NEW LISTING — OpenAI rules out
+
+The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live.
+
+0 out of a possible 0 (0% of the tests could be answered)
+
+The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 0 points' worth of the ten tests could be answered from the coverage. That is too little to say anything — it is a gap in reporting, not a judgement on the company.
+
+
+The coverage did not say:
+  · Does reporting say it makes money?
+  · Is revenue growing?
+  · Does the money go into the business?
+  · Is the price being called reasonable?
+  · Did serious institutions take an allocation?
+
+From: US Top News and Analysis
+
+This is a reading of press coverage, not of the prospectus. Nothing here has been checked against how any listing actually performed, and a single listing has no base rate to be checked against.
+
