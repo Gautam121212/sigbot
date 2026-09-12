@@ -4,7 +4,7 @@
   "kind": "Market thesis",
   "colour": "#ffd93d",
   "verdict": "Reported by a source with a record, but this model has never been scored against outcomes. Treat it as a thing to look into.",
-  "summary": "Wall St Week Ahead Investors brace for possible rate hike at uncertain Fed meeting - Reuters",
+  "summary": "Wall St Week Ahead Investors brace for possible rate hike at uncertain Fed meeting - reuters.com",
   "answered": [],
   "unanswered": [
    "the asset is genuinely priced lower in real terms, not just in a depreciating local currency",
@@ -13,42 +13,8 @@
   ],
   "money": "Not stated. A market thesis says nothing about what acting on it would cost you.",
   "sources": [
-   "Reuters (2026-09-11)",
+   "reuters.com (2026-09-11)",
    "Markets-Economic Times (2026-09-12)"
-  ]
- },
- {
-  "title": "Houthis Advance Bab Saudi",
-  "kind": "Market thesis",
-  "colour": "#8b8b9a",
-  "verdict": "Weak sourcing (42%). One outlet, or an outlet without a track record. Read it as a prompt to check elsewhere, nothing more.",
-  "summary": "Houthis Advance on Bab al-Mandeb as Saudi Oil Route Comes Under Threat",
-  "answered": [],
-  "unanswered": [
-   "the asset is genuinely priced lower in real terms, not just in a depreciating local currency",
-   "there is a liquid, legal exit available to a non-resident",
-   "the dislocation has a plausible resolution path with a timeframe"
-  ],
-  "money": "Not stated. A market thesis says nothing about what acting on it would cost you.",
-  "sources": [
-   "Oilprice.com (2026-09-11)"
-  ]
- },
- {
-  "title": "Core CPI August, Fed",
-  "kind": "Market thesis",
-  "colour": "#8b8b9a",
-  "verdict": "Weak sourcing (49%). One outlet, or an outlet without a track record. Read it as a prompt to check elsewhere, nothing more.",
-  "summary": "Core CPI rose a faster-than-forecast 0.3% in August, setting up possible Fed rate hike",
-  "answered": [],
-  "unanswered": [
-   "the asset is genuinely priced lower in real terms, not just in a depreciating local currency",
-   "there is a liquid, legal exit available to a non-resident",
-   "the dislocation has a plausible resolution path with a timeframe"
-  ],
-  "money": "Not stated. A market thesis says nothing about what acting on it would cost you.",
-  "sources": [
-   "CoinDesk: Bitcoin, Ethereum, Crypto News and Price Data (2026-09-11)"
   ]
  },
  {
@@ -66,6 +32,23 @@
   "money": "Not stated. A market thesis says nothing about what acting on it would cost you.",
   "sources": [
    "CoinDesk: Bitcoin, Ethereum, Crypto News and Price Data (2026-09-11)"
+  ]
+ },
+ {
+  "title": "World Cup Morocco PM",
+  "kind": "Market thesis",
+  "colour": "#8b8b9a",
+  "verdict": "Weak sourcing (70%). One outlet, or an outlet without a track record. Read it as a prompt to check elsewhere, nothing more.",
+  "summary": "World Cup final tug-of-war escalates as Morocco PM rebukes FA head, Spain stakes claim - reuters.com",
+  "answered": [],
+  "unanswered": [
+   "the asset is genuinely priced lower in real terms, not just in a depreciating local currency",
+   "there is a liquid, legal exit available to a non-resident",
+   "the dislocation has a plausible resolution path with a timeframe"
+  ],
+  "money": "Not stated. A market thesis says nothing about what acting on it would cost you.",
+  "sources": [
+   "reuters.com (2026-09-11)"
   ]
  },
  {
@@ -164,7 +147,7 @@
   "kind": "Market thesis",
   "colour": "#8b8b9a",
   "verdict": "Weak sourcing (70%). One outlet, or an outlet without a track record. Read it as a prompt to check elsewhere, nothing more.",
-  "summary": "Brazil's Eduardo Bolsonaro to push for U.S. sanctions against Supreme Court Justice during Washington visit - Reuters",
+  "summary": "Brazil's Eduardo Bolsonaro to push for U.S. sanctions against Supreme Court Justice during Washington visit - reuters.com",
   "answered": [],
   "unanswered": [
    "the asset is genuinely priced lower in real terms, not just in a depreciating local currency",
@@ -173,7 +156,7 @@
   ],
   "money": "Not stated. A market thesis says nothing about what acting on it would cost you.",
   "sources": [
-   "Reuters (2026-09-11)"
+   "reuters.com (2026-09-11)"
   ]
  },
  {
@@ -194,11 +177,11 @@
   ]
  },
  {
-  "title": "Nvidia Anthropic\u2019s IPO",
+  "title": "EXCLUSIVE: Nvidia Anthropic\u2019s IPO,",
   "kind": "IPO \u2014 dates unknown",
   "colour": "#8b8b9a",
   "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 0 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
-  "summary": "Nvidia in talks to invest in Anthropic\u2019s mega IPO",
+  "summary": "EXCLUSIVE: Nvidia in talks to invest in Anthropic\u2019s mega IPO, sources say - reuters.com",
   "answered": [],
   "unanswered": [
    "Does reporting say it makes money?",
@@ -209,15 +192,16 @@
   ],
   "money": "0 of a possible 0 points on the ten tests the coverage could answer.",
   "sources": [
+   "reuters.com (2026-09-11)",
    "Latest Share Market News, Sensex, Nifty, BSE, NSE Today | The HinduBusinessLine (2026-09-11)"
   ]
  },
  {
-  "title": "India-China Reuters",
+  "title": "India-China",
   "kind": "Market thesis",
   "colour": "#8b8b9a",
   "verdict": "Weak sourcing (70%). One outlet, or an outlet without a track record. Read it as a prompt to check elsewhere, nothing more.",
-  "summary": "India-China relations, from conflict to cautious thaw - Reuters",
+  "summary": "India-China relations, from conflict to cautious thaw - reuters.com",
   "answered": [],
   "unanswered": [
    "the asset is genuinely priced lower in real terms, not just in a depreciating local currency",
@@ -226,7 +210,7 @@
   ],
   "money": "Not stated. A market thesis says nothing about what acting on it would cost you.",
   "sources": [
-   "Reuters (2026-09-12)"
+   "reuters.com (2026-09-12)"
   ]
  },
  {
@@ -247,72 +231,79 @@
   ]
  },
  {
-  "title": "Rising yields, oil prices leave bitcoin vulnerable ahead of U.S. inflation repor",
-  "kind": "Supply chain change",
+  "title": "BRICS CBAM-style Moneycontrol.com",
+  "kind": "Market thesis",
   "colour": "#8b8b9a",
-  "verdict": "Cannot get there. Even if every unknown resolved in your favour this reaches 69 out of 80. Read it as context, not a lead.",
-  "summary": "A trade rule, tariff, sanction or logistics change makes a route newly viable or newly broken.",
-  "answered": [
-   "months before anything could be charged",
-   "needs real capital before any revenue",
-   "crowded, with established players",
-   "reported by a source with a record"
-  ],
+  "verdict": "Weak sourcing (45%). One outlet, or an outlet without a track record. Read it as a prompt to check elsewhere, nothing more.",
+  "summary": "BRICS condemns unilateral tariffs, warns against CBAM-style protectionism - Moneycontrol.com",
+  "answered": [],
   "unanswered": [
-   "Is anyone already paying for this?",
-   "Can you reach a buyer without paying for ads?",
-   "Could you actually do the work?"
+   "the asset is genuinely priced lower in real terms, not just in a depreciating local currency",
+   "there is a liquid, legal exit available to a non-resident",
+   "the dislocation has a plausible resolution path with a timeframe"
   ],
-  "money": "needs real capital before any revenue",
+  "money": "Not stated. A market thesis says nothing about what acting on it would cost you.",
   "sources": [
-   "CoinDesk: Bitcoin, Ethereum, Crypto News and Price Data (2026-09-11)"
+   "Moneycontrol.com (2026-09-12)"
   ]
  },
  {
-  "title": "UniCredit seeks infrastructure partner for crypto trading, custody: Report",
-  "kind": "Supply chain change",
+  "title": "LIC NSE IPO; ADIA,",
+  "kind": "IPO \u2014 dates unknown",
   "colour": "#8b8b9a",
-  "verdict": "Cannot get there. Even if every unknown resolved in your favour this reaches 69 out of 80. Read it as context, not a lead.",
-  "summary": "A trade rule, tariff, sanction or logistics change makes a route newly viable or newly broken.",
+  "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 10 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
+  "summary": "LIC may emerge top investor in anchor book of NSE IPO; ADIA, Carmignac may also bet big - Moneycontrol.com",
   "answered": [
-   "months before anything could be charged",
-   "needs real capital before any revenue",
-   "crowded, with established players"
+   "Did serious institutions take an allocation?"
   ],
   "unanswered": [
-   "Is anyone already paying for this?",
-   "Can you reach a buyer without paying for ads?",
-   "Could you actually do the work?"
+   "Does reporting say it makes money?",
+   "Is revenue growing?",
+   "Does the money go into the business?",
+   "Is the price being called reasonable?",
+   "Is the book filling?"
   ],
-  "money": "needs real capital before any revenue",
+  "money": "10 of a possible 10 points on the ten tests the coverage could answer.",
   "sources": [
-   "Cointelegraph.com News (2026-09-11)"
+   "Moneycontrol.com (2026-09-12)"
   ]
  },
  {
-  "title": "Spain sea temperatures hit record highs in summer of 2026, port authority says -",
-  "kind": "Supply chain change",
+  "title": "BRICS New Delhi Declaration:",
+  "kind": "Market thesis",
   "colour": "#8b8b9a",
-  "verdict": "Cannot get there. Even if every unknown resolved in your favour this reaches 69 out of 80. Read it as context, not a lead.",
-  "summary": "A trade rule, tariff, sanction or logistics change makes a route newly viable or newly broken.",
-  "answered": [
-   "months before anything could be charged",
-   "needs real capital before any revenue",
-   "crowded, with established players",
-   "reported by a source with a record"
-  ],
+  "verdict": "Weak sourcing (45%). One outlet, or an outlet without a track record. Read it as a prompt to check elsewhere, nothing more.",
+  "summary": "BRICS New Delhi Declaration: Cross-border terror, India's UNSC bid, tariffs, WTO reform and nuclear safety... - Moneycontrol.com",
+  "answered": [],
   "unanswered": [
-   "Is anyone already paying for this?",
-   "Can you reach a buyer without paying for ads?",
-   "Could you actually do the work?"
+   "the asset is genuinely priced lower in real terms, not just in a depreciating local currency",
+   "there is a liquid, legal exit available to a non-resident",
+   "the dislocation has a plausible resolution path with a timeframe"
   ],
-  "money": "needs real capital before any revenue",
+  "money": "Not stated. A market thesis says nothing about what acting on it would cost you.",
   "sources": [
-   "Reuters (2026-09-11)"
+   "Moneycontrol.com (2026-09-12)"
   ]
  },
  {
-  "title": "Houthis Advance on Bab al-Mandeb as Saudi Oil Route Comes Under Threat",
+  "title": "Iran UAE BRICS",
+  "kind": "Market thesis",
+  "colour": "#8b8b9a",
+  "verdict": "Weak sourcing (70%). One outlet, or an outlet without a track record. Read it as a prompt to check elsewhere, nothing more.",
+  "summary": "Iran and UAE back joint BRICS statement urging restraint in war - reuters.com",
+  "answered": [],
+  "unanswered": [
+   "the asset is genuinely priced lower in real terms, not just in a depreciating local currency",
+   "there is a liquid, legal exit available to a non-resident",
+   "the dislocation has a plausible resolution path with a timeframe"
+  ],
+  "money": "Not stated. A market thesis says nothing about what acting on it would cost you.",
+  "sources": [
+   "reuters.com (2026-09-12)"
+  ]
+ },
+ {
+  "title": "IEA Sees 5.7 Million Bpd Oil Supply Plunge as Gulf Recovery Slips to 2027",
   "kind": "Supply chain change",
   "colour": "#8b8b9a",
   "verdict": "Cannot get there. Even if every unknown resolved in your favour this reaches 69 out of 80. Read it as context, not a lead.",
@@ -333,7 +324,7 @@
   ]
  },
  {
-  "title": "Geely TT launches at $19,100 \u2014 half the price of a Tesla",
+  "title": "Tesla reveals European Semi specs: 550 km range, 800 kW charging",
   "kind": "Supply chain change",
   "colour": "#8b8b9a",
   "verdict": "Cannot get there. Even if every unknown resolved in your favour this reaches 69 out of 80. Read it as context, not a lead.",
@@ -354,7 +345,7 @@
   ]
  },
  {
-  "title": "Major scope for India-Russia CBDC trade settlements, says Russia\u2019s Sberbank",
+  "title": "Colgate-Palmolive seeks to divest some personal care brands: Report - Moneycontr",
   "kind": "Supply chain change",
   "colour": "#8b8b9a",
   "verdict": "Cannot get there. Even if every unknown resolved in your favour this reaches 69 out of 80. Read it as context, not a lead.",
@@ -372,7 +363,26 @@
   ],
   "money": "needs real capital before any revenue",
   "sources": [
-   "Latest Share Market News, Sensex, Nifty, BSE, NSE Today | The HinduBusinessLine (2026-09-11)"
+   "Moneycontrol.com (2026-09-11)"
+  ]
+ },
+ {
+  "title": "EXCLUSIVE: Nvidia in talks to invest in Anthropic\u2019s mega",
+  "kind": "New listing",
+  "colour": "#8b8b9a",
+  "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 0 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
+  "summary": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live.",
+  "money": "0 of a possible 0 points on the ten tests the coverage could answer",
+  "answered": [],
+  "unanswered": [
+   "Does reporting say it makes money?",
+   "Is revenue growing?",
+   "Does the money go into the business?",
+   "Is the price being called reasonable?",
+   "Did serious institutions take an allocation?"
+  ],
+  "sources": [
+   "reuters.com"
   ]
  },
  {
@@ -433,86 +443,6 @@
   ]
  },
  {
-  "title": "NSE's",
-  "kind": "New listing",
-  "colour": "#8b8b9a",
-  "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 0 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
-  "summary": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live.",
-  "money": "0 of a possible 0 points on the ten tests the coverage could answer",
-  "answered": [],
-  "unanswered": [
-   "Does reporting say it makes money?",
-   "Is revenue growing?",
-   "Does the money go into the business?",
-   "Is the price being called reasonable?",
-   "Did serious institutions take an allocation?"
-  ],
-  "sources": [
-   "Markets-Economic Times"
-  ]
- },
- {
-  "title": "SME",
-  "kind": "New listing",
-  "colour": "#8b8b9a",
-  "verdict": "Only 12 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
-  "summary": "Opens in 3 day(s), on 15 Sep.",
-  "money": "12 of a possible 12 points on the ten tests the coverage could answer",
-  "answered": [
-   "Does the money go into the business?"
-  ],
-  "unanswered": [
-   "Does reporting say it makes money?",
-   "Is revenue growing?",
-   "Is the price being called reasonable?",
-   "Did serious institutions take an allocation?",
-   "Is the book filling?"
-  ],
-  "sources": [
-   "Markets-Economic Times"
-  ]
- },
- {
-  "title": "NSE diversification could weigh on weekly options' revenue, CEO says",
-  "kind": "New listing",
-  "colour": "#8b8b9a",
-  "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 0 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
-  "summary": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live.",
-  "money": "0 of a possible 0 points on the ten tests the coverage could answer",
-  "answered": [],
-  "unanswered": [
-   "Does reporting say it makes money?",
-   "Is revenue growing?",
-   "Does the money go into the business?",
-   "Is the price being called reasonable?",
-   "Did serious institutions take an allocation?"
-  ],
-  "sources": [
-   "Markets-Economic Times"
-  ]
- },
- {
-  "title": "Mann Fleet Partners gets Sebi nod to raise funds via",
-  "kind": "New listing",
-  "colour": "#8b8b9a",
-  "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 12 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
-  "summary": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live.",
-  "money": "12 of a possible 12 points on the ten tests the coverage could answer",
-  "answered": [
-   "Does the money go into the business?"
-  ],
-  "unanswered": [
-   "Does reporting say it makes money?",
-   "Is revenue growing?",
-   "Is the price being called reasonable?",
-   "Did serious institutions take an allocation?",
-   "Is the book filling?"
-  ],
-  "sources": [
-   "Markets-Economic Times"
-  ]
- },
- {
   "title": "Paytm stock soars to post",
   "kind": "New listing",
   "colour": "#8b8b9a",
@@ -520,88 +450,6 @@
   "summary": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live.",
   "money": "0 of a possible 0 points on the ten tests the coverage could answer",
   "answered": [],
-  "unanswered": [
-   "Does reporting say it makes money?",
-   "Is revenue growing?",
-   "Does the money go into the business?",
-   "Is the price being called reasonable?",
-   "Did serious institutions take an allocation?"
-  ],
-  "sources": [
-   "Share Market Today"
-  ]
- },
- {
-  "title": "Spectrum Electrical Industries raises Rs 324.98 cr via equity issuance",
-  "kind": "New listing",
-  "colour": "#8b8b9a",
-  "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 0 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
-  "summary": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live.",
-  "money": "0 of a possible 0 points on the ten tests the coverage could answer",
-  "answered": [],
-  "unanswered": [
-   "Does reporting say it makes money?",
-   "Is revenue growing?",
-   "Does the money go into the business?",
-   "Is the price being called reasonable?",
-   "Did serious institutions take an allocation?"
-  ],
-  "sources": [
-   "Share Market Today"
-  ]
- },
- {
-  "title": "Manipal Payment and Identity Solutions",
-  "kind": "New listing",
-  "colour": "#8b8b9a",
-  "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 10 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
-  "summary": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live.",
-  "money": "10 of a possible 10 points on the ten tests the coverage could answer",
-  "answered": [
-   "Is the book filling?"
-  ],
-  "unanswered": [
-   "Does reporting say it makes money?",
-   "Is revenue growing?",
-   "Does the money go into the business?",
-   "Is the price being called reasonable?",
-   "Did serious institutions take an allocation?"
-  ],
-  "sources": [
-   "Share Market Today"
-  ]
- },
- {
-  "title": "Asset Reconstruction Company (India)",
-  "kind": "New listing",
-  "colour": "#8b8b9a",
-  "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 10 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
-  "summary": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live.",
-  "money": "10 of a possible 10 points on the ten tests the coverage could answer",
-  "answered": [
-   "Is the book filling?"
-  ],
-  "unanswered": [
-   "Does reporting say it makes money?",
-   "Is revenue growing?",
-   "Does the money go into the business?",
-   "Is the price being called reasonable?",
-   "Did serious institutions take an allocation?"
-  ],
-  "sources": [
-   "Share Market Today"
-  ]
- },
- {
-  "title": "Rentomojo",
-  "kind": "New listing",
-  "colour": "#8b8b9a",
-  "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 10 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
-  "summary": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live.",
-  "money": "10 of a possible 10 points on the ten tests the coverage could answer",
-  "answered": [
-   "Is the book filling?"
-  ],
   "unanswered": [
    "Does reporting say it makes money?",
    "Is revenue growing?",
@@ -633,41 +481,24 @@
   ]
  },
  {
-  "title": "Meta\u2019s Muse $20 vs $100 AI plans: How much revenue can its paid AI agent really generate?",
+  "title": "LIC may emerge top investor in anchor book of NSE",
   "kind": "New listing",
   "colour": "#8b8b9a",
-  "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 0 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
+  "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 10 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
   "summary": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live.",
-  "money": "0 of a possible 0 points on the ten tests the coverage could answer",
-  "answered": [],
+  "money": "10 of a possible 10 points on the ten tests the coverage could answer",
+  "answered": [
+   "Did serious institutions take an allocation?"
+  ],
   "unanswered": [
    "Does reporting say it makes money?",
    "Is revenue growing?",
    "Does the money go into the business?",
    "Is the price being called reasonable?",
-   "Did serious institutions take an allocation?"
+   "Is the book filling?"
   ],
   "sources": [
-   "mint - companies"
-  ]
- },
- {
-  "title": "Fidelity, GIC, BlackRock among global funds eyeing NSE\u2019s anchor allocation",
-  "kind": "New listing",
-  "colour": "#8b8b9a",
-  "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 0 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
-  "summary": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live.",
-  "money": "0 of a possible 0 points on the ten tests the coverage could answer",
-  "answered": [],
-  "unanswered": [
-   "Does reporting say it makes money?",
-   "Is revenue growing?",
-   "Does the money go into the business?",
-   "Is the price being called reasonable?",
-   "Did serious institutions take an allocation?"
-  ],
-  "sources": [
-   "mint - companies"
+   "Moneycontrol.com"
   ]
  },
  {
@@ -766,45 +597,7 @@
   ]
  },
  {
-  "title": "Sonaselection India",
-  "kind": "New listing",
-  "colour": "#8b8b9a",
-  "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 0 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
-  "summary": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live.",
-  "money": "0 of a possible 0 points on the ten tests the coverage could answer",
-  "answered": [],
-  "unanswered": [
-   "Does reporting say it makes money?",
-   "Is revenue growing?",
-   "Does the money go into the business?",
-   "Is the price being called reasonable?",
-   "Did serious institutions take an allocation?"
-  ],
-  "sources": [
-   "IPO Watch"
-  ]
- },
- {
   "title": "Asset Reconstruction",
-  "kind": "New listing",
-  "colour": "#8b8b9a",
-  "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 0 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
-  "summary": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live.",
-  "money": "0 of a possible 0 points on the ten tests the coverage could answer",
-  "answered": [],
-  "unanswered": [
-   "Does reporting say it makes money?",
-   "Is revenue growing?",
-   "Does the money go into the business?",
-   "Is the price being called reasonable?",
-   "Did serious institutions take an allocation?"
-  ],
-  "sources": [
-   "IPO Watch"
-  ]
- },
- {
-  "title": "Kanohar Electricals",
   "kind": "New listing",
   "colour": "#8b8b9a",
   "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 0 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
@@ -842,7 +635,26 @@
   ]
  },
  {
-  "title": "Apana Logistics",
+  "title": "Sonaselection India",
+  "kind": "New listing",
+  "colour": "#8b8b9a",
+  "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 0 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
+  "summary": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live.",
+  "money": "0 of a possible 0 points on the ten tests the coverage could answer",
+  "answered": [],
+  "unanswered": [
+   "Does reporting say it makes money?",
+   "Is revenue growing?",
+   "Does the money go into the business?",
+   "Is the price being called reasonable?",
+   "Did serious institutions take an allocation?"
+  ],
+  "sources": [
+   "IPO Watch"
+  ]
+ },
+ {
+  "title": "Kanohar Electricals",
   "kind": "New listing",
   "colour": "#8b8b9a",
   "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 0 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
@@ -862,6 +674,44 @@
  },
  {
   "title": "Jindal Supreme",
+  "kind": "New listing",
+  "colour": "#8b8b9a",
+  "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 0 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
+  "summary": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live.",
+  "money": "0 of a possible 0 points on the ten tests the coverage could answer",
+  "answered": [],
+  "unanswered": [
+   "Does reporting say it makes money?",
+   "Is revenue growing?",
+   "Does the money go into the business?",
+   "Is the price being called reasonable?",
+   "Did serious institutions take an allocation?"
+  ],
+  "sources": [
+   "IPO Watch"
+  ]
+ },
+ {
+  "title": "Apana Logistics",
+  "kind": "New listing",
+  "colour": "#8b8b9a",
+  "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 0 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
+  "summary": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live.",
+  "money": "0 of a possible 0 points on the ten tests the coverage could answer",
+  "answered": [],
+  "unanswered": [
+   "Does reporting say it makes money?",
+   "Is revenue growing?",
+   "Does the money go into the business?",
+   "Is the price being called reasonable?",
+   "Did serious institutions take an allocation?"
+  ],
+  "sources": [
+   "IPO Watch"
+  ]
+ },
+ {
+  "title": "Rentomojo",
   "kind": "New listing",
   "colour": "#8b8b9a",
   "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 0 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
@@ -915,6 +765,25 @@
   ],
   "sources": [
    "TradingView"
+  ]
+ },
+ {
+  "title": "Nvidia considers $10B investment in potential record Anthropic",
+  "kind": "New listing",
+  "colour": "#8b8b9a",
+  "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 0 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
+  "summary": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live.",
+  "money": "0 of a possible 0 points on the ten tests the coverage could answer",
+  "answered": [],
+  "unanswered": [
+   "Does reporting say it makes money?",
+   "Is revenue growing?",
+   "Does the money go into the business?",
+   "Is the price being called reasonable?",
+   "Did serious institutions take an allocation?"
+  ],
+  "sources": [
+   "Cointelegraph.com News"
   ]
  }
 ]
