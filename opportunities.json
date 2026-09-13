@@ -1,41 +1,5 @@
 [
  {
-  "title": "OpenAI IPO Sam Altman",
-  "kind": "IPO \u2014 dates unknown",
-  "colour": "#8b8b9a",
-  "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 0 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
-  "summary": "OpenAI IPO won't happen this year, says Sam Altman",
-  "answered": [],
-  "unanswered": [
-   "Does reporting say it makes money?",
-   "Is revenue growing?",
-   "Does the money go into the business?",
-   "Is the price being called reasonable?",
-   "Did serious institutions take an allocation?"
-  ],
-  "money": "0 of a possible 0 points on the ten tests the coverage could answer.",
-  "sources": [
-   "CoinDesk: Bitcoin, Ethereum, Crypto News and Price Data (2026-09-12)"
-  ]
- },
- {
-  "title": "Oil Industry Braces Years-Long",
-  "kind": "Market thesis",
-  "colour": "#8b8b9a",
-  "verdict": "Weak sourcing (42%). One outlet, or an outlet without a track record. Read it as a prompt to check elsewhere, nothing more.",
-  "summary": "Oil Industry Braces for Years-Long Iran War",
-  "answered": [],
-  "unanswered": [
-   "the asset is genuinely priced lower in real terms, not just in a depreciating local currency",
-   "there is a liquid, legal exit available to a non-resident",
-   "the dislocation has a plausible resolution path with a timeframe"
-  ],
-  "money": "Not stated. A market thesis says nothing about what acting on it would cost you.",
-  "sources": [
-   "Oilprice.com (2026-09-12)"
-  ]
- },
- {
   "title": "Daily Voice: Prolonged US",
   "kind": "Market thesis",
   "colour": "#8b8b9a",
@@ -86,25 +50,6 @@
   "money": "0 of a possible 0 points on the ten tests the coverage could answer.",
   "sources": [
    "Moneycontrol.com (2026-09-13)"
-  ]
- },
- {
-  "title": "EXCLUSIVE: Nvidia Anthropic\u2019s IPO,",
-  "kind": "IPO \u2014 dates unknown",
-  "colour": "#8b8b9a",
-  "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 0 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
-  "summary": "EXCLUSIVE: Nvidia in talks to invest in Anthropic\u2019s mega IPO, sources say - Reuters",
-  "answered": [],
-  "unanswered": [
-   "Does reporting say it makes money?",
-   "Is revenue growing?",
-   "Does the money go into the business?",
-   "Is the price being called reasonable?",
-   "Did serious institutions take an allocation?"
-  ],
-  "money": "0 of a possible 0 points on the ten tests the coverage could answer.",
-  "sources": [
-   "Reuters (2026-09-13)"
   ]
  },
  {
@@ -199,11 +144,28 @@
   ]
  },
  {
-  "title": "Trump Irish Reuters",
+  "title": "Further Oil Price Spikes",
+  "kind": "Market thesis",
+  "colour": "#8b8b9a",
+  "verdict": "Weak sourcing (42%). One outlet, or an outlet without a track record. Read it as a prompt to check elsewhere, nothing more.",
+  "summary": "Further Oil Price Spikes Could Rekindle Recession Fears",
+  "answered": [],
+  "unanswered": [
+   "the asset is genuinely priced lower in real terms, not just in a depreciating local currency",
+   "there is a liquid, legal exit available to a non-resident",
+   "the dislocation has a plausible resolution path with a timeframe"
+  ],
+  "money": "Not stated. A market thesis says nothing about what acting on it would cost you.",
+  "sources": [
+   "Oilprice.com (2026-09-13)"
+  ]
+ },
+ {
+  "title": "Trump U.S. Irish Reuters",
   "kind": "Market thesis",
   "colour": "#8b8b9a",
   "verdict": "Weak sourcing (70%). One outlet, or an outlet without a track record. Read it as a prompt to check elsewhere, nothing more.",
-  "summary": "Trump says he is lifting tariffs on Irish whiskey - Reuters",
+  "summary": "Trump says he is removing U.S. tariffs on Irish whiskey - Reuters",
   "answered": [],
   "unanswered": [
    "the asset is genuinely priced lower in real terms, not just in a depreciating local currency",
@@ -216,24 +178,39 @@
   ]
  },
  {
-  "title": "Oil Industry Braces for Years-Long Iran War",
-  "kind": "Supply chain change",
+  "title": "China's Ligent Technologies Hong",
+  "kind": "IPO \u2014 dates unknown",
   "colour": "#8b8b9a",
-  "verdict": "Cannot get there. Even if every unknown resolved in your favour this reaches 69 out of 80. Read it as context, not a lead.",
-  "summary": "A trade rule, tariff, sanction or logistics change makes a route newly viable or newly broken.",
-  "answered": [
-   "months before anything could be charged",
-   "needs real capital before any revenue",
-   "crowded, with established players"
-  ],
+  "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 0 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
+  "summary": "China's Ligent Technologies seeks $723 million in Hong Kong IPO - Reuters",
+  "answered": [],
   "unanswered": [
-   "Is anyone already paying for this?",
-   "Can you reach a buyer without paying for ads?",
-   "Could you actually do the work?"
+   "Does reporting say it makes money?",
+   "Is revenue growing?",
+   "Does the money go into the business?",
+   "Is the price being called reasonable?",
+   "Did serious institutions take an allocation?"
   ],
-  "money": "needs real capital before any revenue",
+  "money": "0 of a possible 0 points on the ten tests the coverage could answer.",
   "sources": [
-   "Oilprice.com (2026-09-12)"
+   "Reuters (2026-09-13)"
+  ]
+ },
+ {
+  "title": "StanChart Warns Oil Is",
+  "kind": "Market thesis",
+  "colour": "#8b8b9a",
+  "verdict": "Weak sourcing (42%). One outlet, or an outlet without a track record. Read it as a prompt to check elsewhere, nothing more.",
+  "summary": "StanChart Warns Oil Is Now Built for Sharper, More Frequent Spikes",
+  "answered": [],
+  "unanswered": [
+   "the asset is genuinely priced lower in real terms, not just in a depreciating local currency",
+   "there is a liquid, legal exit available to a non-resident",
+   "the dislocation has a plausible resolution path with a timeframe"
+  ],
+  "money": "Not stated. A market thesis says nothing about what acting on it would cost you.",
+  "sources": [
+   "Oilprice.com (2026-09-13)"
   ]
  },
  {
@@ -260,6 +237,28 @@
  },
  {
   "title": "Explosions reported off Qeshm Island as Iran tensions rise in Strait of Hormuz -",
+  "kind": "Supply chain change",
+  "colour": "#8b8b9a",
+  "verdict": "Cannot get there. Even if every unknown resolved in your favour this reaches 69 out of 80. Read it as context, not a lead.",
+  "summary": "A trade rule, tariff, sanction or logistics change makes a route newly viable or newly broken.",
+  "answered": [
+   "months before anything could be charged",
+   "needs real capital before any revenue",
+   "crowded, with established players",
+   "reported by a source with a record"
+  ],
+  "unanswered": [
+   "Is anyone already paying for this?",
+   "Can you reach a buyer without paying for ads?",
+   "Could you actually do the work?"
+  ],
+  "money": "needs real capital before any revenue",
+  "sources": [
+   "Moneycontrol.com (2026-09-13)"
+  ]
+ },
+ {
+  "title": "Strait of Hormuz attack reported as Saudi Arabia closes vital East-West oil pipe",
   "kind": "Supply chain change",
   "colour": "#8b8b9a",
   "verdict": "Cannot get there. Even if every unknown resolved in your favour this reaches 69 out of 80. Read it as context, not a lead.",
@@ -413,7 +412,7 @@
   ]
  },
  {
-  "title": "EXCLUSIVE: Nvidia in talks to invest in Anthropic\u2019s mega",
+  "title": "China's Ligent Technologies seeks $723 million in Hong Kong",
   "kind": "New listing",
   "colour": "#8b8b9a",
   "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 0 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
@@ -664,25 +663,6 @@
   ]
  },
  {
-  "title": "OpenAI\u2019s Altman Says No",
-  "kind": "New listing",
-  "colour": "#8b8b9a",
-  "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 0 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
-  "summary": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live.",
-  "money": "0 of a possible 0 points on the ten tests the coverage could answer",
-  "answered": [],
-  "unanswered": [
-   "Does reporting say it makes money?",
-   "Is revenue growing?",
-   "Does the money go into the business?",
-   "Is the price being called reasonable?",
-   "Did serious institutions take an allocation?"
-  ],
-  "sources": [
-   "mint - companies"
-  ]
- },
- {
   "title": "IPO action: NSE among 11 issues worth Rs 24,600 crore openin",
   "kind": "New listing",
   "colour": "#8b8b9a",
@@ -913,25 +893,6 @@
   ]
  },
  {
-  "title": "IPO Bonanza: NSE, Hero Motors Among 11 Issues To Open For Su",
-  "kind": "New listing",
-  "colour": "#8b8b9a",
-  "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 0 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
-  "summary": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live.",
-  "money": "0 of a possible 0 points on the ten tests the coverage could answer",
-  "answered": [],
-  "unanswered": [
-   "Does reporting say it makes money?",
-   "Is revenue growing?",
-   "Does the money go into the business?",
-   "Is the price being called reasonable?",
-   "Did serious institutions take an allocation?"
-  ],
-  "sources": [
-   "ndtvprofit.com"
-  ]
- },
- {
   "title": "A-One Steels",
   "kind": "New listing",
   "colour": "#8b8b9a",
@@ -948,6 +909,25 @@
   ],
   "sources": [
    "IPO Watch"
+  ]
+ },
+ {
+  "title": "IPO Bonanza: NSE, Hero Motors Among 11 Issues To Open For Su",
+  "kind": "New listing",
+  "colour": "#8b8b9a",
+  "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 0 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
+  "summary": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live.",
+  "money": "0 of a possible 0 points on the ten tests the coverage could answer",
+  "answered": [],
+  "unanswered": [
+   "Does reporting say it makes money?",
+   "Is revenue growing?",
+   "Does the money go into the business?",
+   "Is the price being called reasonable?",
+   "Did serious institutions take an allocation?"
+  ],
+  "sources": [
+   "NDTV Profit"
   ]
  },
  {
@@ -1005,25 +985,6 @@
   ],
   "sources": [
    "Zee Business"
-  ]
- },
- {
-  "title": "OpenAI",
-  "kind": "New listing",
-  "colour": "#8b8b9a",
-  "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 0 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
-  "summary": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live.",
-  "money": "0 of a possible 0 points on the ten tests the coverage could answer",
-  "answered": [],
-  "unanswered": [
-   "Does reporting say it makes money?",
-   "Is revenue growing?",
-   "Does the money go into the business?",
-   "Is the price being called reasonable?",
-   "Did serious institutions take an allocation?"
-  ],
-  "sources": [
-   "CoinDesk: Bitcoin, Ethereum, Crypto News and Price Data"
   ]
  }
 ]

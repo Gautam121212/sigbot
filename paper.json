@@ -1,13 +1,13 @@
 {
-  "generated_at": "2026-09-13T20:44:32.293488+00:00",
+  "generated_at": "2026-09-13T23:07:34.823385+00:00",
   "starting_cash": 100000.0,
-  "equity": 54769.38363159693,
-  "total_pnl": -45230.61636840307,
-  "total_return": -0.45230616368403065,
-  "total_costs": 19986.068881554515,
-  "trades": 8778,
-  "wins": 3267,
-  "win_rate": 0.37218045112781956,
+  "equity": 54772.40867336872,
+  "total_pnl": -45227.59132663128,
+  "total_return": -0.4522759132663128,
+  "total_costs": 19990.998455475285,
+  "trades": 8781,
+  "wins": 3268,
+  "win_rate": 0.37216717913677255,
   "max_drawdown": 0.48441026802635745,
   "skipped_no_price": 0,
   "by_model": {
@@ -26,54 +26,15 @@
       "win_rate": 0.452779380650125
     },
     "news": {
-      "trades": 80,
-      "pnl": 1316.3759158386106,
-      "wins": 35,
-      "costs": 134.74814169964685,
-      "win_rate": 0.4375
+      "trades": 83,
+      "pnl": 1319.4009576104045,
+      "wins": 36,
+      "costs": 139.67771562041597,
+      "win_rate": 0.43373493975903615
     }
   },
-  "verdict": "Following every signal would have LOST 45.23% over 8,778 round trips. Costs alone took 19,986. Worst peak-to-trough fall along the way: 48.4%.",
+  "verdict": "Following every signal would have LOST 45.23% over 8,781 round trips. Costs alone took 19,991. Worst peak-to-trough fall along the way: 48.4%.",
   "recent_trades": [
-    {
-      "prediction_id": 11004,
-      "model": "daily",
-      "symbol": "TRX-USD",
-      "side": "BUY",
-      "entry_price": 0.33851128816604614,
-      "exit_price": 0.33958449959754944,
-      "size": 1095.4499199503703,
-      "gross_ret": 0.0031703859487748343,
-      "cost": 1.6431748799255554,
-      "pnl": 1.8298241538716156,
-      "opened_at": "2026-09-11T09:30:50.890656+00:00"
-    },
-    {
-      "prediction_id": 11005,
-      "model": "daily",
-      "symbol": "TXN",
-      "side": "BUY",
-      "entry_price": 258.82000732421875,
-      "exit_price": 268.70001220703125,
-      "size": 1095.4865164334476,
-      "gross_ret": 0.0381732656024385,
-      "cost": 1.6432297746501714,
-      "pnl": 40.17506798105393,
-      "opened_at": "2026-09-11T09:30:51.238474+00:00"
-    },
-    {
-      "prediction_id": 11006,
-      "model": "daily",
-      "symbol": "UNI-USD",
-      "side": "SELL",
-      "entry_price": 0.0001630000042496249,
-      "exit_price": 0.0001630000042496249,
-      "size": 1096.290017793069,
-      "gross_ret": -0.0,
-      "cost": 1.6444350266896035,
-      "pnl": -1.6444350266896035,
-      "opened_at": "2026-09-11T09:30:51.434375+00:00"
-    },
     {
       "prediction_id": 11007,
       "model": "daily",
@@ -359,6 +320,45 @@
       "cost": 1.643130802871994,
       "pnl": -1.643130802871994,
       "opened_at": "2026-09-12T20:31:07.534874+00:00"
+    },
+    {
+      "prediction_id": 11029,
+      "model": "news",
+      "symbol": "BTC-USD",
+      "side": "SELL",
+      "entry_price": 77221.1171875,
+      "exit_price": 76660.34375,
+      "size": 1095.3876726319386,
+      "gross_ret": 0.007261918215174079,
+      "cost": 1.6430815089479078,
+      "pnl": 6.311534183615109,
+      "opened_at": "2026-09-12T23:01:00.032118+00:00"
+    },
+    {
+      "prediction_id": 11030,
+      "model": "news",
+      "symbol": "OPEN",
+      "side": "BUY",
+      "entry_price": 2.7899999618530273,
+      "exit_price": 2.7899999618530273,
+      "size": 1095.513903315611,
+      "gross_ret": 0.0,
+      "cost": 1.6432708549734165,
+      "pnl": -1.6432708549734165,
+      "opened_at": "2026-09-12T23:01:00.193943+00:00"
+    },
+    {
+      "prediction_id": 11031,
+      "model": "news",
+      "symbol": "SAN",
+      "side": "BUY",
+      "entry_price": 14.960000038146973,
+      "exit_price": 14.960000038146973,
+      "size": 1095.4810378985114,
+      "gross_ret": 0.0,
+      "cost": 1.6432215568477673,
+      "pnl": -1.6432215568477673,
+      "opened_at": "2026-09-12T23:01:00.439953+00:00"
     }
   ]
 }
