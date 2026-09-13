@@ -1,13 +1,13 @@
 {
-  "generated_at": "2026-09-12T23:01:15.029533+00:00",
+  "generated_at": "2026-09-13T04:40:47.526481+00:00",
   "starting_cash": 100000.0,
-  "equity": 54780.88658247226,
-  "total_pnl": -45219.11341752774,
-  "total_return": -0.45219113417527745,
-  "total_costs": 19974.565930679186,
-  "trades": 8771,
+  "equity": 54779.243155874785,
+  "total_pnl": -45220.756844125215,
+  "total_return": -0.4522075684412522,
+  "total_costs": 19976.20935727666,
+  "trades": 8772,
   "wins": 3267,
-  "win_rate": 0.372477482613157,
+  "win_rate": 0.37243502051983585,
   "max_drawdown": 0.48441026802635745,
   "skipped_no_price": 0,
   "by_model": {
@@ -26,28 +26,15 @@
       "win_rate": 0.452779380650125
     },
     "news": {
-      "trades": 73,
-      "pnl": 1327.87886671394,
+      "trades": 74,
+      "pnl": 1326.2354401164657,
       "wins": 35,
-      "costs": 123.24519082431767,
-      "win_rate": 0.4794520547945205
+      "costs": 124.88861742179185,
+      "win_rate": 0.47297297297297297
     }
   },
-  "verdict": "Following every signal would have LOST 45.22% over 8,771 round trips. Costs alone took 19,975. Worst peak-to-trough fall along the way: 48.4%.",
+  "verdict": "Following every signal would have LOST 45.22% over 8,772 round trips. Costs alone took 19,976. Worst peak-to-trough fall along the way: 48.4%.",
   "recent_trades": [
-    {
-      "prediction_id": 10997,
-      "model": "daily",
-      "symbol": "SEI-USD",
-      "side": "SELL",
-      "entry_price": 0.04456999897956848,
-      "exit_price": 0.0449800007045269,
-      "size": 1095.387783923022,
-      "gross_ret": -0.009199051701714644,
-      "cost": 1.643081675884533,
-      "pnl": -11.719610533619042,
-      "opened_at": "2026-09-11T09:30:49.198610+00:00"
-    },
     {
       "prediction_id": 10998,
       "model": "daily",
@@ -359,6 +346,19 @@
       "cost": 1.6434759017512206,
       "pnl": -1.6434759017512206,
       "opened_at": "2026-09-11T20:55:05.800584+00:00"
+    },
+    {
+      "prediction_id": 11022,
+      "model": "news",
+      "symbol": "CRM",
+      "side": "BUY",
+      "entry_price": 247.72000122070312,
+      "exit_price": 247.72000122070312,
+      "size": 1095.6177316494452,
+      "gross_ret": 0.0,
+      "cost": 1.6434265974741677,
+      "pnl": -1.6434265974741677,
+      "opened_at": "2026-09-11T23:13:56.894835+00:00"
     }
   ]
 }
