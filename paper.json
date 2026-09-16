@@ -1,13 +1,13 @@
 {
-  "generated_at": "2026-09-15T21:16:51.614923+00:00",
+  "generated_at": "2026-09-16T04:44:29.938416+00:00",
   "starting_cash": 100000.0,
-  "equity": 53860.73821729757,
-  "total_pnl": -46139.26178270243,
-  "total_return": -0.46139261782702434,
-  "total_costs": 20186.23410143527,
-  "trades": 8901,
-  "wins": 3309,
-  "win_rate": 0.37175598247387937,
+  "equity": 53881.01876572259,
+  "total_pnl": -46118.98123427741,
+  "total_return": -0.4611898123427741,
+  "total_costs": 20187.84992358179,
+  "trades": 8902,
+  "wins": 3310,
+  "win_rate": 0.3718265558301505,
   "max_drawdown": 0.48441026802635745,
   "skipped_no_price": 0,
   "by_model": {
@@ -26,28 +26,15 @@
       "win_rate": 0.452779380650125
     },
     "news": {
-      "trades": 103,
-      "pnl": 1162.6607728029826,
-      "wins": 38,
-      "costs": 172.41518320789507,
-      "win_rate": 0.36893203883495146
+      "trades": 104,
+      "pnl": 1182.9413212279997,
+      "wins": 39,
+      "costs": 174.031005354414,
+      "win_rate": 0.375
     }
   },
-  "verdict": "Following every signal would have LOST 46.14% over 8,901 round trips. Costs alone took 20,186. Worst peak-to-trough fall along the way: 48.4%.",
+  "verdict": "Following every signal would have LOST 46.12% over 8,902 round trips. Costs alone took 20,188. Worst peak-to-trough fall along the way: 48.4%.",
   "recent_trades": [
-    {
-      "prediction_id": 11127,
-      "model": "daily",
-      "symbol": "SBIN.NS",
-      "side": "BUY",
-      "entry_price": 995.7000122070312,
-      "exit_price": 968.0,
-      "size": 1081.1591523751717,
-      "gross_ret": -0.02781963630354134,
-      "cost": 1.6217387285627576,
-      "pnl": -31.699193133885068,
-      "opened_at": "2026-09-14T10:31:19.655742+00:00"
-    },
     {
       "prediction_id": 11128,
       "model": "daily",
@@ -359,6 +346,19 @@
       "cost": 1.6148243522326458,
       "pnl": 33.25980954271618,
       "opened_at": "2026-09-14T12:38:12.609460+00:00"
+    },
+    {
+      "prediction_id": 11152,
+      "model": "news",
+      "symbol": "JST-USD",
+      "side": "BUY",
+      "entry_price": 0.11355233937501907,
+      "exit_price": 0.11586049944162369,
+      "size": 1077.2147643459514,
+      "gross_ret": 0.020326838524934887,
+      "cost": 1.615822146518927,
+      "pnl": 20.280548425017013,
+      "opened_at": "2026-09-14T23:51:45.037850+00:00"
     }
   ]
 }
