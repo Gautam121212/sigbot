@@ -1,13 +1,13 @@
 {
-  "generated_at": "2026-09-16T11:26:35.820322+00:00",
+  "generated_at": "2026-09-16T16:48:41.187695+00:00",
   "starting_cash": 100000.0,
-  "equity": 54033.24047294919,
-  "total_pnl": -45966.75952705081,
-  "total_return": -0.45966759527050804,
-  "total_costs": 20353.151704198506,
-  "trades": 9005,
-  "wins": 3366,
-  "win_rate": 0.3737923375902277,
+  "equity": 54011.328570799815,
+  "total_pnl": -45988.671429200185,
+  "total_return": -0.4598867142920019,
+  "total_costs": 20356.39275416447,
+  "trades": 9007,
+  "wins": 3367,
+  "win_rate": 0.3738203619407128,
   "max_drawdown": 0.48441026802635745,
   "skipped_no_price": 0,
   "by_model": {
@@ -26,41 +26,15 @@
       "win_rate": 0.452779380650125
     },
     "news": {
-      "trades": 107,
-      "pnl": 192.63454641709677,
-      "wins": 39,
-      "costs": 178.8795296447685,
-      "win_rate": 0.3644859813084112
+      "trades": 109,
+      "pnl": 170.72264426772185,
+      "wins": 40,
+      "costs": 182.1205796107317,
+      "win_rate": 0.3669724770642202
     }
   },
-  "verdict": "Following every signal would have LOST 45.97% over 9,005 round trips. Costs alone took 20,353. Worst peak-to-trough fall along the way: 48.4%.",
+  "verdict": "Following every signal would have LOST 45.99% over 9,007 round trips. Costs alone took 20,356. Worst peak-to-trough fall along the way: 48.4%.",
   "recent_trades": [
-    {
-      "prediction_id": 11231,
-      "model": "daily",
-      "symbol": "QQQ",
-      "side": "BUY",
-      "entry_price": 709.1799926757812,
-      "exit_price": 704.5399780273438,
-      "size": 1073.4947847222325,
-      "gross_ret": -0.006542788426574742,
-      "cost": 1.6102421770833486,
-      "pnl": -8.633891430552316,
-      "opened_at": "2026-09-15T09:58:29.456472+00:00"
-    },
-    {
-      "prediction_id": 11232,
-      "model": "daily",
-      "symbol": "RELIANCE.NS",
-      "side": "SELL",
-      "entry_price": 1239.0,
-      "exit_price": 1240.0,
-      "size": 1073.3221068936214,
-      "gross_ret": -0.0008071025020177647,
-      "cost": 1.609983160340432,
-      "pnl": -2.4762641182852523,
-      "opened_at": "2026-09-15T09:58:30.029014+00:00"
-    },
     {
       "prediction_id": 11233,
       "model": "daily",
@@ -359,6 +333,32 @@
       "cost": 1.618402109662394,
       "pnl": 86.5034842027291,
       "opened_at": "2026-09-15T09:58:38.360459+00:00"
+    },
+    {
+      "prediction_id": 11256,
+      "model": "news",
+      "symbol": "TCS.NS",
+      "side": "BUY",
+      "entry_price": 2251.0,
+      "exit_price": 2188.800048828125,
+      "size": 1080.6648094589839,
+      "gross_ret": -0.027632141791148368,
+      "cost": 1.6209972141884759,
+      "pnl": -31.482080457863454,
+      "opened_at": "2026-09-15T11:39:07.769235+00:00"
+    },
+    {
+      "prediction_id": 11257,
+      "model": "news",
+      "symbol": "GOOGL",
+      "side": "SELL",
+      "entry_price": 349.3900146484375,
+      "exit_price": 345.7699890136719,
+      "size": 1080.0351678498266,
+      "gross_ret": 0.010360987672782151,
+      "cost": 1.62005275177474,
+      "pnl": 9.570178308488515,
+      "opened_at": "2026-09-15T11:39:07.941911+00:00"
     }
   ]
 }
