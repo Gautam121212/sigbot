@@ -20414,3 +20414,18 @@ From: Moneycontrol.com
 
 This is a reading of press coverage, not of the prospectus. Nothing here has been checked against how any listing actually performed, and a single listing has no base rate to be checked against.
 
+Daily 24h outlook — 2026-09-16 09:49 UTC
+
+No signal cleared the gates today (97 holds). That is the expected outcome most days.
+
+3 symbol(s) failed: APT-USD: ValueError: need >= 400 training rows, got 0; MATIC-USD: ValueError: need >= 400 training rows, got 0; UNI-USD: ValueError: need >= 400 training rows, got 0
+
+Contagion scan: 596 live link(s), but nothing cleared the 2σ trigger and the gates today.
+
+Links that fired but did not clear the gates:
+  INTC after INDA: direction lower bound 47% < 58%
+  TSM after INDA: direction lower bound 37% < 58%; edge over base -6.0% < 3%
+  ASML after INDA: direction lower bound 43% < 58%; edge over base +2.1% < 3%
+  AMAT after INDA: direction lower bound 38% < 58%; edge over base -4.1% < 3%
+  LRCX after INDA: direction lower bound 37% < 58%; edge over base -5.8% < 3%
+
