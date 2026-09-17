@@ -1,13 +1,13 @@
 {
-  "generated_at": "2026-09-16T21:15:36.942225+00:00",
+  "generated_at": "2026-09-17T04:47:26.021157+00:00",
   "starting_cash": 100000.0,
-  "equity": 54993.28690074525,
-  "total_pnl": -45006.71309925475,
-  "total_return": -0.4500671309925476,
-  "total_costs": 20361.254056744907,
-  "trades": 9010,
+  "equity": 54963.43645275154,
+  "total_pnl": -45036.56354724846,
+  "total_return": -0.45036563547248454,
+  "total_costs": 20366.203304085586,
+  "trades": 9013,
   "wins": 3369,
-  "win_rate": 0.3739178690344062,
+  "win_rate": 0.37379340951958284,
   "max_drawdown": 0.48441026802635745,
   "skipped_no_price": 0,
   "by_model": {
@@ -26,54 +26,15 @@
       "win_rate": 0.452779380650125
     },
     "news": {
-      "trades": 112,
-      "pnl": 1152.6809742131527,
+      "trades": 115,
+      "pnl": 1122.8305262194515,
       "wins": 42,
-      "costs": 186.98188219116943,
-      "win_rate": 0.375
+      "costs": 191.9311295318467,
+      "win_rate": 0.3652173913043478
     }
   },
-  "verdict": "Following every signal would have LOST 45.01% over 9,010 round trips. Costs alone took 20,361. Worst peak-to-trough fall along the way: 48.4%.",
+  "verdict": "Following every signal would have LOST 45.04% over 9,013 round trips. Costs alone took 20,366. Worst peak-to-trough fall along the way: 48.4%.",
   "recent_trades": [
-    {
-      "prediction_id": 11236,
-      "model": "daily",
-      "symbol": "SCHW",
-      "side": "BUY",
-      "entry_price": 107.30999755859375,
-      "exit_price": 107.79000091552734,
-      "size": 1073.7482992181742,
-      "gross_ret": 0.004473053469892241,
-      "cost": 1.6106224488272614,
-      "pnl": 3.1923111067814847,
-      "opened_at": "2026-09-15T09:58:31.394936+00:00"
-    },
-    {
-      "prediction_id": 11237,
-      "model": "daily",
-      "symbol": "SEI-USD",
-      "side": "SELL",
-      "entry_price": 0.04368000105023384,
-      "exit_price": 0.04180999845266342,
-      "size": 1073.81214544031,
-      "gross_ret": 0.04281141375019282,
-      "cost": 1.610718218160465,
-      "pnl": 44.360697830266865,
-      "opened_at": "2026-09-15T09:58:31.754516+00:00"
-    },
-    {
-      "prediction_id": 11238,
-      "model": "daily",
-      "symbol": "SMH",
-      "side": "BUY",
-      "entry_price": 541.5,
-      "exit_price": 542.1099853515625,
-      "size": 1074.699359396915,
-      "gross_ret": 0.0011264734100877583,
-      "cost": 1.6120490390953726,
-      "pnl": -0.4014287868964004,
-      "opened_at": "2026-09-15T09:58:32.185783+00:00"
-    },
     {
       "prediction_id": 11239,
       "model": "daily",
@@ -359,6 +320,45 @@
       "cost": 1.6206714763854748,
       "pnl": 970.9043545627499,
       "opened_at": "2026-09-15T16:53:34.244698+00:00"
+    },
+    {
+      "prediction_id": 11261,
+      "model": "news",
+      "symbol": "TRUMP-USD",
+      "side": "SELL",
+      "entry_price": 0.0003020281146746129,
+      "exit_price": 0.0003020281146746129,
+      "size": 1099.865738014905,
+      "gross_ret": -0.0,
+      "cost": 1.6497986070223576,
+      "pnl": -1.6497986070223576,
+      "opened_at": "2026-09-15T21:16:38.070845+00:00"
+    },
+    {
+      "prediction_id": 11262,
+      "model": "news",
+      "symbol": "TRUMP-USD",
+      "side": "SELL",
+      "entry_price": 0.0003020281146746129,
+      "exit_price": 0.0003020281146746129,
+      "size": 1099.8327420427645,
+      "gross_ret": -0.0,
+      "cost": 1.6497491130641468,
+      "pnl": -1.6497491130641468,
+      "opened_at": "2026-09-16T04:44:17.198824+00:00"
+    },
+    {
+      "prediction_id": 11263,
+      "model": "news",
+      "symbol": "OPEN",
+      "side": "BUY",
+      "entry_price": 2.6500000953674316,
+      "exit_price": 2.5899999141693115,
+      "size": 1099.7997470605033,
+      "gross_ret": -0.022641576995792834,
+      "cost": 1.6496996205907548,
+      "pnl": -26.550900273614623,
+      "opened_at": "2026-09-16T04:44:17.531148+00:00"
     }
   ]
 }
