@@ -21133,3 +21133,18 @@ From: Markets-Economic Times
 
 This is a reading of press coverage, not of the prospectus. Nothing here has been checked against how any listing actually performed, and a single listing has no base rate to be checked against.
 
+Daily 24h outlook — 2026-09-17 09:55 UTC
+
+No signal cleared the gates today (97 holds). That is the expected outcome most days.
+
+3 symbol(s) failed: APT-USD: ValueError: need >= 400 training rows, got 0; MATIC-USD: ValueError: need >= 400 training rows, got 0; UNI-USD: ValueError: need >= 400 training rows, got 0
+
+Contagion scan: 591 live link(s), but nothing cleared the 2σ trigger and the gates today.
+
+Links that fired but did not clear the gates:
+  TSM after BAC: direction lower bound 40% < 58%; edge over base -2.4% < 3%
+  ASML after BAC: direction lower bound 39% < 58%; edge over base -4.8% < 3%
+  AMAT after BAC: direction lower bound 39% < 58%; edge over base -4.3% < 3%
+  LRCX after BAC: direction lower bound 37% < 58%; edge over base -6.0% < 3%
+  KLAC after BAC: direction lower bound 38% < 58%; edge over base -5.2% < 3%
+
