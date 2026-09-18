@@ -1,13 +1,13 @@
 {
-  "generated_at": "2026-09-18T11:08:48.359713+00:00",
+  "generated_at": "2026-09-18T16:21:25.482011+00:00",
   "starting_cash": 100000.0,
-  "equity": 52334.954904760896,
-  "total_pnl": -47665.045095239104,
-  "total_return": -0.476650450952391,
-  "total_costs": 20686.605479135724,
-  "trades": 9212,
-  "wins": 3448,
-  "win_rate": 0.374294398610508,
+  "equity": 52371.24370493484,
+  "total_pnl": -47628.75629506516,
+  "total_return": -0.47628756295065167,
+  "total_costs": 20689.745971097997,
+  "trades": 9214,
+  "wins": 3450,
+  "win_rate": 0.3744302148903842,
   "max_drawdown": 0.48973958580010046,
   "skipped_no_price": 0,
   "by_model": {
@@ -26,41 +26,15 @@
       "win_rate": 0.452779380650125
     },
     "news": {
-      "trades": 120,
-      "pnl": 1110.319761533428,
-      "wins": 43,
-      "costs": 199.9848912754613,
-      "win_rate": 0.35833333333333334
+      "trades": 122,
+      "pnl": 1146.6085617073695,
+      "wins": 45,
+      "costs": 203.12538323773504,
+      "win_rate": 0.36885245901639346
     }
   },
-  "verdict": "Following every signal would have LOST 47.67% over 9,212 round trips. Costs alone took 20,687. Worst peak-to-trough fall along the way: 49.0%.",
+  "verdict": "Following every signal would have LOST 47.63% over 9,214 round trips. Costs alone took 20,690. Worst peak-to-trough fall along the way: 49.0%.",
   "recent_trades": [
-    {
-      "prediction_id": 11438,
-      "model": "daily",
-      "symbol": "QCOM",
-      "side": "BUY",
-      "entry_price": 184.83999633789062,
-      "exit_price": 188.7100067138672,
-      "size": 1050.2165566456613,
-      "gross_ret": 0.020937083167336334,
-      "cost": 1.5753248349684918,
-      "pnl": 20.41314655523531,
-      "opened_at": "2026-09-17T09:56:06.804186+00:00"
-    },
-    {
-      "prediction_id": 11439,
-      "model": "daily",
-      "symbol": "QQQ",
-      "side": "BUY",
-      "entry_price": 704.719970703125,
-      "exit_price": 716.9199829101562,
-      "size": 1050.624819576766,
-      "gross_ret": 0.0173118582049816,
-      "cost": 1.575937229365149,
-      "pnl": 16.6123306737822,
-      "opened_at": "2026-09-17T09:56:07.047815+00:00"
-    },
     {
       "prediction_id": 11440,
       "model": "daily",
@@ -359,6 +333,32 @@
       "cost": 1.5705480505605836,
       "pnl": -16.64678059189078,
       "opened_at": "2026-09-17T09:56:13.170369+00:00"
+    },
+    {
+      "prediction_id": 11463,
+      "model": "news",
+      "symbol": "RELIANCE.NS",
+      "side": "SELL",
+      "entry_price": 1243.9000244140625,
+      "exit_price": 1226.4000244140625,
+      "size": 1046.699098095218,
+      "gross_ret": 0.014068654760452604,
+      "cost": 1.570048647142827,
+      "pnl": 13.15559960203591,
+      "opened_at": "2026-09-17T11:35:07.621872+00:00"
+    },
+    {
+      "prediction_id": 11464,
+      "model": "news",
+      "symbol": "F",
+      "side": "SELL",
+      "entry_price": 13.350000381469727,
+      "exit_price": 13.03499984741211,
+      "size": 1046.9622100872587,
+      "gross_ret": 0.023595544948062264,
+      "cost": 1.570443315130888,
+      "pnl": 23.13320057190563,
+      "opened_at": "2026-09-17T11:35:07.965114+00:00"
     }
   ]
 }
