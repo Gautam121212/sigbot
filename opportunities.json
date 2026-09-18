@@ -4,7 +4,7 @@
   "kind": "Market thesis",
   "colour": "#8b8b9a",
   "verdict": "Weak sourcing (70%). One outlet, or an outlet without a track record. Read it as a prompt to check elsewhere, nothing more.",
-  "summary": "South Korea's Lee says will not deploy military to get involved in Middle East conflict - reuters.com",
+  "summary": "South Korea's Lee says will not deploy military to get involved in Middle East conflict - Reuters",
   "answered": [],
   "unanswered": [
    "the asset is genuinely priced lower in real terms, not just in a depreciating local currency",
@@ -13,7 +13,7 @@
   ],
   "money": "Not stated. A market thesis says nothing about what acting on it would cost you.",
   "sources": [
-   "reuters.com (2026-09-18)"
+   "Reuters (2026-09-18)"
   ]
  },
  {
@@ -130,11 +130,11 @@
   ]
  },
  {
-  "title": "China's August",
+  "title": "China's August Reuters",
   "kind": "Market thesis",
   "colour": "#8b8b9a",
   "verdict": "Weak sourcing (70%). One outlet, or an outlet without a track record. Read it as a prompt to check elsewhere, nothing more.",
-  "summary": "China's August refined fuel exports exceed pre-Iran war levels, jet fuel exports hit record high - reuters.com",
+  "summary": "China's August refined fuel exports exceed pre-Iran war levels, jet fuel exports hit record high - Reuters",
   "answered": [],
   "unanswered": [
    "the asset is genuinely priced lower in real terms, not just in a depreciating local currency",
@@ -143,7 +143,7 @@
   ],
   "money": "Not stated. A market thesis says nothing about what acting on it would cost you.",
   "sources": [
-   "reuters.com (2026-09-18)"
+   "Reuters (2026-09-18)"
   ]
  },
  {
@@ -286,11 +286,11 @@
   ]
  },
  {
-  "title": "Jet Iran",
+  "title": "Jet Iran Reuters",
   "kind": "Market thesis",
   "colour": "#8b8b9a",
   "verdict": "Weak sourcing (70%). One outlet, or an outlet without a track record. Read it as a prompt to check elsewhere, nothing more.",
-  "summary": "Jet financiers fret as Iran war pumps up fuel and borrowing costs - reuters.com",
+  "summary": "Jet financiers fret as Iran war pumps up fuel and borrowing costs - Reuters",
   "answered": [],
   "unanswered": [
    "the asset is genuinely priced lower in real terms, not just in a depreciating local currency",
@@ -299,7 +299,7 @@
   ],
   "money": "Not stated. A market thesis says nothing about what acting on it would cost you.",
   "sources": [
-   "reuters.com (2026-09-18)"
+   "Reuters (2026-09-18)"
   ]
  },
  {
@@ -392,7 +392,7 @@
    "Did serious institutions take an allocation?"
   ],
   "sources": [
-   "reuters.com"
+   "Reuters"
   ]
  },
  {
@@ -1279,25 +1279,6 @@
   ]
  },
  {
-  "title": "IPO GMP Today: NSE vs Jindal Supreme vs Hero Motors \u2014 Which ",
-  "kind": "New listing",
-  "colour": "#8b8b9a",
-  "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 0 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
-  "summary": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live.",
-  "money": "0 of a possible 0 points on the ten tests the coverage could answer",
-  "answered": [],
-  "unanswered": [
-   "Does reporting say it makes money?",
-   "Is revenue growing?",
-   "Does the money go into the business?",
-   "Is the price being called reasonable?",
-   "Did serious institutions take an allocation?"
-  ],
-  "sources": [
-   "NDTV Profit"
-  ]
- },
- {
   "title": "IPO GMP Today: SS Retail vs Jindal Supreme vs NSE vs Sonasel",
   "kind": "New listing",
   "colour": "#8b8b9a",
@@ -1314,6 +1295,25 @@
   ],
   "sources": [
    "Goodreturns"
+  ]
+ },
+ {
+  "title": "IPO GMP Today: NSE vs Jindal Supreme vs Hero Motors \u2014 Which ",
+  "kind": "New listing",
+  "colour": "#8b8b9a",
+  "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 0 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
+  "summary": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live.",
+  "money": "0 of a possible 0 points on the ten tests the coverage could answer",
+  "answered": [],
+  "unanswered": [
+   "Does reporting say it makes money?",
+   "Is revenue growing?",
+   "Does the money go into the business?",
+   "Is the price being called reasonable?",
+   "Did serious institutions take an allocation?"
+  ],
+  "sources": [
+   "NDTV Profit"
   ]
  },
  {
