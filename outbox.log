@@ -21847,3 +21847,17 @@ From: Markets-Economic Times
 
 This is a reading of press coverage, not of the prospectus. Nothing here has been checked against how any listing actually performed, and a single listing has no base rate to be checked against.
 
+Daily 24h outlook — 2026-09-18 09:34 UTC
+
+No signal cleared the gates today (97 holds). That is the expected outcome most days.
+
+3 symbol(s) failed: APT-USD: ValueError: need >= 400 training rows, got 0; MATIC-USD: ValueError: need >= 400 training rows, got 0; UNI-USD: ValueError: need >= 400 training rows, got 0
+
+Contagion alerts — 2026-09-18 09:36 UTC
+
+▲ BAC — BUY
+Affected by: TIA-USD (+2.6σ move today)
+Expected 24h response: +0.31% (10–90% -1.78% to +2.07%)
+Score: 58% — direction hit rate 68% over 66 historical shocks, base rate 50%
+Link strength: next-day beta +0.001, q=0.003
+

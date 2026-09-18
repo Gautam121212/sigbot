@@ -1,13 +1,13 @@
 {
-  "generated_at": "2026-09-18T04:37:14.268621+00:00",
+  "generated_at": "2026-09-18T09:36:10.481824+00:00",
   "starting_cash": 100000.0,
-  "equity": 53687.162374211766,
-  "total_pnl": -46312.837625788234,
-  "total_return": -0.4631283762578824,
-  "total_costs": 20530.81442860093,
-  "trades": 9114,
+  "equity": 53673.11459031661,
+  "total_pnl": -46326.88540968339,
+  "total_return": -0.46326885409683394,
+  "total_costs": 20532.425043472154,
+  "trades": 9115,
   "wins": 3397,
-  "win_rate": 0.3727232828615317,
+  "win_rate": 0.37268239166209544,
   "max_drawdown": 0.48441026802635745,
   "skipped_no_price": 0,
   "by_model": {
@@ -26,28 +26,15 @@
       "win_rate": 0.452779380650125
     },
     "news": {
-      "trades": 119,
-      "pnl": 1124.3675454285838,
+      "trades": 120,
+      "pnl": 1110.319761533428,
       "wins": 43,
-      "costs": 198.37427640423496,
-      "win_rate": 0.36134453781512604
+      "costs": 199.9848912754613,
+      "win_rate": 0.35833333333333334
     }
   },
-  "verdict": "Following every signal would have LOST 46.31% over 9,114 round trips. Costs alone took 20,531. Worst peak-to-trough fall along the way: 48.4%.",
+  "verdict": "Following every signal would have LOST 46.33% over 9,115 round trips. Costs alone took 20,532. Worst peak-to-trough fall along the way: 48.4%.",
   "recent_trades": [
-    {
-      "prediction_id": 11340,
-      "model": "daily",
-      "symbol": "RUNE-USD",
-      "side": "BUY",
-      "entry_price": 0.48626944422721863,
-      "exit_price": 0.5009661912918091,
-      "size": 1078.808969514872,
-      "gross_ret": 0.030223464046659432,
-      "cost": 1.618213454272308,
-      "pnl": 30.987130649074132,
-      "opened_at": "2026-09-16T09:50:02.027063+00:00"
-    },
     {
       "prediction_id": 11341,
       "model": "daily",
@@ -359,6 +346,19 @@
       "cost": 1.6106631911220868,
       "pnl": -1.6106631911220868,
       "opened_at": "2026-09-16T21:15:22.448014+00:00"
+    },
+    {
+      "prediction_id": 11365,
+      "model": "news",
+      "symbol": "OPEN",
+      "side": "BUY",
+      "entry_price": 2.5899999141693115,
+      "exit_price": 2.559999942779541,
+      "size": 1073.7432474842353,
+      "gross_ret": -0.011583000920443065,
+      "cost": 1.610614871226353,
+      "pnl": -14.047783895155776,
+      "opened_at": "2026-09-17T04:47:12.838270+00:00"
     }
   ]
 }
