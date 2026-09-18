@@ -1,13 +1,13 @@
 {
-  "generated_at": "2026-09-18T16:21:25.482011+00:00",
+  "generated_at": "2026-09-18T20:52:10.159998+00:00",
   "starting_cash": 100000.0,
-  "equity": 52371.24370493484,
-  "total_pnl": -47628.75629506516,
-  "total_return": -0.47628756295065167,
-  "total_costs": 20689.745971097997,
-  "trades": 9214,
+  "equity": 52355.9643737509,
+  "total_pnl": -47644.0356262491,
+  "total_return": -0.4764403562624909,
+  "total_costs": 20692.88818534369,
+  "trades": 9216,
   "wins": 3450,
-  "win_rate": 0.3744302148903842,
+  "win_rate": 0.3743489583333333,
   "max_drawdown": 0.48973958580010046,
   "skipped_no_price": 0,
   "by_model": {
@@ -26,41 +26,15 @@
       "win_rate": 0.452779380650125
     },
     "news": {
-      "trades": 122,
-      "pnl": 1146.6085617073695,
+      "trades": 124,
+      "pnl": 1131.3292305234388,
       "wins": 45,
-      "costs": 203.12538323773504,
-      "win_rate": 0.36885245901639346
+      "costs": 206.26759748342974,
+      "win_rate": 0.3629032258064516
     }
   },
-  "verdict": "Following every signal would have LOST 47.63% over 9,214 round trips. Costs alone took 20,690. Worst peak-to-trough fall along the way: 49.0%.",
+  "verdict": "Following every signal would have LOST 47.64% over 9,216 round trips. Costs alone took 20,693. Worst peak-to-trough fall along the way: 49.0%.",
   "recent_trades": [
-    {
-      "prediction_id": 11440,
-      "model": "daily",
-      "symbol": "RELIANCE.NS",
-      "side": "SELL",
-      "entry_price": 1245.5,
-      "exit_price": 1226.4000244140625,
-      "size": 1050.9570661902417,
-      "gross_ret": 0.015335187142462847,
-      "cost": 1.5764355992853625,
-      "pnl": 14.540187689435706,
-      "opened_at": "2026-09-17T09:56:07.332486+00:00"
-    },
-    {
-      "prediction_id": 11441,
-      "model": "daily",
-      "symbol": "RENDER-USD",
-      "side": "SELL",
-      "entry_price": 1.3875000476837158,
-      "exit_price": 1.503100037574768,
-      "size": 1051.2478699440303,
-      "gross_ret": -0.08331530516632002,
-      "cost": 1.5768718049160455,
-      "pnl": -89.16190889474683,
-      "opened_at": "2026-09-17T09:56:07.559464+00:00"
-    },
     {
       "prediction_id": 11442,
       "model": "daily",
@@ -359,6 +333,32 @@
       "cost": 1.570443315130888,
       "pnl": 23.13320057190563,
       "opened_at": "2026-09-17T11:35:07.965114+00:00"
+    },
+    {
+      "prediction_id": 11465,
+      "model": "news",
+      "symbol": "WMT",
+      "side": "BUY",
+      "entry_price": 106.7750015258789,
+      "exit_price": 106.7300033569336,
+      "size": 1047.4248740986968,
+      "gross_ret": -0.00042142981317971895,
+      "cost": 1.5711373111480453,
+      "pnl": -2.01255338015925,
+      "opened_at": "2026-09-17T16:54:59.347305+00:00"
+    },
+    {
+      "prediction_id": 11466,
+      "model": "news",
+      "symbol": "KEY",
+      "side": "BUY",
+      "entry_price": 21.045000076293945,
+      "exit_price": 20.809999465942383,
+      "size": 1047.3846230310935,
+      "gross_ret": -0.01116657683533473,
+      "cost": 1.5710769345466402,
+      "pnl": -13.266777803771447,
+      "opened_at": "2026-09-17T16:54:59.714343+00:00"
     }
   ]
 }
