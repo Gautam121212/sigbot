@@ -1,13 +1,13 @@
 {
-  "generated_at": "2026-09-19T10:53:16.122909+00:00",
+  "generated_at": "2026-09-19T15:51:14.430182+00:00",
   "starting_cash": 100000.0,
-  "equity": 51430.43636945152,
-  "total_pnl": -48569.56363054848,
-  "total_return": -0.48569563630548485,
-  "total_costs": 20847.335918249042,
-  "trades": 9315,
-  "wins": 3492,
-  "win_rate": 0.3748792270531401,
+  "equity": 51475.89298264288,
+  "total_pnl": -48524.10701735712,
+  "total_return": -0.4852410701735712,
+  "total_costs": 20848.878831340127,
+  "trades": 9316,
+  "wins": 3493,
+  "win_rate": 0.37494632889652213,
   "max_drawdown": 0.49837313491103624,
   "skipped_no_price": 0,
   "by_model": {
@@ -26,11 +26,11 @@
       "win_rate": 0.452779380650125
     },
     "news": {
-      "trades": 125,
-      "pnl": 1101.6020101614165,
-      "wins": 45,
-      "costs": 207.83827641464228,
-      "win_rate": 0.36
+      "trades": 126,
+      "pnl": 1147.058623352776,
+      "wins": 46,
+      "costs": 209.3811895057258,
+      "win_rate": 0.36507936507936506
     },
     "contagion": {
       "trades": 1,
@@ -40,21 +40,8 @@
       "win_rate": 0.0
     }
   },
-  "verdict": "Following every signal would have LOST 48.57% over 9,315 round trips. Costs alone took 20,847. Worst peak-to-trough fall along the way: 49.8%.",
+  "verdict": "Following every signal would have LOST 48.52% over 9,316 round trips. Costs alone took 20,849. Worst peak-to-trough fall along the way: 49.8%.",
   "recent_trades": [
-    {
-      "prediction_id": 11541,
-      "model": "daily",
-      "symbol": "QQQ",
-      "side": "BUY",
-      "entry_price": 716.9199829101562,
-      "exit_price": 721.4500122070312,
-      "size": 1036.737908028314,
-      "gross_ret": 0.006318737662307061,
-      "cost": 1.555106862042471,
-      "pnl": 4.995768003357471,
-      "opened_at": "2026-09-18T09:35:15.941862+00:00"
-    },
     {
       "prediction_id": 11542,
       "model": "daily",
@@ -366,6 +353,19 @@
       "cost": 1.54319810834769,
       "pnl": -9.50057547148027,
       "opened_at": "2026-09-18T09:36:05.426797+00:00"
+    },
+    {
+      "prediction_id": 11566,
+      "model": "news",
+      "symbol": "BTC-USD",
+      "side": "BUY",
+      "entry_price": 78113.15625,
+      "exit_price": 81682.328125,
+      "size": 1028.6087273890305,
+      "gross_ret": 0.045692326956766616,
+      "cost": 1.5429130910835458,
+      "pnl": 45.45661319135965,
+      "opened_at": "2026-09-18T11:08:33.063933+00:00"
     }
   ]
 }
