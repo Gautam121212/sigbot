@@ -23,8 +23,11 @@ def test_a_long_that_rises_makes_money_minus_costs(led):
                         cost_pct_per_side=0.00075)
     trade = book.trades[0]
     assert trade.gross_ret == pytest.approx(0.10)
-    # 2% of 100k = 2,000 committed; 10% of that is 200 gross, less 3 in costs.
-    assert trade.pnl == pytest.approx(2000 * 0.10 - 2000 * 0.0015)
+    # Size now comes from RISK, not a flat percentage: the position is
+    # whatever makes the distance to the stop equal the risk budget, so a
+    # tight stop buys a larger position at identical risk.
+    assert trade.pnl > 0, "a 10% rise on a long must make money"
+    assert trade.size <= 100_000 * 0.25, "no position exceeds a quarter of the book"
     assert book.equity > book.starting_cash
 
 

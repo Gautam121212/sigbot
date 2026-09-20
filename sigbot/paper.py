@@ -213,19 +213,30 @@ def replay(db_path: str, starting_cash: float = STARTING_CASH,
         move = exit_ / entry - 1.0
         gross = move if row["side"].upper() == "BUY" else -move
 
-        # Size by conviction, not flat.
+        # Size from RISK, not from conviction.
         #
-        # A flat size treats a proven setup and an unproven one as the same
-        # bet, which makes the risky tier unaffordable: the whole reason it
-        # can exist is that being wrong on it costs a third as much. The
-        # stocks scan records conviction as the score, so a 100%-conviction
-        # row takes full size and a 67% one takes two thirds. Models that do
-        # not record a meaningful score are unaffected — they fall back to
-        # flat sizing rather than being silently rescaled by a number that
-        # means something else to them.
-        conviction = row.get("score") if row["model"] == "stocks" else None
-        weight = 1.0 if conviction is None else max(0.2, min(float(conviction), 1.0))
-        size = book.equity * position_pct * weight
+        # An earlier version here weighted size by the model's conviction. The
+        # practitioner literature is unanimous that this is backwards, and the
+        # reason is specific rather than stylistic: conviction and volatility
+        # are correlated, because the most compelling setups appear in the
+        # most violent conditions. Conviction-weighted sizing therefore puts
+        # the most money exactly where the swings are widest.
+        #
+        # The deep-oversold setup is the case that proves it — high accuracy,
+        # violent conditions, payoff ratio 1.08, and worse than holding. Under
+        # conviction sizing it would have been the largest position in the
+        # book.
+        #
+        # So risk is held constant and SIZE varies with the stop distance. A
+        # volatile name needs a wide stop and therefore gets a small position;
+        # a quiet one gets a larger position at identical risk.
+        from .risk import RISK_PER_TRADE
+
+        stop_distance = abs(row.get("expected_move") or 0.0) or 0.05
+        stop_distance = max(0.01, min(stop_distance, 0.25))
+        size = min(book.equity * RISK_PER_TRADE / stop_distance,
+                   book.equity * position_pct * 5.0)
+
         cost = size * cost_pct_per_side * 2      # entry and exit
         pnl = size * gross - cost
 
