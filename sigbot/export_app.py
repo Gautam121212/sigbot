@@ -50,6 +50,19 @@ MISS_PLAIN = {
 
 from .horizons import horizon_for
 
+# How many scored checks each model needs before its record is judged.
+# Sized to the rate each one accumulates, so every model reaches its verdict
+# in a comparable number of weeks rather than crypto being judged in two days
+# and news in two years. Fixed in advance on purpose — see the comment at the
+# use site.
+TARGET_CHECKS = {
+    "news": 300,
+    "daily": 4000,
+    "contagion": 2000,
+    "crypto15m": 6000,
+    "opportunity": 200,
+}
+
 MODEL_META = {
     "news": ("News scanner", "Scores stories for whether they move an asset"),
     "daily": ("Daily outlook", "Next-session direction on the watchlist"),
@@ -83,6 +96,9 @@ class ModelView:
     # defaulted one, which is what the first attempt at this hit.
     null_rate: float = 0.50
     ready_in: str = ""
+    target_checks: int = 0
+    sample_progress: float = 0.0
+    benchmark: str = ""
     intake: str = ""
     badge: str = ""
     window: str = ""
@@ -217,6 +233,23 @@ def build_charts(bars_by_symbol: dict, kinds: dict[str, str],
     return out
 
 
+def _distance_to_trade(lower: float, null: float) -> float:
+    """0-100: how far this asset's floor has travelled from chance to TRADE.
+
+    Measured from the null rather than from zero. A floor of 30% means
+    nothing on its own — it is excellent against a 20% null and hopeless
+    against a 47% one, and a bar drawn from zero would rank them identically.
+    """
+    from .tiers import TIER_RULES, Tier
+
+    rule = next((r for r in TIER_RULES if r.tier is Tier.TRADE), None)
+    span = rule.min_lower_bound if rule else 0.10
+    if span <= 0:
+        return 0.0
+    travelled = (lower - null) / span
+    return max(0.0, min(travelled * 100.0, 100.0))
+
+
 def _next_tier_above(tier):
     """The tier one step up from where a model currently sits.
 
@@ -291,6 +324,22 @@ def build_export(db_path: str = "shadow.db", patterns_path: str = "patterns.db",
         else:
             ready_in = "no checks yet"
 
+        # Fixed sample, judged once. Watching a growing sample against a
+        # threshold is the multiple-comparisons problem: peek often enough and
+        # any bar gets crossed by luck. A target set in advance means the
+        # verdict is taken at a point chosen before the data arrived.
+        target = TARGET_CHECKS.get(model_id, 500)
+        progress = min(n / target * 100.0, 100.0) if target else 0.0
+        if n >= target:
+            benchmark = (f"Sample complete: {n:,} of {target:,} checks. "
+                         "The verdict below is the one this model earned, "
+                         "judged at a point fixed before the data arrived.")
+        else:
+            benchmark = (f"{n:,} of {target:,} checks toward a verdict. "
+                         "Nothing is concluded until the sample is complete — "
+                         "watching a growing number against a bar is how "
+                         "luck gets mistaken for skill.")
+
         # Intake, so "limited news" is a measured claim rather than a feeling.
         job = {"opportunity": "opportunity"}.get(model_id, model_id)
         flow = ledger.intake_per_day(job)
@@ -307,9 +356,18 @@ def build_export(db_path: str = "shadow.db", patterns_path: str = "patterns.db",
              # it the page can say a call missed but never why, which is the
              # only part a person can learn from.
              "failures": ledger.failure_modes(model_id, sym),
-             "null_rate": round(null, 4)}
+             "null_rate": round(null, 4),
+             "rate": round(r, 4), "lower": round(lo, 4),
+             # How close this asset is to its model's trade bar, as a
+             # percentage of the distance from chance to the gate.
+             "to_trade": _distance_to_trade(lo, null)}
+            # Every asset the model has scored, not the busiest eight. A page
+            # that shows a tenth of the board cannot answer "where should I
+            # look", which is the only question it is there for. Ordered by
+            # worst-case floor so the closest-to-qualifying sit at the top.
             for sym, (cnt, r, lo) in sorted(
-                ledger.stats(model_id).items(), key=lambda kv: -kv[1][0])[:8]
+                ledger.stats(model_id).items(),
+                key=lambda kv: (-kv[1][2], -kv[1][0]))
             for t, _, _ in [ledger.tier(model_id, sym)]
         ]
         all_alerts.extend(alerts)
@@ -318,6 +376,9 @@ def build_export(db_path: str = "shadow.db", patterns_path: str = "patterns.db",
             id=model_id, name=name, subtitle=subtitle, accent=ACCENTS[model_id],
             null_rate=round(null, 4),
             ready_in=ready_in,
+            target_checks=target,
+            sample_progress=round(progress, 1),
+            benchmark=benchmark,
             intake=intake,
             badge=horizon_for(model_id).badge,
             window=horizon_for(model_id).window,

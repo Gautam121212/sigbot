@@ -372,12 +372,30 @@ def _plain_risk_note(n: int, note: str) -> str:
 
 
 def _call(model: dict, a: dict) -> tuple[str, str, str]:
+    """What the record permits, stated so it cannot be read two ways.
+
+    "BUY" on a green asset left it ambiguous whether someone already holding
+    should add, hold or sell. The system does not know what anyone owns, so
+    the honest wording covers both readings explicitly rather than picking one
+    and being wrong half the time.
+    """
     tier, n = a.get("tier", "SILENT"), a.get("resolved", 0)
+    side = str(a.get("side") or "").upper()
+    direction = "BUY" if side != "SELL" else "SELL"
+    opposite = "sell" if direction == "BUY" else "buy back"
+
     if tier in ("TRADE", "CAUTION"):
-        return "BUY", TIER_COLOR[tier], f"beats a coin flip across {n:,} checks"
+        return (f"{direction} — or HOLD if already in",
+                TIER_COLOR[tier],
+                f"the record beats chance across {n:,} checks; if you already "
+                f"hold this, the record says keep it, not {opposite}")
     if tier == "WATCH":
-        return "HOLD", TIER_COLOR["WATCH"], "there is something here, but not enough to act on"
-    return "HOLD", TIER_COLOR["SILENT"], f"only {n} checks so far — too few to call"
+        return ("NO ACTION — watch only", TIER_COLOR["WATCH"],
+                "there is something here, but not enough to open or close a "
+                "position on")
+    return ("NO ACTION — not enough evidence", TIER_COLOR["SILENT"],
+            f"only {n:,} checks so far; nothing here justifies buying, and "
+            "nothing here justifies selling either")
 
 
 def _detail(model: dict, a: dict) -> str:
@@ -458,13 +476,23 @@ def _detail(model: dict, a: dict) -> str:
 def _model_page(m: dict) -> str:
     col = ACCENT.get(m["accent"], "#00d4aa")
     tc = TIER_COLOR.get(m["tier"], "#8b8b9a")
+    # A coloured dot per asset, so the state is readable without opening
+    # anything, and a bar showing how far its floor has travelled from chance
+    # to the trade gate — which is the question "where do I spend attention"
+    # in its only answerable form.
     rows = "".join(f"""
     <a href="#d-{_e(m['id'])}-{_e(a['symbol'])}"><div class="card row">
+      <span class="pip" style="background:{
+          TIER_COLOR.get(a.get('tier', 'SILENT'), '#8b8b9a')};margin-top:0"></span>
       <div class="av" style="background:{col}1f;border-color:{col}59;color:{col}">
         {_e(a['symbol'][:3])}</div>
       <div class="grow"><h3>{_e(a['symbol'])}</h3>
         {f'<p class="what-sm">{_e(a["description"])}</p>' if a.get("description") else ''}
-        <p>{_e(a['detail'])}</p></div>
+        <p>{_e(a['detail'])}</p>
+        <div class="dualbar"><span>trade</span>
+          <i><b style="width:{a.get('to_trade', 0):.0f}%;background:{
+              TIER_COLOR.get(a.get('tier', 'SILENT'), '#8b8b9a')}"></b></i>
+          <span>{a.get('to_trade', 0):.0f}%</span></div></div>
       <span class="chev">&rsaquo;</span></div></a>""" for a in m["alerts"])
     return f"""
 <div class="page" id="m-{_e(m['id'])}"><div class="wrap">
@@ -477,6 +505,10 @@ def _model_page(m: dict) -> str:
     <p class="what-sm" style="margin-top:10px">Next tier: {_e(m.get('ready_in', ''))}.
     {_e(_null_note(m))}</p>
     <p class="what-sm">Intake: {_e(m.get('intake', ''))}.</p>
+    <div class="dualbar" style="margin-top:12px"><span>sample</span>
+      <i><b style="width:{m.get('sample_progress', 0):.0f}%;background:var(--indigo)"></b></i>
+      <span>{m.get('sample_progress', 0):.0f}%</span></div>
+    <p class="what-sm">{_e(m.get('benchmark', ''))}</p>
     <span class="badge" style="background:{tc}1f;color:{tc}">{_e(TIER_PLAIN.get(m['tier'], m['tier']))}</span>
     <div class="meter"><i style="width:{(m.get('lower_bound') or 0) * 100:.0f}%;background:{tc}"></i></div>
     <p>{_e(m['status_line'])}</p>
@@ -492,7 +524,8 @@ def _model_page(m: dict) -> str:
   </div>
   <h4>What would prove this wrong</h4>
   <div class="card"><p>{_e(m.get('falsifier', ''))}</p></div>
-  <h2>What it is watching</h2>
+  {_asset_split(m)}
+  <h2>What it is watching ({len(m["alerts"])})</h2>
   {rows or '<div class="card"><p>Nothing has been checked for this one yet. It stays quiet until it has something to show.</p></div>'}
   <p class="note">Tap any row for the full reasoning.</p>
 </div></div>
@@ -870,6 +903,17 @@ def build_report(data: dict) -> str:
   gate. Finding out whether they are worth money is exactly what it is for,
   and the answer is allowed to be no.</p>
 </div></div>
+<div class="page" id="picks"><div class="wrap">
+  <div class="top"><span class="brand">Suggested picks</span>
+    <span class="stamp">{_e(_picks_stamp(data))}</span></div>
+  <p class="lead">Names the paper record has actually paid on. Confidence is
+  how much of that record is profit, weighted down when the sample is thin —
+  three winning trades is not the same evidence as thirty.</p>
+  {_picks_rows(data)}
+  <p class="note">Derived from paper trading, which is a simulation. A name
+  here is a place to look, not a call to act, and every one of them also
+  appears on the board with its own record.</p>
+</div></div>
 <div class="page" id="pnl"><div class="wrap">
   <div class="top"><span class="brand">Daily P&amp;L</span>
     <span class="stamp">{_e(_pnl_stamp(data))}</span></div>
@@ -898,6 +942,7 @@ def build_report(data: dict) -> str:
   <a class="n-ideas" href="#ideas"><b>&#10022;</b><span>Ideas</span></a>
   <a class="n-learn" href="#learned"><b>&#8599;</b><span>Top picks</span></a>
   <a class="n-paper" href="#paper"><b>&#8942;</b><span>Paper</span></a>
+  <a class="n-picks" href="#picks"><b>&#9733;</b><span>Picks</span></a>
   <a class="n-pnl" href="#pnl"><b>&#8942;</b><span>Daily P&amp;L</span></a>
 </nav>
 </body></html>"""
@@ -928,21 +973,57 @@ def _paper_stamp(data: dict) -> str:
 
 
 def _paper_body(data: dict) -> str:
-    """The portfolio, or an honest empty state — never zeros standing in for
-    a result that does not exist."""
-    state = data.get("paper")
+    """Today first: starting capital, today's percentage, today's win/loss
+    count, and the capital that percentage leaves behind.
+
+    The cumulative curve stays underneath because it is the only thing that
+    can ever prove an edge — but it answers a different question from the one
+    someone opens this page with, which is "what happened today".
+    """
+    state = data.get("paper") or {}
     if not state:
         return ('<div class="card"><p>The paper model has not run yet. It '
                 'appears here once the first scored predictions carry both an '
                 'entry and an exit price.</p></div>')
 
+    days = state.get("days") or []
+    today = days[0] if days else None
+    start = state.get("starting_cash", 0)
+
+    if today:
+        pct = today.get("pct") or 0.0
+        colour = ("var(--green)" if pct > 0
+                  else "var(--red)" if pct < 0 else "var(--dim)")
+        word = "up" if pct > 0 else "down" if pct < 0 else "flat"
+        banner = f"""
+  <div class="card call">
+    <div class="eyebrow"><span class="dot"></span>Today · {_e(today.get('date', ''))}</div>
+    <h1 style="color:{colour}">{abs(pct):.2f}% {word}</h1>
+    <p class="lead">Opened the day on {today.get('opening', 0):,.0f} and sits
+    at {today.get('closing', 0):,.0f} after {len(today.get('trades') or []):,}
+    trade(s).</p>
+  </div>
+  <div class="stats">
+    <div class="stat"><b>{start:,.0f}</b><span>Starting capital</span></div>
+    <div class="stat"><b style="color:var(--green)">{today.get('wins', 0):,}</b>
+      <span>Profitable today</span></div>
+    <div class="stat"><b style="color:var(--red)">{today.get('losses', 0):,}</b>
+      <span>Losing today</span></div>
+  </div>
+  <p class="what-sm">Today's figures reset at the end of the day. Every trade
+  stays in the ledger and in Daily P&amp;L — only this view resets.</p>"""
+    else:
+        banner = f"""
+  <div class="card call">
+    <div class="eyebrow"><span class="dot"></span>Today</div>
+    <h1>No trades yet today</h1>
+    <p class="lead">Starting capital {start:,.0f}. A trade appears here when a
+    gated signal is scored.</p>
+  </div>"""
+
     ret = state.get("total_return") or 0.0
-    colour = "var(--green)" if ret > 0 else "var(--red)" if ret < 0 else "var(--dim)"
-    wr = state.get("win_rate")
-    # One f-string, start to finish. An earlier version silenced an F541 lint
-    # warning by dropping the `f` prefix from the second half of a
-    # concatenated literal, which left every placeholder in it rendering as
-    # raw text on the live page: {_e(model)}, {row["pnl"]}, all of it.
+    run_colour = ("var(--green)" if ret > 0
+                  else "var(--red)" if ret < 0 else "var(--dim)")
     rows = "".join(
         f'''<div class="tile">
         <span class="pip" style="background:{
@@ -954,129 +1035,18 @@ def _paper_body(data: dict) -> str:
         for model, row in sorted((state.get("by_model") or {}).items(),
                                  key=lambda kv: -kv[1]["pnl"]))
 
-    return f'''
-  <div class="card call"><h1 style="color:{colour}">{ret * 100:+.2f}%</h1>
-    <p class="lead">{_e(state.get("verdict", ""))}</p></div>
+    return banner + f"""
+  <h2>Since the record began</h2>
   <div class="stats">
-    <div class="stat"><b>{state.get("equity", 0):,.0f}</b><span>Ending equity</span></div>
+    <div class="stat"><b style="color:{run_colour}">{ret * 100:+.2f}%</b>
+      <span>All time</span></div>
+    <div class="stat"><b>{state.get("equity", 0):,.0f}</b><span>Equity</span></div>
     <div class="stat"><b>{state.get("total_costs", 0):,.0f}</b><span>Costs paid</span></div>
-    <div class="stat"><b>{(state.get("max_drawdown") or 0) * 100:.1f}%</b><span>Worst fall</span></div>
   </div>
   <h2>Which model paid</h2>
   <div class="tiles-grid">{rows or "<p>No trades yet.</p>"}</div>
-  <p class="what-sm">Started from {state.get("starting_cash", 0):,.0f} in
-  notional cash. {state.get("wins", 0):,} of {state.get("trades", 0):,} round
-  trips ended in profit''' + (f", {wr * 100:.0f}%." if wr else ".") + "</p>"
+  <p class="what-sm">{_e(state.get("verdict", ""))}</p>"""
 
-
-def _board_progress(asset: dict) -> tuple[float, float]:
-    """(percent toward the trade bar, percent toward removal) for one asset.
-
-    Both are capped at 100 and floored at 0 so a bar never renders past its
-    track or inverts. An asset with no checks reads 0 on both, which is
-    correct: it is neither close to qualifying nor close to being dropped.
-    """
-    from .watchlist import RULES
-
-    n = asset.get("n") or 0
-    lower = asset.get("lower") or 0.0
-    upper = asset.get("upper") or 0.0
-
-    # Ready needs BOTH enough checks and a high enough lower bound, so the
-    # bar shows whichever is further behind — the binding constraint.
-    by_checks = min(n / RULES.green_min_n, 1.0) if RULES.green_min_n else 1.0
-    by_rate = (min(lower / RULES.green_min_lower, 1.0)
-               if RULES.green_min_lower else 1.0)
-    ready = max(0.0, min(min(by_checks, by_rate) * 100, 100.0))
-
-    # Removal needs enough checks AND an upper bound below the drop ceiling.
-    # Closeness to being dropped rises as the upper bound falls toward it.
-    drop_checks = min(n / RULES.drop_min_n, 1.0) if RULES.drop_min_n else 0.0
-    if upper and upper > RULES.drop_max_upper:
-        head_room = max(upper - RULES.drop_max_upper, 0.0)
-        drop_rate = max(0.0, 1.0 - head_room / RULES.drop_max_upper)
-    else:
-        drop_rate = 1.0 if n else 0.0
-    drop = max(0.0, min(min(drop_checks, drop_rate) * 100, 100.0))
-    return ready, drop
-
-def _idea_precision(o: dict) -> float:
-    """How much of this idea's case the coverage could actually answer, 0-100.
-
-    Not a probability and not a forecast. It is the share of the fixed
-    question set that reporting settled, which is the only thing about a
-    single unrepeatable event that can be measured at all.
-    """
-    answered = len(o.get("answered") or [])
-    unanswered = len(o.get("unanswered") or [])
-    total = answered + unanswered
-    return (answered / total * 100.0) if total else 0.0
-
-
-def _idea_is_dead(o: dict) -> bool:
-    """True for cards that can no longer be acted on.
-
-    An undated listing is the main case: if the coverage never said when the
-    window opens or closes, there is no free way to find out, and a card that
-    cannot say whether it is open is worse than no card — it invites action on
-    something that may have closed weeks ago. Dropped rather than guessed,
-    because inventing a date is the one thing this system must never do.
-    """
-    text = f"{o.get('kind', '')} {o.get('summary', '')}".lower()
-    if ("dates unknown" in text or "gives no dates" in text
-            or "closed" in o.get("kind", "").lower()):
-        return True
-
-    # A dated card whose window has passed. "Last day — closes today, 11 Sep"
-    # was still on the page on 20 September: the undated filter could not see
-    # it because it HAD a date, and the write-path age-out only runs when the
-    # scan re-runs. Read the date on the page and judge it here.
-    import re
-    from datetime import datetime, timezone
-
-    months = {m: i for i, m in enumerate(
-        ("jan", "feb", "mar", "apr", "may", "jun",
-         "jul", "aug", "sep", "oct", "nov", "dec"), start=1)}
-    today = datetime.now(timezone.utc).date()
-    for day, mon in re.findall(r"(\d{1,2})\s+([A-Za-z]{3})", text):
-        month = months.get(mon[:3].lower())
-        if not month:
-            continue
-        try:
-            when = today.replace(month=month, day=int(day))
-        except ValueError:
-            continue
-        # A date more than two days past is a window that has shut. Future
-        # dates and today are live; a stale card is never rescued by guessing
-        # that it meant next year.
-        if (today - when).days > 2:
-            return True
-    return False
-
-
-def _live_ideas(data: dict) -> list[dict]:
-    """Ideas worth showing, strongest case first.
-
-    Sorted by colour then by precision: the whole point of the page is to put
-    the few actionable things at the top while there is still time to act,
-    and a dead card occupying a row is a dead stack.
-    """
-    rank = {"#00e676": 0, "#ffd93d": 1, "#8b8b9a": 2}
-    live = [o for o in (data.get("opportunities") or [])
-            if not _idea_is_dead(o)]
-    return sorted(live, key=lambda o: (rank.get(o.get("colour"), 9),
-                                       -_idea_precision(o)))
-
-
-def _wins(learning: list[dict]) -> list[dict]:
-    """The calls that worked, strongest claim first.
-
-    Display-only. Every entry — hit or miss — is still stored, still fed to
-    the learning loop, and still priced into the paper P&L. Filtering the
-    PAGE is not the same as filtering the RECORD, and only the first is
-    happening here.
-    """
-    return [e for e in learning if e.get("hit")]
 
 def _paper_days(data: dict) -> list[dict]:
     state = data.get("paper") or {}
@@ -1204,3 +1174,225 @@ def _null_note(model: dict) -> str:
     return (f"Chance scores {null * 100:.0f}% on this model's measure, "
             "because a call only counts when the move also clears trading "
             "costs. That is the bar to beat, not 50%.")
+
+
+def _asset_split(model: dict) -> str:
+    """How many of this model's assets beat chance, and how many do not.
+
+    Counted against the model's measured null, not against 50%. On a
+    cost-filtered metric a 45% asset can be above chance and a 51% one below
+    it, so splitting at 50% would put assets on the wrong side of the line.
+    """
+    alerts = model.get("alerts") or []
+    if not alerts:
+        return ""
+    null = model.get("null_rate") or 0.50
+    above = sum(1 for a in alerts if (a.get("rate") or 0) > null)
+    below = len(alerts) - above
+    ready = sum(1 for a in alerts if a.get("tier") not in (None, "SILENT"))
+    return f"""
+  <div class="stats">
+    <div class="stat"><b>{len(alerts):,}</b><span>Assets checked</span></div>
+    <div class="stat"><b style="color:var(--green)">{above:,}</b>
+      <span>Above chance</span></div>
+    <div class="stat"><b style="color:var(--red)">{below:,}</b>
+      <span>Below chance</span></div>
+  </div>
+  <p class="what-sm">Split at {null * 100:.0f}%, this model's measured chance
+  level — not at 50%. {ready:,} have cleared a tier.</p>"""
+
+
+def _paper_by_symbol(data: dict) -> list[dict]:
+    """Per-symbol paper results, best first, with a shrunk confidence.
+
+    Raw win rate on a handful of trades is mostly luck, so confidence is
+    shrunk toward zero by sample size: a 100% record on three trades scores
+    below a 60% record on thirty. Without that, the page would rank noise
+    first, which is the single most misleading thing a "suggested" list can
+    do.
+    """
+    state = data.get("paper") or {}
+    by_symbol: dict[str, dict] = {}
+    for day in state.get("days") or []:
+        for trade in day.get("trades") or []:
+            sym = str(trade.get("symbol", ""))
+            if not sym:
+                continue
+            row = by_symbol.setdefault(sym, {
+                "symbol": sym, "trades": 0, "wins": 0, "pnl": 0.0,
+                "model": str(trade.get("model", ""))})
+            row["trades"] += 1
+            row["pnl"] += trade.get("pnl", 0.0)
+            if trade.get("pnl", 0.0) > 0:
+                row["wins"] += 1
+
+    from .stats import wilson_interval
+
+    out = []
+    for row in by_symbol.values():
+        n = row["trades"]
+        row["win_rate"] = row["wins"] / n if n else 0.0
+        # The Wilson lower bound, exactly as every other number in this system
+        # is computed. An ad-hoc shrinkage toward 0.5 still ranked a 100%
+        # record on three trades above a 60% record on thirty, because a
+        # posterior MEAN rewards a short lucky run. A lower bound does not,
+        # and using the same tool everywhere means the pages are comparable.
+        lower, _ = wilson_interval(row["wins"], n, 0.90) if n else (0.0, 0.0)
+        row["confidence"] = max(0.0, min((lower - 0.5) * 200.0, 100.0))
+        if row["pnl"] > 0:
+            out.append(row)
+    return sorted(out, key=lambda r: -r["confidence"])
+
+
+def _picks_stamp(data: dict) -> str:
+    picks = _paper_by_symbol(data)
+    return f"{len(picks)} name(s)" if picks else "nothing yet"
+
+
+def _picks_rows(data: dict) -> str:
+    picks = _paper_by_symbol(data)
+    # Only link where the detail page actually exists. A pick can come from a
+    # trade on a symbol the model no longer lists, and a link to a page that
+    # was never rendered is a dead end on the one page meant to send you
+    # somewhere useful.
+    pages = {f"{m['id']}-{a['symbol']}"
+             for m in data.get("models", []) for a in (m.get("alerts") or [])}
+    if not picks:
+        return ('<div class="card"><p>No name has a profitable paper record '
+                'yet. That is the expected state while the models are still '
+                'below their bars, and an empty list is the honest one.</p>'
+                '</div>')
+
+    out = []
+    for row in picks:
+        conf = row["confidence"]
+        colour = ("var(--green)" if conf >= 20
+                  else "var(--amber)" if conf >= 5 else "var(--faint)")
+        body = f"""<div class="card row">
+    <span class="pip" style="background:{colour};margin-top:0"></span>
+    <div class="grow"><h3>{_e(row['symbol'])}</h3>
+      <p>Worth a look: paper trading made {row['pnl']:+,.0f} on this name
+      across {row['trades']:,} trade(s), {row['win_rate'] * 100:.0f}% of them
+      in profit.</p>
+      <div class="dualbar"><span>conf</span>
+        <i><b style="width:{conf:.0f}%;background:{colour}"></b></i>
+        <span>{conf:.0f}%</span></div></div>
+    <span class="chev">&rsaquo;</span></div>"""
+        key = f"{row['model']}-{row['symbol']}"
+        if key in pages:
+            out.append(f'<a href="#d-{_e(key)}">{body}</a>')
+        else:
+            out.append(body)
+    return "".join(out)
+
+
+def _board_progress(asset: dict) -> tuple[float, float]:
+    """(percent toward the trade bar, percent toward removal) for one asset.
+
+    Both capped at 100 and floored at 0 so a bar never renders past its track
+    or inverts. An asset with no checks reads 0 on both, which is correct: it
+    is neither close to qualifying nor close to being dropped.
+    """
+    from .watchlist import RULES
+
+    n = asset.get("n") or 0
+    lower = asset.get("lower") or 0.0
+    upper = asset.get("upper") or 0.0
+
+    by_checks = min(n / RULES.green_min_n, 1.0) if RULES.green_min_n else 1.0
+    by_rate = (min(lower / RULES.green_min_lower, 1.0)
+               if RULES.green_min_lower else 1.0)
+    ready = max(0.0, min(min(by_checks, by_rate) * 100, 100.0))
+
+    # Removal needs enough checks AND an upper bound that has fallen BELOW the
+    # drop ceiling. The first version had this inverted: it read a healthy
+    # upper bound of 0.60 against a 0.52 ceiling as 85% of the way to being
+    # dropped, so strong assets and doomed ones looked alike and the two bars
+    # contradicted each other on the same row.
+    #
+    # Closeness now means what it says. Comfortably above the ceiling is 0;
+    # at or below it, and with the checks to confirm, is 100.
+    if not n or not upper:
+        return ready, 0.0
+
+    ceiling = RULES.drop_max_upper
+    if upper <= ceiling:
+        drop_rate = 1.0                      # already failing the ceiling
+    else:
+        # Fade in over the band just above the ceiling. Beyond it, zero.
+        band = ceiling * 0.25
+        drop_rate = max(0.0, 1.0 - (upper - ceiling) / band)
+
+    drop_checks = min(n / RULES.drop_min_n, 1.0) if RULES.drop_min_n else 0.0
+    drop = max(0.0, min(min(drop_checks, drop_rate) * 100, 100.0))
+    return ready, drop
+
+
+def _idea_precision(o: dict) -> float:
+    """How much of this idea's case the coverage could answer, 0-100.
+
+    Not a probability and not a forecast — the share of the fixed question set
+    that reporting settled, which is the only measurable thing about a single
+    unrepeatable event.
+    """
+    answered = len(o.get("answered") or [])
+    unanswered = len(o.get("unanswered") or [])
+    total = answered + unanswered
+    return (answered / total * 100.0) if total else 0.0
+
+
+def _idea_is_dead(o: dict) -> bool:
+    """True for cards that can no longer be acted on.
+
+    Undated listings go because there is no free way to find the window and
+    inventing a date is the one thing this system must never do. Dated ones go
+    once the window has shut — that case was missed at first precisely because
+    the card HAD a date, so the undated filter could not see it.
+    """
+    text = f"{o.get('kind', '')} {o.get('summary', '')}".lower()
+    if ("dates unknown" in text or "gives no dates" in text
+            or "closed" in o.get("kind", "").lower()):
+        return True
+
+    import re
+    from datetime import datetime, timezone
+
+    months = {m: i for i, m in enumerate(
+        ("jan", "feb", "mar", "apr", "may", "jun",
+         "jul", "aug", "sep", "oct", "nov", "dec"), start=1)}
+    today = datetime.now(timezone.utc).date()
+    for day, mon in re.findall(r"(\d{1,2})\s+([A-Za-z]{3})", text):
+        month = months.get(mon[:3].lower())
+        if not month:
+            continue
+        try:
+            when = today.replace(month=month, day=int(day))
+        except ValueError:
+            continue
+        if (today - when).days > 2:
+            return True
+    return False
+
+
+def _live_ideas(data: dict) -> list[dict]:
+    """Ideas worth showing, strongest case first.
+
+    Sorted by colour then precision: the page exists to put the few actionable
+    things at the top while there is still time to act, and a dead card
+    occupying a row is a dead stack.
+    """
+    rank = {"#00e676": 0, "#ffd93d": 1, "#8b8b9a": 2}
+    live = [o for o in (data.get("opportunities") or [])
+            if not _idea_is_dead(o)]
+    return sorted(live, key=lambda o: (rank.get(o.get("colour"), 9),
+                                       -_idea_precision(o)))
+
+
+def _wins(learning: list[dict]) -> list[dict]:
+    """The calls that worked. Display-only.
+
+    Every entry — hit or miss — is still stored, still fed to the learning
+    loop, and still priced into the paper P&L. Filtering the PAGE is not
+    filtering the RECORD.
+    """
+    return [e for e in learning if e.get("hit")]

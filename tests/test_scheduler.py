@@ -721,6 +721,13 @@ def test_ship_script_is_valid_and_gated():
         "tests must gate the commit, not follow it")
     assert text.index("git pull --rebase") < commit, (
         "pull before commit — the scheduled ticks push from GitHub")
+    # And pull before BUILD. Publishing first meant git had to stash the
+    # generated page and reapply it over the remote's own copy of the same
+    # file, which conflicted on every run and left a stash behind each time.
+    assert text.index("git pull --rebase") < text.index(
+        "python -m sigbot.runner publish"), (
+        "pull must precede publish, or the generated page conflicts on "
+        "every single run")
     # A staged .env must be a hard stop, since a pushed secret is unrecoverable.
     assert "die \".env is staged" in text
 

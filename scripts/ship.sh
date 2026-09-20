@@ -35,14 +35,7 @@ if command -v mypy >/dev/null 2>&1; then
 fi
 
 # ---------------------------------------------------------------- 2. build
-say "3/6  Rebuild the page"
-python -m sigbot.runner publish
-[ -f app/public/index.html ] || die "publish produced no app/public/index.html"
-printf '     wrote app/public/index.html (%s KB)\n' \
-  "$(( $(wc -c < app/public/index.html) / 1024 ))"
-
-# ---------------------------------------------------------------- 3. sync
-say "4/6  Pull (the scheduled ticks push from GitHub)"
+say "3/6  Pull first (the scheduled ticks push from GitHub)"
 # A fresh checkout, or a repo torn down and not yet re-created, has no git at
 # all. Failing here with "not a git repository" told you nothing about what to
 # do next, so say it instead.
@@ -57,15 +50,32 @@ git rev-parse --git-dir >/dev/null 2>&1 || die \
 BRANCH="$(git rev-parse --abbrev-ref HEAD)"
 if ! git remote get-url origin >/dev/null 2>&1; then
   echo "     no 'origin' remote yet — skipping pull and push."
-  echo "     Publish the repo once from GitHub Desktop, then rerun."
   SKIP_REMOTE=1
 fi
+
 if [ -z "${SKIP_REMOTE:-}" ]; then
+  # Discard local copies of GENERATED files before pulling. They are rebuilt
+  # in the next step anyway, and keeping them dirty is what made every pull
+  # conflict: git stashed our copy, pulled the remote tick's copy of the same
+  # generated file, and could not reconcile two machines' renderings of the
+  # same data. The remote's copy wins; ours is regenerated seconds later.
+  # Generated files are gitignored now, so nothing to discard — but an older
+  # checkout may still have them tracked. Untrack rather than fight them.
+  for gen in app/data.json app/public/index.html app/sigbot-report.html \
+             outbox.log; do
+    git rm --cached -q "$gen" 2>/dev/null || true
+  done
   git pull --rebase --autostash origin "$BRANCH" \
     || die "pull failed — resolve by hand, then rerun."
 fi
 
-# ---------------------------------------------------------------- 4. commit
+say "4/6  Rebuild the page on top of what we just pulled"
+python -m sigbot.runner publish
+[ -f app/public/index.html ] || die "publish produced no app/public/index.html"
+printf '     wrote app/public/index.html (%s KB)\n' \
+  "$(( $(wc -c < app/public/index.html) / 1024 ))"
+
+# ---------------------------------------------------------------- 3. sync
 say "5/6  Commit"
 for f in shadow.db patterns.db watchlist.db opportunities.json universe.json \
          paper.json themes.json app/public/index.html; do
@@ -92,7 +102,20 @@ say "6/6  Push"
 if [ -n "${SKIP_REMOTE:-}" ]; then
   echo "     skipped — no remote. Publish from GitHub Desktop first."
 else
-  git push origin "HEAD:$BRANCH"
+  # The tick pushes on its own schedule and can land between our pull and our
+  # push, which rejects the push through no fault of the commit. Rebase onto
+  # whatever arrived and try again rather than making it the user's problem.
+  for attempt in 1 2 3; do
+    if git push origin "HEAD:$BRANCH"; then
+      break
+    fi
+    if [ "$attempt" = 3 ]; then
+      die "push rejected three times — the remote is moving faster than this
+   script can keep up. Run npm run github again in a minute."
+    fi
+    echo "     rejected (the tick pushed while we worked) — rebasing, retry $attempt"
+    git pull --rebase --autostash origin "$BRANCH" || die "rebase failed"
+  done
 fi
 
 # ---------------------------------------------------------------- 6. trigger

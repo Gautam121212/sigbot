@@ -83,8 +83,15 @@ def test_detail_view_has_all_four_parts(report):
 
 def test_strong_record_calls_buy_and_weak_one_holds(report):
     h, _ = report
-    assert ">BUY<" in _page(h, "d-contagion-AVGO")
-    assert ">HOLD<" in _page(h, "d-daily-SPY"), "8 records must not produce a BUY"
+    # The wording now covers both readings — "BUY — or HOLD if already in" —
+    # because the system does not know what anyone owns, and a bare "BUY" left
+    # a holder unsure whether to add, keep or sell.
+    strong = _page(h, "d-contagion-AVGO")
+    assert "BUY" in strong and "HOLD if already in" in strong
+
+    thin = _page(h, "d-daily-SPY")
+    assert "NO ACTION" in thin, "8 records must not produce a buy signal"
+    assert "HOLD if already in" not in thin
 
 
 def test_thin_evidence_risks_nothing(report):
@@ -258,8 +265,9 @@ def test_signal_header_carries_a_description(repeats):
     page = _page(h, "d-news-NVDA")
     assert a["description"] in page
     # It must sit inside the header card, under the call.
-    call = "BUY" if ">BUY<" in page else "HOLD"
-    assert page.index(f">{call}<") < page.index(a["description"])
+    call = "BUY" if "HOLD if already in" in page else "NO ACTION"
+    assert page.index(call) < page.index(a["description"]), (
+        "the call must come before the description")
 
 
 def test_feed_entries_carry_descriptions(repeats):
@@ -712,3 +720,122 @@ def test_the_null_sentence_never_contradicts_itself():
     assert "coin flip is the bar" in _null_note({"null_rate": 0.50})
     assert "not 50%" in _null_note({"null_rate": 0.30})
     assert "not been measured" in _null_note({"null_rate": None})
+
+
+def test_model_pages_list_every_asset_not_a_sample(report):
+    """The page showed the busiest eight of sixty-seven, which cannot answer
+    "where should I look" — the only question it exists for."""
+    html = report[0]
+    if 'id="m-daily"' not in html:
+        return
+    # The fixture's ledger is nearly empty, so a count threshold would test
+    # the fixture rather than the code. What matters is that the export hands
+    # over every scored asset, with no slice.
+    from pathlib import Path
+
+    src = (Path(__file__).resolve().parents[1] / "sigbot" / "export_app.py").read_text()
+    assert "ledger.stats(model_id).items(), key=lambda kv: -kv[1][0])[:8]" not in src, (
+        "the alerts list must not be sliced to the busiest few")
+
+
+def test_each_asset_row_has_a_dot_and_a_distance_bar(report):
+    """State readable without opening anything, and distance-to-trade shown
+    so attention can be spent where it might pay."""
+    html = report[0]
+    if 'id="m-daily"' not in html:
+        return
+    page = html[html.index('id="m-daily"'):]
+    page = page[:page.index('<div class="page"')]
+    rows = len(re.findall(r'href="#d-daily-', page))
+    if not rows:
+        return
+    # One dot and one bar per row, whatever the fixture contains.
+    assert page.count(">trade<") == rows
+    assert page.count('class="pip"') == rows
+
+
+def test_the_asset_split_uses_the_measured_null_not_fifty():
+    """On a cost-filtered metric a 45% asset can be above chance and a 51% one
+    below it, so splitting at 50% puts assets on the wrong side."""
+    from sigbot.report import _asset_split
+
+    model = {"null_rate": 0.30,
+             "alerts": [{"rate": 0.45, "tier": "WATCH"},
+                        {"rate": 0.25, "tier": "SILENT"},
+                        {"rate": 0.51, "tier": "WATCH"}]}
+    html = _asset_split(model)
+    assert "Split at 30%" in html
+    assert ">2<" in html or "2</b>" in html, "45% and 51% both beat a 30% null"
+
+
+def test_distance_to_trade_is_measured_from_chance():
+    """A 30% floor is excellent against a 20% null and hopeless against a 47%
+    one. A bar drawn from zero would rank them identically."""
+    from sigbot.export_app import _distance_to_trade
+
+    assert _distance_to_trade(0.30, 0.20) > _distance_to_trade(0.30, 0.28)
+    assert _distance_to_trade(0.20, 0.30) == 0.0, "below chance is zero, not negative"
+    assert _distance_to_trade(0.99, 0.30) == 100.0, "and never past the end"
+
+
+def test_the_drop_bar_is_not_inverted():
+    """The first version read a healthy upper bound of 0.60 against a 0.52
+    ceiling as 85% of the way to removal, so strong assets and doomed ones
+    looked alike and the two bars contradicted each other on the same row."""
+    from sigbot.report import _board_progress
+
+    strong_ready, strong_drop = _board_progress(
+        {"n": 200, "lower": 0.60, "upper": 0.72})
+    weak_ready, weak_drop = _board_progress(
+        {"n": 200, "lower": 0.30, "upper": 0.45})
+
+    assert strong_drop == 0.0, "a healthy upper bound is not near removal"
+    assert weak_drop > strong_drop
+    assert strong_ready > weak_ready
+
+
+def test_the_call_is_readable_by_someone_already_holding():
+    """A bare "BUY" left a holder unsure whether to add, keep or sell. The
+    system does not know what anyone owns, so both readings are stated."""
+    from sigbot.report import _call
+
+    buy, _c, why = _call({}, {"tier": "TRADE", "resolved": 200})
+    assert "BUY" in buy and "HOLD if already in" in buy
+    assert "keep it" in why
+
+    thin, _c2, why2 = _call({}, {"tier": "SILENT", "resolved": 4})
+    assert "NO ACTION" in thin
+    assert "justifies selling" in why2, (
+        "no evidence must not read as a reason to sell either")
+
+
+def test_pick_confidence_rewards_evidence_not_luck():
+    """Same win rate, more trades, higher confidence.
+
+    An earlier version of this test asserted that 60% over thirty trades must
+    outrank 100% over three. That is false: the Wilson lower bounds are 0.451
+    and 0.526, and a clean 3-for-3 is p=0.125 under a fair coin against
+    p=0.18 for 18-of-30. The code was right and the test was wrong. What must
+    hold is monotonicity in the sample — the same rate on a longer record is
+    better evidence, always.
+    """
+    from sigbot.report import _paper_by_symbol
+
+    trades = ([{"symbol": "SHORT", "model": "news", "pnl": 1.0}] * 3
+              + [{"symbol": "LONG", "model": "news", "pnl": 1.0}] * 30)
+    rows = {r["symbol"]: r for r in _paper_by_symbol({"paper": {
+        "days": [{"trades": trades}]}})}
+
+    assert rows["SHORT"]["win_rate"] == rows["LONG"]["win_rate"] == 1.0
+    assert rows["LONG"]["confidence"] > rows["SHORT"]["confidence"], (
+        "a longer record at the same rate is stronger evidence")
+
+
+def test_a_losing_name_is_never_suggested():
+    from sigbot.report import _paper_by_symbol
+
+    rows = _paper_by_symbol({"paper": {"days": [{"trades": [
+        {"symbol": "LOSER", "model": "news", "pnl": -5.0},
+        {"symbol": "LOSER", "model": "news", "pnl": -3.0},
+    ]}]}})
+    assert not rows, "a name that lost money is not a suggestion"

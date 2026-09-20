@@ -1,12 +1,28 @@
+# Secrets and environment
 .env
 .venv/
 __pycache__/
-*.db
-logs/
 .DS_Store
+
+# Transient run markers
+logs/
+outbox.log
 .last_*
 .seen_*
 scheduler_state.json
-universe.json
-opportunities.json
+
+# GENERATED ARTIFACTS — never track these.
+# Each is rebuilt from the ledger on every run. Tracking them asks git to
+# merge two machines' renderings of identical data, which conflicts on every
+# single pull and has broken four consecutive ships. The workflow rebuilds
+# app/public/index.html before it deploys, so nothing depends on it being in
+# the repository.
+app/data.json
 app/public/
+app/sigbot-report.html
+
+# THE LEDGER IS TRACKED ON PURPOSE (force-added in CI and by ship.sh):
+#   shadow.db patterns.db watchlist.db
+#   opportunities.json universe.json paper.json
+# These are the product. Everything above is a rendering of them.
+*.db

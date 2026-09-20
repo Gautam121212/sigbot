@@ -312,6 +312,7 @@ def run_contagion(messenger=None, market=None, settings=SETTINGS,
     gates = ContagionGates()
     out: list[str] = []
     skipped: list[str] = []
+    recorded = 0
     for lk in survivors:
         anchor_r = returns[lk.anchor]
         vol = anchor_r.rolling(60).std().shift(1)
@@ -324,12 +325,18 @@ def run_contagion(messenger=None, market=None, settings=SETTINGS,
         if resp is None:
             continue
         ok, blocked = gate(resp, lk, gates)
-        if not ok:
-            # Say why. A link that silently vanishes looks identical to one that
-            # was never found, and the two need different responses from you.
-            skipped.append(f"{lk.dependent} after {lk.anchor}: {'; '.join(blocked)}")
-            continue
 
+        # TWO GATES, DIFFERENT JOBS.
+        #
+        # Recording and alerting were the same decision, so a link that failed
+        # the alert bar was never written down — and this model finished its
+        # first month with ONE resolved check out of 17,583 firings. It could
+        # not learn because it refused to observe.
+        #
+        # Every triggered link is now recorded and scored like any other
+        # forecast. Only gated ones are alerted. The recording gate is
+        # permissive on purpose: an observation costs nothing and is the only
+        # way to find out whether the alert gate is set anywhere near right.
         side = "BUY" if (resp.mean_response * np.sign(z)) > 0 else "SELL"
         expected = resp.mean_response * np.sign(z)
         try:
@@ -337,7 +344,16 @@ def run_contagion(messenger=None, market=None, settings=SETTINGS,
                           ["close"].iloc[-1])
         except Exception:  # handled: the price is optional; absence is visible downstream
             price = None
-        ledger.record("contagion", lk.dependent, side, resp.hit_lower, expected, price, 24)
+        ledger.record("contagion", lk.dependent, side, resp.hit_lower, expected,
+                      price, 24)
+        recorded += 1
+
+        if not ok:
+            # Say why. A link that silently vanishes looks identical to one that
+            # was never found, and the two need different responses from you.
+            skipped.append(f"{lk.dependent} after {lk.anchor}: {'; '.join(blocked)}")
+            continue
+
         out.append(
             f"{'▲' if side == 'BUY' else '▼'} {lk.dependent} — {side}\n"
             f"Affected by: {lk.anchor} ({z:+.1f}σ move today)\n"
@@ -347,6 +363,13 @@ def run_contagion(messenger=None, market=None, settings=SETTINGS,
             f"over {resp.n_events} historical shocks, base rate {resp.base_hit_rate:.0%}\n"
             f"Link strength: next-day beta {lk.beta_lagged:+.3f}, q={lk.q_lagged:.3f}"
         )
+
+    if recorded:
+        messenger.send(
+            f"Contagion recorded {recorded} triggered link(s) for scoring; "
+            f"{len(out)} cleared the alert bar. Recording is deliberately "
+            "looser than alerting — a link has to be observed before anyone "
+            "can tell whether the alert bar is set anywhere near right.")
 
     if not out:
         detail = ("" if not skipped else
@@ -1286,6 +1309,137 @@ def _backtest_summary(results, skipped) -> str:
     return "\n".join(lines)
 
 
+def run_reset(settings=SETTINGS, full: bool = False) -> None:
+    """Clear what is genuinely wrong, keep what is genuinely evidence.
+
+    A record collected under a mis-set gate is not contaminated. The hit
+    definition never changed, the entry and exit prices are real, and the
+    scoring was correct — what was wrong was the BAR those results were judged
+    against, which is a display decision applied at read time. Deleting them
+    would destroy thousands of valid scored predictions to fix a number that
+    is already fixed.
+
+    What IS invalid is a row recording the wrong kind of thing. The daily
+    model forecast crypto until B27 restricted it to stocks, and those rows
+    describe a model that no longer exists. They go.
+
+    `full=True` clears every prediction, for when a genuinely fresh start is
+    wanted. It is not the default because it costs weeks of real evidence and
+    the learning loop is not confused by correct data.
+    """
+    import os
+    import shutil
+    import sqlite3
+    from contextlib import closing
+    from datetime import datetime, timezone
+
+    # A full wipe destroys weeks of evidence that cannot be recreated, so it
+    # does not happen on a typo. This guard exists because a TEST of this
+    # function wiped the real ledger: dataclass field defaults are evaluated
+    # once at import, so a monkeypatched SIGBOT_DB never reached a freshly
+    # constructed settings object and the delete ran against the live file.
+    if full and os.environ.get("SIGBOT_CONFIRM_RESET") != "yes":
+        print("Refusing to wipe the ledger.\n"
+              "  This deletes every prediction and cannot be undone.\n"
+              "  Back it up first:  cp shadow.db shadow-backup.db\n"
+              "  Then re-run with:  SIGBOT_CONFIRM_RESET=yes "
+              "python -m sigbot.runner reset-all")
+        return
+
+    with closing(sqlite3.connect(settings.shadow_db)) as con:
+        before = con.execute(
+            "SELECT COUNT(*) FROM predictions").fetchone()[0]
+
+    # Snapshot before any destructive write, always. Cheap insurance against
+    # the exact accident described above.
+    if before:
+        stamp = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S")
+        backup = f"{settings.shadow_db}.{stamp}.bak"
+        shutil.copy(settings.shadow_db, backup)
+        print(f"Backed up to {backup} before touching anything.")
+
+    with closing(sqlite3.connect(settings.shadow_db)) as con:
+        if full:
+            con.execute("DELETE FROM predictions")
+            con.execute("DELETE FROM runs")
+            note = "every prediction and run"
+        else:
+            # Category error: daily never should have forecast crypto.
+            con.execute("DELETE FROM predictions "
+                        "WHERE model='daily' AND symbol LIKE '%-USD'")
+            # A single row cannot teach anything and predates the two-gate
+            # split that will now produce thousands.
+            con.execute("DELETE FROM predictions WHERE model='contagion'")
+            note = "daily's crypto rows and contagion's pre-split row"
+        con.commit()
+        after = con.execute("SELECT COUNT(*) FROM predictions").fetchone()[0]
+
+    print(f"Cleared {note}: {before - after:,} row(s) removed, "
+          f"{after:,} kept.")
+    if not full:
+        print("Kept on purpose: every correctly-scored prediction. The gate "
+              "that misjudged them is fixed and applies at read time, so the "
+              "record itself was never wrong.")
+    print("paper.json and the site rebuild from the ledger, so both follow "
+          "automatically on the next publish.")
+
+
+def run_horizons(settings=SETTINGS) -> None:
+    """How much room each horizon leaves for an edge to exist at all.
+
+    A call only counts when the move also clears the cost of trading, so at a
+    short horizon most sessions are unwinnable no matter who forecasts them.
+    This measures the ceiling a PERFECT forecaster would hit at each horizon —
+    and therefore how much room the model has to show skill.
+
+    It does not say the model is good. It says whether the question it is
+    being asked can be answered profitably at all.
+    """
+    import sqlite3
+    import statistics
+    from contextlib import closing
+
+    cost = 0.0015
+    series: dict[str, list[float]] = {}
+    with closing(sqlite3.connect(settings.shadow_db)) as con:
+        for sym, price in con.execute(
+                "SELECT symbol, entry_price FROM predictions "
+                "WHERE model='daily' AND entry_price>0 "
+                "ORDER BY symbol, created_at"):
+            series.setdefault(sym, []).append(float(price))
+
+    if not series:
+        print("No priced daily history yet, so there is nothing to measure.")
+        return
+
+    lines = ["Horizon room — what a perfect forecaster could score", ""]
+    lines.append(f"  {'bars':>5} {'winnable':>10} {'median move':>13} "
+                 f"{'chance':>9} {'max edge':>10}")
+    for horizon in (1, 2, 3, 5, 10):
+        moves = []
+        for prices in series.values():
+            for i in range(len(prices) - horizon):
+                a, b = prices[i], prices[i + horizon]
+                if a > 0 and b > 0:
+                    moves.append(abs(b / a - 1.0))
+        if not moves:
+            continue
+        winnable = sum(1 for m in moves if m > cost) / len(moves)
+        lines.append(f"  {horizon:>5} {winnable * 100:>9.0f}% "
+                     f"{statistics.median(moves) * 100:>12.2f}% "
+                     f"{winnable * 50:>8.0f}% {winnable * 50:>9.0f}pp")
+
+    lines.append("")
+    lines.append("  'winnable' is the share of windows where the move beats "
+                 "the cost bar. A move under it is a miss however well it was "
+                 "called, so that share is the hit-rate ceiling. Chance is "
+                 "half of it, and the gap between them is all the room an "
+                 "edge has to appear in.")
+    lines.append("  A longer horizon does not create an edge. It gives an "
+                 "existing one somewhere to show up.")
+    print("\n".join(lines))
+
+
 def run_paper() -> None:
     """The sixth model: replay the ledger as a portfolio and report the money.
 
@@ -1320,6 +1474,9 @@ def main(argv: list[str]) -> int:
         "crypto15m": run_crypto15m,
         "paper": run_paper,
         "backtest": run_backtest,
+        "horizons": run_horizons,
+        "reset": run_reset,
+        "reset-all": lambda: run_reset(full=True),
     }
     if cmd not in jobs:
         print(f"usage: python -m sigbot.runner [{'|'.join(jobs)}]")
