@@ -1364,6 +1364,17 @@ def run_reset(settings=SETTINGS, full: bool = False) -> None:
             con.execute("DELETE FROM runs")
             note = "every prediction and run"
         else:
+            # Frozen rows: exit price identical to entry, meaning no new bar
+            # was ever read. A zero move cannot clear the cost bar, so each
+            # was scored an automatic miss — 47% of the daily record. They are
+            # unscored here rather than deleted: the forecast was real and can
+            # be resolved properly once a genuine bar exists.
+            con.execute(
+                "UPDATE predictions SET exit_price=NULL, realised_ret=NULL, "
+                "hit=NULL, outcome_mode=NULL "
+                "WHERE hit IS NOT NULL AND entry_price IS NOT NULL "
+                "AND exit_price = entry_price")
+
             # Category error: daily never should have forecast crypto.
             con.execute("DELETE FROM predictions "
                         "WHERE model='daily' AND symbol LIKE '%-USD'")
@@ -1428,6 +1439,10 @@ def run_diagnose(settings=SETTINGS) -> None:
                 "AND entry_price>0 AND exit_price>0 "
                 "AND ABS(exit_price/entry_price - 1.0) > 0.0015",
                 (model,)).fetchone()[0]
+            frozen = con.execute(
+                "SELECT COUNT(*) FROM predictions WHERE model=? "
+                "AND hit IS NOT NULL AND exit_price = entry_price",
+                (model,)).fetchone()[0]
             target = TARGET_CHECKS.get(model, 500)
 
             if not recorded:
@@ -1451,7 +1466,20 @@ def run_diagnose(settings=SETTINGS) -> None:
                 lower, _ = wilson_interval(hits, resolved, 0.90)
                 winnable = movers / resolved if resolved else 0.0
 
-                if winnable < 0.5:
+                # Frozen rows used to make this fire constantly: an exit
+                # price identical to entry counts as a non-mover, so a
+                # resolver bug read as "the market does not move enough".
+                # Real daily closes clear the cost bar 94% of the time, so a
+                # low reading here now means the DATA is wrong, not the market.
+                if frozen > resolved * 0.05:
+                    verdict = (f"BAD DATA — {frozen:,} of {resolved:,} rows "
+                               "have an exit price identical to the entry, "
+                               "which means no new bar was read. Each scores "
+                               "an automatic miss and drags the chance level "
+                               "down with it.")
+                    fix = ("Run `python -m sigbot.runner reset` to unscore "
+                           "them, then let them resolve against real bars.")
+                elif winnable < 0.5:
                     verdict = (f"NO ROOM — only {winnable * 100:.0f}% of "
                                "windows move more than the cost of trading "
                                f"them, so even a perfect forecast caps at "
@@ -1494,22 +1522,38 @@ def run_horizons(settings=SETTINGS) -> None:
     It does not say the model is good. It says whether the question it is
     being asked can be answered profitably at all.
     """
-    import sqlite3
+    from datetime import datetime, timedelta, timezone
+
     import statistics
-    from contextlib import closing
 
     cost = 0.0015
-    series: dict[str, list[float]] = {}
-    with closing(sqlite3.connect(settings.shadow_db)) as con:
-        for sym, price in con.execute(
-                "SELECT symbol, entry_price FROM predictions "
-                "WHERE model='daily' AND entry_price>0 "
-                "ORDER BY symbol, created_at"):
-            series.setdefault(sym, []).append(float(price))
 
-    if not series:
-        print("No priced daily history yet, so there is nothing to measure.")
-        return
+    # REAL market history, not the ledger's entry-price snapshots.
+    #
+    # The first version of this read `entry_price` from predictions and
+    # treated consecutive rows as consecutive sessions. They are not: several
+    # land within the same day, so "one bar" was often minutes. It reported a
+    # median 1-day move of 0.06% and claimed only 43% of windows could clear
+    # the cost bar. Real daily closes for the same names say 1.57% and 94%.
+    #
+    # That error did not just misstate a number — it produced the diagnosis
+    # "the horizon leaves no room", which pointed at markets when the real
+    # cause was a resolver reading the same quote twice. A measurement taken
+    # from the thing being measured will confirm whatever is wrong with it.
+    market = YahooProvider()
+    end = (datetime.now(timezone.utc) + timedelta(days=1)).strftime("%Y-%m-%d")
+    start = (datetime.now(timezone.utc) - timedelta(days=730)).strftime("%Y-%m-%d")
+
+    series: dict[str, list[float]] = {}
+    for asset in [a for a in board_assets(settings) if a.kind != "crypto"][:40]:
+        try:
+            bars = market.history(asset.symbol, start, end)
+            closes = [float(x) for x in bars["close"].tolist() if x and x > 0]
+        except Exception as exc:  # noqa: BLE001
+            record_skip("horizons", asset.symbol, exc)
+            continue
+        if len(closes) > 30:
+            series[asset.symbol] = closes
 
     lines = ["Horizon room — what a perfect forecaster could score", ""]
     lines.append(f"  {'bars':>5} {'winnable':>10} {'median move':>13} "

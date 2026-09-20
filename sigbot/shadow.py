@@ -134,6 +134,22 @@ class ShadowLedger:
             if not row or row[1] in (None, 0):
                 return
             side, entry = row[0], float(row[1])
+
+            # An exit price IDENTICAL to the entry price means no new bar was
+            # available — the resolver read back the same quote it opened on.
+            # Scoring that is not a miss, it is a non-observation, and scoring
+            # it as a miss is the single most damaging thing this system did:
+            # 47% of the daily model's record was frozen rows, each an
+            # automatic loss (a zero move can never clear the cost bar). It
+            # dragged the measured hit rate from 45.8% to 24.1% and the
+            # measured chance level from 45.0% to 23.6%, so every tier, every
+            # colour and every verdict downstream was computed against a null
+            # that described a bug rather than a market.
+            #
+            # Left unresolved so the next run can try again with a real bar.
+            if exit_price == entry:
+                return
+
             ret = exit_price / entry - 1.0
             mode, _net = classify_outcome(side, entry, bar_open, bar_high, bar_low,
                                           exit_price, cost_pct)
