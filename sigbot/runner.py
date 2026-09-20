@@ -1384,6 +1384,105 @@ def run_reset(settings=SETTINGS, full: bool = False) -> None:
           "automatically on the next publish.")
 
 
+def run_diagnose(settings=SETTINGS) -> None:
+    """Name what is blocking each model, now, instead of in six months.
+
+    Waiting for a verdict tells you a model failed but never why, and by then
+    the cause is weeks of data behind you. Every model is stuck on exactly one
+    of five things, and each has a different response:
+
+      NO DATA        nothing recorded — the scanner is not running
+      NOT RESOLVING  recorded but never scored — the resolver is behind
+      TOO EARLY      scoring fine, sample too small to conclude anything
+      NO EDGE        enough sample, hit rate at or below its own chance level
+      NO ROOM        beating chance, but the cost bar leaves too little to win
+
+    The last one is the one nobody looks for and the one that wastes the most
+    time: a model can be genuinely skilful and still never clear a bar that
+    the horizon makes unreachable.
+    """
+    import sqlite3
+    from contextlib import closing
+
+    from .export_app import TARGET_CHECKS
+    from .shadow import ShadowLedger
+    from .stats import wilson_interval
+
+    ledger = ShadowLedger(settings.shadow_db)
+    lines = ["What is blocking each model", ""]
+
+    with closing(sqlite3.connect(settings.shadow_db)) as con:
+        models = [r[0] for r in con.execute(
+            "SELECT DISTINCT model FROM predictions ORDER BY model")]
+        known = sorted(set(models) | set(TARGET_CHECKS))
+
+        for model in known:
+            recorded = con.execute(
+                "SELECT COUNT(*) FROM predictions WHERE model=?",
+                (model,)).fetchone()[0]
+            resolved, hits = con.execute(
+                "SELECT COUNT(*), COALESCE(SUM(hit), 0) FROM predictions "
+                "WHERE model=? AND hit IS NOT NULL", (model,)).fetchone()
+            movers = con.execute(
+                "SELECT COUNT(*) FROM predictions WHERE model=? "
+                "AND entry_price>0 AND exit_price>0 "
+                "AND ABS(exit_price/entry_price - 1.0) > 0.0015",
+                (model,)).fetchone()[0]
+            target = TARGET_CHECKS.get(model, 500)
+
+            if not recorded:
+                verdict = ("NO DATA — nothing has been recorded. The scanner "
+                           "is not running, or it declines on every item.")
+                fix = "Check the job runs on the schedule and look at its skips."
+            elif resolved == 0:
+                verdict = (f"NOT RESOLVING — {recorded:,} recorded, none "
+                           "scored. Forecasts are being written but never "
+                           "closed out.")
+                fix = "Run the resolve job; check prices are reachable."
+            elif resolved < target * 0.5:
+                pct = resolved / target * 100
+                verdict = (f"TOO EARLY — {resolved:,} of {target:,} checks "
+                           f"({pct:.0f}%). Nothing can be concluded yet and "
+                           "no number here means anything.")
+                fix = "Wait. Judge at the target, not before."
+            else:
+                null = ledger.empirical_null(model)
+                rate = hits / resolved
+                lower, _ = wilson_interval(hits, resolved, 0.90)
+                winnable = movers / resolved if resolved else 0.0
+
+                if winnable < 0.5:
+                    verdict = (f"NO ROOM — only {winnable * 100:.0f}% of "
+                               "windows move more than the cost of trading "
+                               f"them, so even a perfect forecast caps at "
+                               f"{winnable * 100:.0f}%.")
+                    fix = ("Lengthen the horizon. This is not a skill problem "
+                           "and more data will not fix it.")
+                elif lower <= null:
+                    verdict = (f"NO EDGE — {rate * 100:.1f}% against a chance "
+                               f"level of {null * 100:.1f}%, worst case "
+                               f"{lower * 100:.1f}%. The cautious reading does "
+                               "not clear chance.")
+                    fix = ("Change the signal or retire it. More of the same "
+                           "data will reproduce this.")
+                else:
+                    verdict = (f"WORKING — {rate * 100:.1f}% against "
+                               f"{null * 100:.1f}% chance, worst case "
+                               f"{lower * 100:.1f}% still above it.")
+                    fix = "Keep running it and let the sample grow."
+
+            lines.append(f"  {model}")
+            lines.append(f"    {verdict}")
+            lines.append(f"    -> {fix}")
+            lines.append("")
+
+    lines.append("  Read this monthly. A model that moves from TOO EARLY to "
+                 "NO EDGE has answered its question and should be changed or "
+                 "dropped; one that reaches NO ROOM was never going to work "
+                 "at that horizon however good it was.")
+    print("\n".join(lines))
+
+
 def run_horizons(settings=SETTINGS) -> None:
     """How much room each horizon leaves for an edge to exist at all.
 
@@ -1475,6 +1574,7 @@ def main(argv: list[str]) -> int:
         "paper": run_paper,
         "backtest": run_backtest,
         "horizons": run_horizons,
+        "diagnose": run_diagnose,
         "reset": run_reset,
         "reset-all": lambda: run_reset(full=True),
     }

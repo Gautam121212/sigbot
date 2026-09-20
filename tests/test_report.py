@@ -598,19 +598,19 @@ def test_dead_ideas_are_dropped_not_guessed(report):
         "a window that shut nine days ago is not an idea")
 
 
-def test_ideas_are_sorted_by_colour_then_case_strength():
+def test_ideas_are_sorted_by_strength_of_case():
+    """The old version sorted by a stored colour band. Ideas now carry two
+    colours derived from precision, so precision IS the sort — and a stored
+    colour written before the rules changed no longer overrides it."""
     from sigbot.report import _live_ideas
 
     data = {"opportunities": [
-        {"colour": "#8b8b9a", "kind": "k", "summary": "s",
-         "answered": ["a"], "unanswered": []},
-        {"colour": "#00e676", "kind": "k", "summary": "s",
-         "answered": ["a"], "unanswered": ["b", "c"]},
-        {"colour": "#ffd93d", "kind": "k", "summary": "s",
-         "answered": ["a"], "unanswered": []},
+        {"kind": "k", "summary": "s", "answered": ["a"], "unanswered": ["b", "c"]},
+        {"kind": "k", "summary": "s", "answered": ["a", "b", "c"], "unanswered": []},
+        {"kind": "k", "summary": "s", "answered": ["a", "b"], "unanswered": ["c"]},
     ]}
-    order = [o["colour"] for o in _live_ideas(data)]
-    assert order == ["#00e676", "#ffd93d", "#8b8b9a"]
+    strengths = [len(o["answered"]) for o in _live_ideas(data)]
+    assert strengths == sorted(strengths, reverse=True)
 
 
 def test_idea_precision_is_a_share_of_the_question_set():
@@ -839,3 +839,58 @@ def test_a_losing_name_is_never_suggested():
         {"symbol": "LOSER", "model": "news", "pnl": -3.0},
     ]}]}})
     assert not rows, "a name that lost money is not a suggestion"
+
+
+def test_the_idea_green_bar_is_actually_reachable():
+    """C9, one page over: a threshold above what the metric can produce. The
+    question set has seven entries and coverage answers at most four, so a
+    60% bar meant nothing could ever go green."""
+    from sigbot.report import GREEN_IDEA_AT, _idea_state
+
+    best = {"answered": ["a", "b", "c", "d"], "unanswered": ["e", "f", "g"]}
+    colour, _state, pct = _idea_state(best)
+    assert GREEN_IDEA_AT <= 57.0, "the bar must sit inside the achievable range"
+    assert colour == "var(--green)", "the best available case must be able to go green"
+    assert pct == 100.0
+
+
+def test_ideas_use_two_colours_only():
+    """Amber and grey both meant "not yet" while amber sorted higher despite
+    often carrying a weaker case — the colour said one thing, the bar another."""
+    from sigbot.report import _idea_state
+
+    seen = {_idea_state({"answered": ["a"] * a, "unanswered": ["b"] * b})[0]
+            for a in range(5) for b in range(5)}
+    assert seen <= {"var(--green)", "var(--faint)"}, seen
+
+
+def test_an_idea_that_cannot_finish_in_time_is_dropped():
+    """An idea still unanswered on the day it closes was never actionable."""
+    from datetime import datetime, timedelta, timezone
+
+    from sigbot.report import _live_ideas
+
+    soon = datetime.now(timezone.utc).date() + timedelta(days=1)
+    doomed = {"kind": "New listing",
+              "summary": f"Closes {soon.day} {soon.strftime('%b')}.",
+              "answered": [], "unanswered": ["a", "b", "c", "d", "e"]}
+    assert doomed not in _live_ideas({"opportunities": [doomed]})
+
+
+def test_board_colour_follows_movement_not_tier():
+    from sigbot.report import _board_state
+
+    assert _board_state(30, 60)[0] == "var(--red)", "losing ground is danger"
+    assert _board_state(95, 0)[0] == "var(--green)"
+    assert _board_state(40, 10)[0] == "var(--faint)"
+    assert _board_state(0, 0)[0] == "var(--faint)", "no data is not danger"
+
+
+def test_no_bar_ever_renders_a_zero_width_fill(report):
+    """A zero-width fill still drew a visible stub, so an asset with no checks
+    looked like one with a little progress — the opposite of the truth. Every
+    bar and meter must render an empty track instead."""
+    import re
+
+    html = report[0]
+    assert not re.findall(r"width:0%", html), "a zero bar must draw nothing"

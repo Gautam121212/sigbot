@@ -32,6 +32,16 @@ from .charts import chart_url, indicator_note, tv_symbol
 from .expectancy import size_position
 
 ACCENT = {"teal": "#00d4aa", "purple": "#7c4dff", "red": "#ff6b6b", "green": "#00e676"}
+# Green once MORE of the question set is answered than is still open — a
+# majority known rather than unknown.
+#
+# This was briefly set to 60%, which nothing could ever reach: the question
+# set has seven entries and coverage answers at most four of them, so the
+# achievable maximum is 57%. That is C9 again — a threshold above what the
+# metric can produce — the same bug as the original tier gate, one page over.
+# Any bar here must be checked against the real distribution before it ships.
+GREEN_IDEA_AT = 50.0
+
 TIER_COLOR = {"TRADE": "#00e676", "CAUTION": "#ffd93d", "WATCH": "#00d4aa", "SILENT": "#8b8b9a"}
 TIER_PLAIN = {
     "TRADE": "Proven enough to act on",
@@ -443,7 +453,7 @@ def _detail(model: dict, a: dict) -> str:
     <dd style="color:{'var(--green)' if edge and edge > 0 else 'var(--red)'}">
       {'—' if edge is None else f'{edge * 100:+.0f} points'}</dd>
   </dl>
-  <div class="meter"><i style="width:{min(100, (floor or 0) * 100):.0f}%;background:{col}"></i></div>
+  {_meter(min(100, (floor or 0) * 100), col)}
   <p>Use the worst case, not the headline number. With {n:,} checks behind it,
   that is what the record actually supports — the higher figure is the luckiest
   reading of the same data. Few checks means a low worst case even when the
@@ -489,10 +499,8 @@ def _model_page(m: dict) -> str:
       <div class="grow"><h3>{_e(a['symbol'])}</h3>
         {f'<p class="what-sm">{_e(a["description"])}</p>' if a.get("description") else ''}
         <p>{_e(a['detail'])}</p>
-        <div class="dualbar"><span>trade</span>
-          <i><b style="width:{a.get('to_trade', 0):.0f}%;background:{
-              TIER_COLOR.get(a.get('tier', 'SILENT'), '#8b8b9a')}"></b></i>
-          <span>{a.get('to_trade', 0):.0f}%</span></div></div>
+        {_bar("trade", a.get("to_trade", 0),
+              TIER_COLOR.get(a.get("tier", "SILENT"), "#8b8b9a"))}</div>
       <span class="chev">&rsaquo;</span></div></a>""" for a in m["alerts"])
     return f"""
 <div class="page" id="m-{_e(m['id'])}"><div class="wrap">
@@ -505,12 +513,10 @@ def _model_page(m: dict) -> str:
     <p class="what-sm" style="margin-top:10px">Next tier: {_e(m.get('ready_in', ''))}.
     {_e(_null_note(m))}</p>
     <p class="what-sm">Intake: {_e(m.get('intake', ''))}.</p>
-    <div class="dualbar" style="margin-top:12px"><span>sample</span>
-      <i><b style="width:{m.get('sample_progress', 0):.0f}%;background:var(--indigo)"></b></i>
-      <span>{m.get('sample_progress', 0):.0f}%</span></div>
+    {_bar("sample", m.get("sample_progress", 0), "var(--indigo)")}
     <p class="what-sm">{_e(m.get('benchmark', ''))}</p>
     <span class="badge" style="background:{tc}1f;color:{tc}">{_e(TIER_PLAIN.get(m['tier'], m['tier']))}</span>
-    <div class="meter"><i style="width:{(m.get('lower_bound') or 0) * 100:.0f}%;background:{tc}"></i></div>
+    {_meter((m.get('lower_bound') or 0) * 100, tc)}
     <p>{_e(m['status_line'])}</p>
     <p class="what-sm">{_e((f"{m.get('made', 0):,} forecast(s) recorded, waiting to be scored. "
                             if m.get('made') and not m.get('resolved') else "")
@@ -644,40 +650,53 @@ def build_report(data: dict) -> str:
     b = data.get("board", {})
 
     def _tile(a):
-        """One board row, with the two distances that decide where to look.
+        """One board row, coloured by the thing that actually matters.
 
-        A colour says what an asset is now. It does not say whether it is
-        about to qualify or about to be dropped, which is the only thing that
-        tells you where attention is worth spending. Two bars do: progress
-        toward the trade bar, and progress toward removal.
+        The tier colour said what an asset IS. What you need to know is where
+        it is HEADING, and the two distances already say that:
+
+          red   — closer to being dropped than to qualifying. A danger zone.
+          green — 90% or more of the way to the trade bar.
+          grey  — making progress, not there yet.
+
+        A bar at zero draws nothing at all. The old one rendered a stub in the
+        middle of an empty track, which read as "halfway" on an asset with no
+        checks — the opposite of the truth.
         """
         ready, drop = _board_progress(a)
+        colour, state = _board_state(ready, drop)
+
+        def bar(label, pct, shade):
+            if round(pct) <= 0:
+                return (f'<div class="dualbar"><span>{label}</span>'
+                        f'<i></i><span>--</span></div>')
+            return (f'<div class="dualbar"><span>{label}</span>'
+                    f'<i><b style="width:{pct:.0f}%;background:{shade}"></b></i>'
+                    f'<span>{pct:.0f}%</span></div>')
+
         return f"""
-  <div class="tile"><span class="pip" style="background:{_e(a['colour'])}"></span>
+  <div class="tile"><span class="pip" style="background:{colour}"></span>
     <b>{_e(a['symbol'])}</b>
-    <div class="grow"><p style="color:{_e(a['colour'])}">{_e(a['flag_label'])}</p>
+    <div class="grow"><p style="color:{colour}">{_e(state)}</p>
       <p>{_e(a['reason'])}</p>
-      <div class="dualbar">
-        <span>ready</span>
-        <i><b style="width:{ready:.0f}%;background:var(--green)"></b></i>
-        <span>{ready:.0f}%</span>
-      </div>
-      <div class="dualbar">
-        <span>drop</span>
-        <i><b style="width:{drop:.0f}%;background:var(--red)"></b></i>
-        <span>{drop:.0f}%</span>
-      </div></div></div>"""
+      {bar("ready", ready, "var(--green)")}
+      {bar("drop", drop, "var(--red)")}</div></div>"""
 
     # Stocks and crypto are different games — different hours, different costs,
     # different volatility. One undivided wall of a hundred names made the
     # board read as noise; two sections make it read as two answers.
     # Sorted by colour, strongest first: a hundred rows in arbitrary order
     # meant scrolling to find the two that qualified.
-    rank = {"GREEN": 0, "AMBER": 1, "RED": 2, "TESTING": 3}
-    ordered = sorted(b.get("assets", []),
-                     key=lambda a: (rank.get(a.get("flag"), 9),
-                                    -(a.get("lower") or 0),
-                                    a.get("symbol", "")))
+    # Sorted by the SAME rule that colours the dot. Ordering by the old tier
+    # while colouring by progress would put a red row above a green one and
+    # make the page contradict itself.
+    def _sort_key(a):
+        ready, drop = _board_progress(a)
+        _colour, state = _board_state(ready, drop)
+        rank = {"Close — nearly ready": 0, "Building": 1, "Danger — losing ground": 2}
+        return (rank.get(state, 9), -ready, drop, a.get("symbol", ""))
+
+    ordered = sorted(b.get("assets", []), key=_sort_key)
     stocks = [a for a in ordered if a.get("kind") != "crypto"]
     coins = [a for a in ordered if a.get("kind") == "crypto"]
     tiles = ""
@@ -730,13 +749,13 @@ def build_report(data: dict) -> str:
                    'shown you turns up.</p></div>')
     idea_cards = "".join(f"""
   <a href="#i-{i}"><div class="tile">
-    <span class="pip" style="background:{_e(o['colour'])}"></span>
+    <span class="pip" style="background:{_idea_state(o)[0]}"></span>
     <b>{_e(o['kind'])}</b>
     <div class="grow"><p style="color:var(--w);font-weight:600">{_e(o['title'])}</p>
       <p>{_e(o['summary'][:110])}</p>
-      <div class="dualbar"><span>case</span>
-        <i><b style="width:{_idea_precision(o):.0f}%;background:{_e(o['colour'])}"></b></i>
-        <span>{_idea_precision(o):.0f}%</span></div></div>
+      <p style="color:{_idea_state(o)[0]};font-weight:600">{_e(_idea_state(o)[1])}</p>
+      {_bar("ready", _idea_state(o)[2], _idea_state(o)[0])}
+      <p class="what-sm">{_e(_idea_eta(o))}</p></div>
     <span class="chev">&rsaquo;</span></div></a>""" for i, o in enumerate(opps))
     if dropped:
         idea_cards += (f'<p class="what-sm">{dropped} card(s) hidden: their '
@@ -870,10 +889,13 @@ def build_report(data: dict) -> str:
   outcomes, and single events cannot be: an IPO or a policy change happens once,
   so there is nothing to compare a new one against. This is material to think
   about, not a signal.</p>
+  <p class="lead">Green means enough of the case is answered to act on.
+  Grey means it is not, and the bar shows how far short it falls. Anything
+  already expired, or that cannot be answered before its own window shuts, is
+  removed rather than shown.</p>
   <div class="board-status">
-    <span><i class="pip" style="background:var(--green)"></i>ready to judge</span>
-    <span><i class="pip" style="background:var(--amber)"></i>questions open</span>
-    <span><i class="pip" style="background:var(--faint)"></i>context only</span>
+    <span><i class="pip" style="background:var(--green)"></i>ready to act</span>
+    <span><i class="pip" style="background:var(--faint)"></i>still short</span>
   </div>
   {idea_cards or empty_ideas}
 </div></div>
@@ -1043,6 +1065,8 @@ def _paper_body(data: dict) -> str:
     <div class="stat"><b>{state.get("equity", 0):,.0f}</b><span>Equity</span></div>
     <div class="stat"><b>{state.get("total_costs", 0):,.0f}</b><span>Costs paid</span></div>
   </div>
+  <h2>Today's trades</h2>
+  {_trade_rows(today)}
   <h2>Which model paid</h2>
   <div class="tiles-grid">{rows or "<p>No trades yet.</p>"}</div>
   <p class="what-sm">{_e(state.get("verdict", ""))}</p>"""
@@ -1274,9 +1298,7 @@ def _picks_rows(data: dict) -> str:
       <p>Worth a look: paper trading made {row['pnl']:+,.0f} on this name
       across {row['trades']:,} trade(s), {row['win_rate'] * 100:.0f}% of them
       in profit.</p>
-      <div class="dualbar"><span>conf</span>
-        <i><b style="width:{conf:.0f}%;background:{colour}"></b></i>
-        <span>{conf:.0f}%</span></div></div>
+      {_bar("conf", conf, colour)}</div>
     <span class="chev">&rsaquo;</span></div>"""
         key = f"{row['model']}-{row['symbol']}"
         if key in pages:
@@ -1374,18 +1396,79 @@ def _idea_is_dead(o: dict) -> bool:
     return False
 
 
+def _idea_state(o: dict) -> tuple[str, str, float]:
+    """(colour, plain state, percent toward green) for one idea.
+
+    Two colours only. Amber and grey both meant "not yet" while amber SORTED
+    higher despite often carrying a weaker case, so the palette actively
+    misled: the colour said one thing and the bar said another. Green now
+    means the case is strong enough to act on; grey means it is not, and the
+    bar says how far short it falls.
+    """
+    precision = _idea_precision(o)
+    if precision >= GREEN_IDEA_AT:
+        return "var(--green)", "Ready — the case is answered", 100.0
+    toward = precision / GREEN_IDEA_AT * 100.0 if GREEN_IDEA_AT else 0.0
+    return "var(--faint)", "Not enough answered yet", max(0.0, min(toward, 100.0))
+
+
+def _idea_expected_days(o: dict) -> float | None:
+    """Rough days until this idea's case could be complete, or None.
+
+    Reporting arrives at whatever rate it arrives; with one scan every four
+    hours, an unanswered question resolves in about a day when it resolves at
+    all. This is an estimate and says so — its only job is to be compared
+    against the expiry, because an idea that cannot be answered before its
+    window shuts is not an idea.
+    """
+    unanswered = len(o.get("unanswered") or [])
+    return None if not unanswered else unanswered * 1.0
+
+
+def _idea_days_left(o: dict) -> float | None:
+    """Days until the stated window shuts, or None when no date is given."""
+    import re
+    from datetime import datetime, timezone
+
+    months = {m: i for i, m in enumerate(
+        ("jan", "feb", "mar", "apr", "may", "jun",
+         "jul", "aug", "sep", "oct", "nov", "dec"), start=1)}
+    text = f"{o.get('kind', '')} {o.get('summary', '')}".lower()
+    today = datetime.now(timezone.utc).date()
+    soonest = None
+    for day, mon in re.findall(r"(\d{1,2})\s+([A-Za-z]{3})", text):
+        month = months.get(mon[:3].lower())
+        if not month:
+            continue
+        try:
+            when = today.replace(month=month, day=int(day))
+        except ValueError:
+            continue
+        days = (when - today).days
+        if days >= 0 and (soonest is None or days < soonest):
+            soonest = float(days)
+    return soonest
+
+
 def _live_ideas(data: dict) -> list[dict]:
     """Ideas worth showing, strongest case first.
 
-    Sorted by colour then precision: the page exists to put the few actionable
-    things at the top while there is still time to act, and a dead card
-    occupying a row is a dead stack.
+    Dropped here: anything already expired, and anything whose case cannot be
+    completed before its own window shuts. The second is the important one —
+    an idea that will still be unanswered on the day it closes was never
+    actionable, and showing it just spends your attention on a foregone
+    conclusion.
     """
-    rank = {"#00e676": 0, "#ffd93d": 1, "#8b8b9a": 2}
-    live = [o for o in (data.get("opportunities") or [])
-            if not _idea_is_dead(o)]
-    return sorted(live, key=lambda o: (rank.get(o.get("colour"), 9),
-                                       -_idea_precision(o)))
+    live = []
+    for o in data.get("opportunities") or []:
+        if _idea_is_dead(o):
+            continue
+        need = _idea_expected_days(o)
+        left = _idea_days_left(o)
+        if need is not None and left is not None and need > left:
+            continue
+        live.append(o)
+    return sorted(live, key=lambda o: -_idea_precision(o))
 
 
 def _wins(learning: list[dict]) -> list[dict]:
@@ -1396,3 +1479,93 @@ def _wins(learning: list[dict]) -> list[dict]:
     filtering the RECORD.
     """
     return [e for e in learning if e.get("hit")]
+
+
+def _board_state(ready: float, drop: float) -> tuple[str, str]:
+    """Colour and plain-English state from the two distances.
+
+    Derived from where an asset is HEADING, not from what tier it holds now.
+    The tier is a label; these two numbers are the movement, and movement is
+    what tells you where attention is worth spending.
+    """
+    if drop > ready:
+        return "var(--red)", "Danger — losing ground"
+    if ready >= 90:
+        return "var(--green)", "Close — nearly ready"
+    return "var(--faint)", "Building"
+
+
+def _trade_rows(day: dict | None) -> str:
+    """Every trade of the day: what, which way, and one word for the outcome.
+
+    A row that says only "+2.11%" makes you work out what was bought and
+    whether it worked. Name, direction and verdict, in that order, is the
+    whole question answered in one line.
+    """
+    if not day or not (day.get("trades") or []):
+        return ('<div class="card"><p>No trades today. The models only act '
+                'when a signal clears its bar, and most days none does.</p>'
+                '</div>')
+
+    out = []
+    for t in day.get("trades") or []:
+        pnl = t.get("pnl", 0.0)
+        won = pnl > 0
+        colour = "var(--green)" if won else "var(--red)"
+        word = "PROFIT" if won else "LOSS"
+        side = str(t.get("side", "")).upper() or "BUY"
+        out.append(f"""
+  <div class="tile"><span class="pip" style="background:{colour}"></span>
+    <b>{_e(str(t.get('symbol', '')))}</b>
+    <div class="grow">
+      <p style="color:{colour};font-weight:600">{_e(side)} &middot; {word}</p>
+      <p>{pnl:+,.2f} on a position of {t.get('size', 0):,.0f},
+      moved {t.get('gross_ret', 0) * 100:+.2f}% before costs</p>
+      <p class="what-sm">Signal from {_e(str(t.get('model', '')))}.
+      In at {t.get('entry_price', 0):,.4f}, out at
+      {t.get('exit_price', 0):,.4f}.</p></div></div>""")
+    return f'<div class="tiles-grid">{"".join(out)}</div>'
+
+
+def _idea_eta(o: dict) -> str:
+    """When this case might complete, against when its window shuts."""
+    need = _idea_expected_days(o)
+    left = _idea_days_left(o)
+    if need is None:
+        return "Every question answered."
+    if left is None:
+        return (f"About {need:.0f} more day(s) of reporting would finish the "
+                "case. No closing date was given.")
+    return (f"About {need:.0f} more day(s) of reporting would finish the case, "
+            f"and the window shuts in {left:.0f}.")
+
+
+def _bar(label: str, pct: float, colour: str) -> str:
+    """One progress bar, or an empty track when there is nothing to show.
+
+    A zero-width fill still rendered a visible stub, which read as "some
+    progress" on an asset with no checks at all — the opposite of the truth.
+    Nothing measured shows an empty track and a dash.
+    """
+    pct = max(0.0, min(float(pct or 0), 100.0))
+    # Guard the ROUNDED value: 0.4 is greater than zero but formats as "0%",
+    # which is exactly the stub this is meant to prevent.
+    if round(pct) <= 0:
+        return (f'<div class="dualbar"><span>{label}</span>'
+                f'<i></i><span>--</span></div>')
+    return (f'<div class="dualbar"><span>{label}</span>'
+            f'<i><b style="width:{pct:.0f}%;background:{colour}"></b></i>'
+            f'<span>{pct:.0f}%</span></div>')
+
+
+def _meter(pct: float, colour: str) -> str:
+    """A filled meter, or an empty track when nothing has been measured.
+
+    Same reason as _bar: a zero-width fill still drew a visible stub, so a
+    model with no record looked like one with a little.
+    """
+    pct = max(0.0, min(float(pct or 0), 100.0))
+    # Rounded, as in _bar: 0.4 is above zero but renders as "0%".
+    if round(pct) <= 0:
+        return '<div class="meter"><i></i></div>'
+    return f'<div class="meter"><i style="width:{pct:.0f}%;background:{colour}"></i></div>'
