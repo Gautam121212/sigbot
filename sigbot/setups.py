@@ -86,16 +86,34 @@ class Setup:
 
 
 def _deep_oversold(row: dict) -> bool:
-    """RSI below 20 — a washout, not merely a dip.
+    """RSI below 20, but only while money flow has NOT also collapsed.
 
-    The threshold is 20 rather than the conventional 30 because the data says
-    so: at RSI<30 the edge is +2.0pp and inconsistent across eras; at RSI<20
-    it is +9.7pp and present in all three. The dose-response between them is
-    the strongest single piece of evidence that this is a real effect rather
-    than a lucky slice.
+    RSI<20 is the washout. The threshold is 20 rather than the conventional 30
+    because the data says so: at RSI<30 the edge is small and inconsistent
+    across eras, at RSI<20 it is present in all three, and the dose-response
+    between them is the strongest evidence the effect is real.
+
+    The MFI condition is the half that took a wide search to find, and it is a
+    veto that genuinely works — unlike the per-name personality veto, which
+    sounded just as sensible and tested flat. Across 3.5 million sessions:
+
+        MFI < 10 alone                39.1%   (8.4pp BELOW a 47.5% baseline)
+        RSI<20 combined with MFI<10   41.3%
+        RSI<20 with MFI >= 10         52.5%
+
+    Money-flow exhaustion is not the same event as price exhaustion. When both
+    collapse together the selling has conviction behind it and the fall tends
+    to continue; when price is washed out but money flow is not, it tends to
+    be bought. Combining them without checking would have kept the worst
+    quarter of the sample and cut the edge by more than half.
     """
-    rsi = row.get("rsi_14")
-    return rsi is not None and rsi < 20.0
+    rsi, mfi = row.get("rsi_14"), row.get("mfi_14")
+    if rsi is None or rsi >= 20.0:
+        return False
+    # Missing MFI is treated as disqualifying. The veto removes the worst
+    # cell in the sample, so failing open would reinstate exactly what it
+    # exists to exclude.
+    return mfi is not None and mfi >= 10.0
 
 
 SETUPS: tuple[Setup, ...] = (
@@ -103,17 +121,25 @@ SETUPS: tuple[Setup, ...] = (
         name="deep-oversold",
         side="BUY",
         plain=("The price has fallen far enough, fast enough, that recent "
-               "selling looks exhausted. Historically it bounces more often "
-               "than it continues falling — not always, but more often than "
-               "chance, and measurably so."),
+               "selling looks exhausted — but money has not fled the name "
+               "with it. That second half matters: when both give way "
+               "together the fall usually continues. Historically this "
+               "combination bounces more often than chance, measurably so, "
+               "in every period tested."),
         condition=_deep_oversold,
-        # Measured on 30 board names, 2015-present, daily closes from the
-        # market-data provider. "hit" uses the live definition: direction
-        # right AND the move larger than the round-trip cost.
+        # Measured across the FULL US large-cap universe (market cap > $2bn,
+        # common stock, US-domiciled) over 3.5 million sessions, not the 30
+        # board names an earlier version used. That matters: on 30 names the
+        # best-looking context cell scored 72.7% on 22 occurrences, and the
+        # same cell across the full universe scores 51.3% on 1,633. The small
+        # sample was noise wearing the shape of a discovery.
+        #
+        # "hit" uses the live definition: direction right AND the move larger
+        # than the round-trip cost.
         eras=(
-            EraResult("2015-2018", n=81, hit_pct=55.6, base_pct=46.4),
-            EraResult("2019-2021", n=90, hit_pct=60.0, base_pct=48.1),
-            EraResult("2022-now", n=81, hit_pct=55.6, base_pct=47.6),
+            EraResult("2016-2019", n=3224, hit_pct=50.0, base_pct=47.6),
+            EraResult("2020-2022", n=3037, hit_pct=55.8, base_pct=47.5),
+            EraResult("2023-now", n=3017, hit_pct=51.9, base_pct=47.5),
         ),
     ),
 )
@@ -210,4 +236,46 @@ def describe() -> str:
     lines.append("  A setup speaks only when its condition occurs, which is "
                  "rare on purpose. Silence is the normal state and is not a "
                  "failure.")
+    return "\n".join(lines)
+
+
+# Candidates tested on real history and REJECTED. Kept so they are not
+# rediscovered and re-shipped by someone who only sees the pooled number.
+REJECTED = (
+    ("gap down > 5%",
+     "Pooled 53.6% on 24,097 occurrences — the best raw number in the entire "
+     "search. Split by era: -3.2pp (2016-19), +15.0pp (2020-22), -0.4pp "
+     "(2023-now). The whole edge is one extraordinary period, and a signal "
+     "that only worked during the 2020 crash and recovery is a description of "
+     "that crash, not a rule for the future."),
+    ("day down > 8%",
+     "52.9% pooled on 31,831, and fails the same way for the same reason — "
+     "it is largely the same days as the gap-down set."),
+    ("per-name bounce personality as a veto",
+     "Removed 87 of 252 occurrences and moved the hit rate 57.1% -> 57.0%. "
+     "The profile measures bounce after an ORDINARY down day; the setup fires "
+     "on a DEEP washout. A disposition measured on one condition does not "
+     "transfer to another."),
+    ("capitulation context (calm name, volume spike)",
+     "72.7% on 22 occurrences across 30 names. Across the full universe the "
+     "same cell is 51.3% on 1,633. A 22-row cell is not a finding."),
+    ("MFI < 10 as an entry",
+     "39.1% — 8.4pp BELOW baseline on 12,633 occurrences. Inverted, and "
+     "strongly enough that it became the veto above instead."),
+    ("Stochastic K < 5, hammer candles, Williams %R < -95, CCI < -250, "
+     "25% below the 200-day average, closing at the day's low",
+     "All within 2pp of the 47.5% baseline on large samples. Not edges."),
+)
+
+
+def rejected_summary() -> str:
+    """What was tried and did not survive. The queue's other half."""
+    lines = ["Tested and rejected", ""]
+    for name, why in REJECTED:
+        lines.append(f"  {name}")
+        lines.append(f"    {why}")
+        lines.append("")
+    lines.append("  Recorded on purpose. A filter with an attractive pooled "
+                 "number and no era consistency is the single easiest way to "
+                 "ship a backtest as a strategy.")
     return "\n".join(lines)

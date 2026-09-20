@@ -64,7 +64,36 @@ def test_silence_is_the_normal_answer():
 
 
 def test_the_validated_threshold_is_twenty_not_thirty():
-    """At RSI<30 the edge is +2.0pp and inconsistent across eras; at RSI<20 it
-    is +9.7pp and present in all three."""
-    fired = evaluate({"rsi_14": 19.0})
+    """At RSI<30 the edge is small and inconsistent across eras; at RSI<20 it
+    is present in all three."""
+    fired = evaluate({"rsi_14": 19.0, "mfi_14": 30.0})
     assert fired is not None and fired.name == "deep-oversold"
+    assert evaluate({"rsi_14": 25.0, "mfi_14": 30.0}) is None
+
+
+def test_money_flow_collapse_vetoes_the_setup():
+    """Across 3.5M sessions: MFI<10 alone scores 39.1% against a 47.5%
+    baseline, and RSI<20 combined with MFI<10 scores 41.3% versus 52.5% when
+    money flow holds up. Price exhaustion and money exhaustion are different
+    events, and when both give way the fall tends to continue."""
+    assert evaluate({"rsi_14": 18.0, "mfi_14": 30.0}) is not None
+    assert evaluate({"rsi_14": 18.0, "mfi_14": 5.0}) is None
+
+
+def test_a_missing_money_flow_reading_fails_closed():
+    """The veto removes the worst cell in the sample. Failing open would
+    reinstate exactly what it exists to exclude."""
+    assert evaluate({"rsi_14": 18.0}) is None
+    assert evaluate({"rsi_14": 18.0, "mfi_14": None}) is None
+
+
+def test_rejected_candidates_are_recorded_with_their_evidence():
+    """A filter with an attractive pooled number and no era consistency is the
+    easiest way to ship a backtest as a strategy. Gap-down scored 53.6% pooled
+    and -3.2pp / +15.0pp / -0.4pp by era."""
+    from sigbot.setups import REJECTED, rejected_summary
+
+    assert len(REJECTED) >= 5
+    text = rejected_summary()
+    assert "gap down" in text.lower()
+    assert "one extraordinary period" in text

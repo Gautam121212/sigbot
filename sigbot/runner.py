@@ -1418,8 +1418,9 @@ def run_setups(settings=SETTINGS) -> None:
     for asset in [a for a in board_assets(settings) if a.kind != "crypto"]:
         try:
             bars = market.history(asset.symbol, settings.history_start, end)
-            from .features import _rsi
+            from .features import _mfi, _rsi
             rsi = float(_rsi(bars["close"]).iloc[-1])
+            mfi = float(_mfi(bars).iloc[-1])
             close = float(bars["close"].iloc[-1])
         except Exception as exc:  # noqa: BLE001
             record_skip("setups", asset.symbol, exc)
@@ -1430,7 +1431,7 @@ def run_setups(settings=SETTINGS) -> None:
         closes = [float(x) for x in bars["close"].tolist() if x and x > 0]
         profile = profile_from_closes(asset.symbol, closes)
 
-        row = {"rsi_14": rsi, "close": close}
+        row = {"rsi_14": rsi, "mfi_14": mfi, "close": close}
         for col, key in (("atr_14", "atr_14"), ("volume", "volume")):
             if col in bars:
                 row[key] = float(bars[col].iloc[-1])
