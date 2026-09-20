@@ -85,6 +85,23 @@
   ]
  },
  {
+  "title": "Schedules Controlled Substances: Placement",
+  "kind": "Market thesis",
+  "colour": "#ffd93d",
+  "verdict": "Reported at 64% sourcing strength. Enough to be worth reading, not enough to lean on. This model has never been scored against outcomes.",
+  "summary": "Schedules of Controlled Substances: Placement of Diphenidine in Schedule I",
+  "answered": [],
+  "unanswered": [
+   "the asset is genuinely priced lower in real terms, not just in a depreciating local currency",
+   "there is a liquid, legal exit available to a non-resident",
+   "the dislocation has a plausible resolution path with a timeframe"
+  ],
+  "money": "Not stated. A market thesis says nothing about what acting on it would cost you.",
+  "sources": [
+   "Federal Register Documents published on or after 08/21/2026 and of type Rule (2026-09-21)"
+  ]
+ },
+ {
   "title": "Iran US Qatar Moneycontrol.com",
   "kind": "Market thesis",
   "colour": "#8b8b9a",
@@ -367,28 +384,6 @@
   ]
  },
  {
-  "title": "Fuel cost spike hits carrier margins",
-  "kind": "Supply chain change",
-  "colour": "#8b8b9a",
-  "verdict": "Cannot get there. Even if every unknown resolved in your favour this reaches 69 out of 80. Read it as context, not a lead.",
-  "summary": "A trade rule, tariff, sanction or logistics change makes a route newly viable or newly broken.",
-  "answered": [
-   "months before anything could be charged",
-   "needs real capital before any revenue",
-   "crowded, with established players",
-   "reported by a source with a record"
-  ],
-  "unanswered": [
-   "Is anyone already paying for this?",
-   "Can you reach a buyer without paying for ads?",
-   "Could you actually do the work?"
-  ],
-  "money": "needs real capital before any revenue",
-  "sources": [
-   "news - FreightWaves (2026-09-20)"
-  ]
- },
- {
   "title": "Rs 23,000 crore outflows! Is the September FII rout indicating a worse end to 2026?",
   "kind": "New listing",
   "colour": "#8b8b9a",
@@ -528,25 +523,6 @@
   ]
  },
  {
-  "title": "Rs 3,825 crore",
-  "kind": "New listing",
-  "colour": "#8b8b9a",
-  "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 0 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
-  "summary": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live.",
-  "money": "0 of a possible 0 points on the ten tests the coverage could answer",
-  "answered": [],
-  "unanswered": [
-   "Does reporting say it makes money?",
-   "Is revenue growing?",
-   "Does the money go into the business?",
-   "Is the price being called reasonable?",
-   "Did serious institutions take an allocation?"
-  ],
-  "sources": [
-   "Moneycontrol.com"
-  ]
- },
- {
   "title": "Accel, Tiger Global-backed Moneyview",
   "kind": "New listing",
   "colour": "#8b8b9a",
@@ -562,6 +538,25 @@
    "Is the price being called reasonable?",
    "Did serious institutions take an allocation?",
    "Is the book filling?"
+  ],
+  "sources": [
+   "Moneycontrol.com"
+  ]
+ },
+ {
+  "title": "Rs 3,825 crore",
+  "kind": "New listing",
+  "colour": "#8b8b9a",
+  "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 0 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
+  "summary": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live.",
+  "money": "0 of a possible 0 points on the ten tests the coverage could answer",
+  "answered": [],
+  "unanswered": [
+   "Does reporting say it makes money?",
+   "Is revenue growing?",
+   "Does the money go into the business?",
+   "Is the price being called reasonable?",
+   "Did serious institutions take an allocation?"
   ],
   "sources": [
    "Moneycontrol.com"
@@ -699,7 +694,7 @@
    "Did serious institutions take an allocation?"
   ],
   "sources": [
-   "businessworld.in"
+   "BW Businessworld"
   ]
  },
  {
@@ -946,7 +941,7 @@
    "Did serious institutions take an allocation?"
   ],
   "sources": [
-   "businessworld.in"
+   "BW Businessworld"
   ]
  },
  {
