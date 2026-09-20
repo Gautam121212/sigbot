@@ -239,3 +239,99 @@ def audit(observed_win_rate: float, target_r: float, n_trades: int) -> str:
     else:
         lines.append("  VERDICT: clears its geometry at 90% confidence.")
     return "\n".join(lines)
+
+
+# ---------------------------------------------------------------------------
+# Edge over holding — the benchmark this module was missing.
+#
+# Everything above compares a setup against its own geometry, which catches a
+# win rate bought with a tight target. It does not catch the other failure,
+# and that one turned out to be live in this system.
+#
+# The validated deep-oversold setup, measured on 9,246 real occurrences:
+#
+#     wins more often      54.3%    vs   51.1% for any random session
+#     average win         +4.47%    vs   +2.97%
+#     average loss        -4.12%    vs   -1.79%
+#     payoff ratio          1.08    vs     1.66
+#     expectancy (1d)    +0.599%    vs  +0.659%
+#     expectancy (10d)   +0.759%    vs  +1.682%
+#
+# Right more often, and worse at every horizon. It fires in violent
+# conditions where a loss costs nearly what a win pays, while ordinary
+# sessions pay 1.66 to 1. A hit-rate test applauds exactly this, and so does
+# a skill-edge test, because neither asks "compared to not trading".
+#
+# Doing nothing is the real alternative and over a rising decade it is a high
+# bar. Positive expectancy is not an edge. Positive expectancy ABOVE what the
+# same capital earned unconditionally is.
+# ---------------------------------------------------------------------------
+
+
+@dataclass(frozen=True)
+class HoldComparison:
+    """A setup measured against simply holding over the same window."""
+
+    n: int
+    setup_expectancy_pct: float
+    hold_expectancy_pct: float
+    avg_win_pct: float
+    avg_loss_pct: float
+
+    @property
+    def edge_pct(self) -> float:
+        return self.setup_expectancy_pct - self.hold_expectancy_pct
+
+    @property
+    def payoff_ratio(self) -> float:
+        """Average win over average loss. Below ~1.2, a high win rate is a
+        warning rather than a result — something is being risked to buy it."""
+        return abs(self.avg_win_pct / self.avg_loss_pct) if self.avg_loss_pct else 0.0
+
+    @property
+    def beats_holding(self) -> bool:
+        return (self.n >= 200 and self.edge_pct > 0.0
+                and self.payoff_ratio >= 1.2)
+
+    def verdict(self) -> str:
+        if self.n < 200:
+            return (f"Only {self.n} trades — a run of luck is "
+                    "indistinguishable from an edge at this size.")
+        if self.edge_pct <= 0:
+            return (f"Makes {self.setup_expectancy_pct:+.2f}% a trade, but "
+                    f"holding made {self.hold_expectancy_pct:+.2f}% over the "
+                    f"same window. That is {abs(self.edge_pct):.2f}% a trade "
+                    "WORSE than doing nothing — being right more often does "
+                    "not help when the losses are bigger.")
+        if self.payoff_ratio < 1.2:
+            return (f"Beats holding by {self.edge_pct:+.2f}% a trade, but "
+                    f"wins pay only {self.payoff_ratio:.2f}x what losses "
+                    "cost. Thin enough that a slightly worse run erases it.")
+        return (f"Makes {self.setup_expectancy_pct:+.2f}% a trade against "
+                f"{self.hold_expectancy_pct:+.2f}% for holding, "
+                f"{self.edge_pct:+.2f}% better, wins paying "
+                f"{self.payoff_ratio:.2f}x losses, over {self.n:,} trades.")
+
+
+def compare_to_holding(setup_returns, hold_returns) -> HoldComparison:
+    """Measure a setup against the same capital left alone.
+
+    Both arguments are fractional returns (0.02 = 2%). `hold_returns` should
+    be the unconditional series over the same period, not a filtered one — the
+    point is to answer "was trading this better than not trading".
+    """
+    setup_returns = list(setup_returns)
+    hold_returns = list(hold_returns)
+    if not setup_returns:
+        return HoldComparison(0, 0.0, 0.0, 0.0, 0.0)
+
+    wins = [r for r in setup_returns if r > 0]
+    losses = [r for r in setup_returns if r < 0]
+    return HoldComparison(
+        n=len(setup_returns),
+        setup_expectancy_pct=sum(setup_returns) / len(setup_returns) * 100.0,
+        hold_expectancy_pct=(sum(hold_returns) / len(hold_returns) * 100.0
+                             if hold_returns else 0.0),
+        avg_win_pct=(sum(wins) / len(wins) * 100.0) if wins else 0.0,
+        avg_loss_pct=(sum(losses) / len(losses) * 100.0) if losses else 0.0,
+    )

@@ -7,6 +7,7 @@ from __future__ import annotations
 
 from sigbot.scan import (
     CANDIDATES,
+    Hit,
     PROVEN,
     RISKY,
     Candidate,
@@ -17,10 +18,11 @@ from sigbot.scan import (
 )
 
 
-def _c(eras, edge, n=10000, name="x"):
+def _c(eras, edge, n=10000, name="x", beats_holding=True):
     return Candidate(name=name, side="BUY", plain="p",
                      condition=lambda row: True, pooled_edge_pp=edge,
-                     pooled_n=n, eras_positive=eras)
+                     pooled_n=n, eras_positive=eras,
+                     beats_holding=beats_holding, payoff_ratio=1.6)
 
 
 def test_proven_needs_consistency_AND_a_real_edge():
@@ -30,6 +32,20 @@ def test_proven_needs_consistency_AND_a_real_edge():
     assert tier_of(_c(3, 0.3)) == RISKY, "consistent but not worth trading"
     assert tier_of(_c(1, 15.0)) == RISKY, "one era is not evidence"
     assert tier_of(_c(2, 5.4)) == RISKY, "two of three is still unproven"
+    assert tier_of(_c(3, 5.0, beats_holding=False)) == RISKY, (
+        "accurate, consistent, and still worse than doing nothing")
+
+
+def test_nothing_currently_ships_as_proven():
+    """The honest state after the money test. Deep-oversold wins 54.3% against
+    51.1% across three eras and still earns +0.599% a trade where holding
+    earns +0.659% — the extra accuracy is bought with exactly enough extra
+    downside to more than cancel it. An empty proven tier is the correct
+    output, not a bug to design around."""
+    from sigbot.scan import CANDIDATES
+
+    assert all(tier_of(c) == RISKY for c in CANDIDATES)
+    assert not any(c.beats_holding for c in CANDIDATES)
 
 
 def test_conviction_is_mostly_era_consistency():
@@ -43,16 +59,12 @@ def test_conviction_is_mostly_era_consistency():
 def test_risky_rows_are_sized_down_not_hidden():
     """The whole reason the risky tier can exist is that being wrong on it
     costs a fraction. Hiding it instead would forfeit the learning."""
-    row = {"rsi_14": 18.0, "mfi_14": 30.0}
-    proven_hit = scan_row("AAPL", row)
-    assert proven_hit is not None and proven_hit.tier == PROVEN
-
-    risky_row = {"close": 70.0, "sma_200": 100.0}
-    risky_hit = scan_row("XYZ", risky_row)
-    assert risky_hit is not None and risky_hit.tier == RISKY
+    from sigbot.scan import Hit
 
     base = 10_000.0
-    assert position_size(risky_hit, base) < position_size(proven_hit, base) / 2
+    proven = Hit("A", _c(3, 5.0), PROVEN, 100.0, 1.0, "r")
+    risky = Hit("B", _c(2, 5.0, beats_holding=False), RISKY, 78.0, 1.0, "r")
+    assert position_size(risky, base) < position_size(proven, base) / 2
 
 
 def test_a_proven_reason_beats_a_risky_one_on_the_same_name():
@@ -60,7 +72,10 @@ def test_a_proven_reason_beats_a_risky_one_on_the_same_name():
     it — that would understate the evidence and mis-size the position."""
     both = {"rsi_14": 18.0, "mfi_14": 30.0, "close": 70.0, "sma_200": 100.0}
     hit = scan_row("AAPL", both)
-    assert hit is not None and hit.tier == PROVEN
+    assert hit is not None
+    # Highest conviction wins when no candidate is proven, which is the
+    # current state — the strongest available reason, honestly labelled.
+    assert hit.candidate.name == "oversold-money-holding"
 
 
 def test_only_two_colours_ever():
@@ -73,7 +88,11 @@ def test_only_two_colours_ever():
         {"close": 90.0, "prev_close": 100.0},       # risky
     ]
     seen = {hit.colour for hit in (scan_row("S", r) for r in rows) if hit}
-    assert seen == {"var(--green)", "var(--faint)"}, seen
+    assert seen <= {"var(--green)", "var(--faint)"}, seen
+    # And the palette itself only ever offers those two.
+    assert Hit("S", _c(3, 5.0), PROVEN, 100.0, 1.0, "r").colour == "var(--green)"
+    assert Hit("S", _c(1, 5.0, beats_holding=False), RISKY, 20.0, 1.0,
+               "r").colour == "var(--faint)"
 
 
 def test_silence_is_reported_as_normal_not_as_failure():
@@ -87,3 +106,33 @@ def test_the_shipped_candidates_carry_their_measurements():
         assert c.pooled_n > 1000, f"{c.name} rests on too little data"
         assert 0 <= c.eras_positive <= 3
         assert c.plain and not c.plain.startswith("TODO")
+
+
+def test_a_setup_cannot_buy_accuracy_with_bigger_losses():
+    """The failure that demoted the only proven candidate. A setup can raise
+    its hit rate by trading conditions where being wrong is expensive, and
+    every accuracy-based test will applaud it."""
+    from sigbot.expectancy import compare_to_holding
+
+    # Deep-oversold as measured: 54.3% wins at +4.47%, losses at -4.12%.
+    setup = [0.0447] * 543 + [-0.0412] * 457
+    # Any random session: 51.1% wins at +2.97%, losses at -1.79%.
+    hold = [0.0297] * 511 + [-0.0179] * 489
+
+    c = compare_to_holding(setup, hold)
+    assert c.payoff_ratio < 1.2, "wins barely bigger than losses"
+    assert c.edge_pct < 0, "and therefore worse than doing nothing"
+    assert not c.beats_holding
+    assert "WORSE than doing nothing" in c.verdict()
+
+
+def test_holding_is_the_benchmark_not_zero():
+    """A setup that makes money in a rising market has not necessarily done
+    anything. Benchmarking against zero flatters every one of them."""
+    from sigbot.expectancy import compare_to_holding
+
+    setup = [0.01] * 300
+    strong_market = [0.02] * 300
+    assert compare_to_holding(setup, strong_market).edge_pct < 0
+    assert compare_to_holding(setup, []).edge_pct > 0, (
+        "the same setup looks good against a zero benchmark")

@@ -59,6 +59,11 @@ class Candidate:
     pooled_edge_pp: float
     pooled_n: int
     eras_positive: int
+    # Measured in money against leaving the capital alone over the same
+    # window. False until a candidate has actually been shown to clear it —
+    # the default must not flatter anything.
+    beats_holding: bool = False
+    payoff_ratio: float = 0.0
 
     @property
     def conviction_pct(self) -> float:
@@ -70,10 +75,13 @@ class Candidate:
         in one era out of three. Sample size and edge size together carry the
         remaining third — they are necessary, and on their own they lie.
         """
-        era_part = min(self.eras_positive / 3.0, 1.0) * 66.0
-        size_part = min(self.pooled_n / 5000.0, 1.0) * 17.0
-        edge_part = min(max(self.pooled_edge_pp, 0.0) / 5.0, 1.0) * 17.0
-        return round(era_part + size_part + edge_part, 1)
+        era_part = min(self.eras_positive / 3.0, 1.0) * 50.0
+        size_part = min(self.pooled_n / 5000.0, 1.0) * 12.0
+        edge_part = min(max(self.pooled_edge_pp, 0.0) / 5.0, 1.0) * 13.0
+        # A quarter of the score is money, and it is all-or-nothing, because
+        # a setup that loses to holding is not partially useful.
+        money_part = 25.0 if self.beats_holding else 0.0
+        return round(era_part + size_part + edge_part + money_part, 1)
 
 
 def _oversold_money_holding(row: dict) -> bool:
@@ -108,9 +116,14 @@ CANDIDATES: tuple[Candidate, ...] = (
     Candidate(
         name="oversold-money-holding", side="BUY",
         plain=("Price has been hammered but money has not left the name. "
-               "Historically the strongest version of a bounce setup."),
+               "Right more often than chance — but the wins are barely "
+               "bigger than the losses, so it has made less money than "
+               "simply holding. Being right is not the same as being paid."),
         condition=_oversold_money_holding,
-        pooled_edge_pp=5.0, pooled_n=9278, eras_positive=3),
+        pooled_edge_pp=5.0, pooled_n=9278, eras_positive=3,
+        # Demoted. Accurate across three eras and still worse than holding:
+        # +0.599% a trade against +0.659%, payoff 1.08 against 1.66.
+        beats_holding=False, payoff_ratio=1.08),
     Candidate(
         name="hard-down-day", side="BUY",
         plain=("Down more than 8% in one session. Often overdone — but the "
@@ -154,12 +167,25 @@ class Hit:
 
 
 def tier_of(candidate: Candidate) -> str:
-    """Proven only on three positive eras AND a real edge.
+    """Proven on three positive eras, a real edge, AND beating buy-and-hold.
 
-    Both halves are required. Three positive eras on +0.3pp is consistency
-    without profit; +15pp in one era out of three is the gap-down trap.
+    The third condition is the one that took longest to find and demotes the
+    only candidate that had passed the first two.
+
+    Deep-oversold wins 54.3% of the time against 51.1% for any random session
+    — a genuine accuracy edge across three eras. Measured in money over 9,246
+    occurrences it earns +0.599% a trade while simply holding earns +0.659%,
+    and at ten days the gap widens to +0.76% against +1.68%. It fires in
+    violent conditions where a loss costs nearly what a win pays (payoff 1.08
+    against 1.66 for ordinary sessions), so the extra accuracy is bought with
+    exactly enough extra downside to more than cancel it.
+
+    Hit rate could never have seen this. Nothing that measures only whether
+    the direction was right can, because the failure is entirely in the sizes.
     """
-    if candidate.eras_positive >= 3 and candidate.pooled_edge_pp >= 3.0:
+    if (candidate.eras_positive >= 3
+            and candidate.pooled_edge_pp >= 3.0
+            and candidate.beats_holding):
         return PROVEN
     return RISKY
 
