@@ -312,48 +312,6 @@
   ]
  },
  {
-  "title": "Energy Giants Are Betting Billions on a World of Longer Oil Routes",
-  "kind": "Supply chain change",
-  "colour": "#8b8b9a",
-  "verdict": "Cannot get there. Even if every unknown resolved in your favour this reaches 69 out of 80. Read it as context, not a lead.",
-  "summary": "A trade rule, tariff, sanction or logistics change makes a route newly viable or newly broken.",
-  "answered": [
-   "months before anything could be charged",
-   "needs real capital before any revenue",
-   "crowded, with established players"
-  ],
-  "unanswered": [
-   "Is anyone already paying for this?",
-   "Can you reach a buyer without paying for ads?",
-   "Could you actually do the work?"
-  ],
-  "money": "needs real capital before any revenue",
-  "sources": [
-   "Oilprice.com (2026-09-19)"
-  ]
- },
- {
-  "title": "Europe Outbids Asia for LNG as Prices Surge 150%",
-  "kind": "Supply chain change",
-  "colour": "#8b8b9a",
-  "verdict": "Cannot get there. Even if every unknown resolved in your favour this reaches 69 out of 80. Read it as context, not a lead.",
-  "summary": "A trade rule, tariff, sanction or logistics change makes a route newly viable or newly broken.",
-  "answered": [
-   "months before anything could be charged",
-   "needs real capital before any revenue",
-   "crowded, with established players"
-  ],
-  "unanswered": [
-   "Is anyone already paying for this?",
-   "Can you reach a buyer without paying for ads?",
-   "Could you actually do the work?"
-  ],
-  "money": "needs real capital before any revenue",
-  "sources": [
-   "Oilprice.com (2026-09-19)"
-  ]
- },
- {
   "title": "Fuel cost spike hits carrier margins",
   "kind": "Supply chain change",
   "colour": "#8b8b9a",
@@ -373,6 +331,50 @@
   "money": "needs real capital before any revenue",
   "sources": [
    "news - FreightWaves (2026-09-20)"
+  ]
+ },
+ {
+  "title": "Trump seeks to bring health-research funding under his control, Politico reports",
+  "kind": "Supply chain change",
+  "colour": "#8b8b9a",
+  "verdict": "Cannot get there. Even if every unknown resolved in your favour this reaches 69 out of 80. Read it as context, not a lead.",
+  "summary": "A trade rule, tariff, sanction or logistics change makes a route newly viable or newly broken.",
+  "answered": [
+   "months before anything could be charged",
+   "needs real capital before any revenue",
+   "crowded, with established players",
+   "reported by a source with a record"
+  ],
+  "unanswered": [
+   "Is anyone already paying for this?",
+   "Can you reach a buyer without paying for ads?",
+   "Could you actually do the work?"
+  ],
+  "money": "needs real capital before any revenue",
+  "sources": [
+   "Reuters (2026-09-20)"
+  ]
+ },
+ {
+  "title": "About BNPP EUR Aggrgt Bond Opportunities UCITS ETF EUR A (AEJE.DE) - Reuters",
+  "kind": "Supply chain change",
+  "colour": "#8b8b9a",
+  "verdict": "Cannot get there. Even if every unknown resolved in your favour this reaches 69 out of 80. Read it as context, not a lead.",
+  "summary": "A trade rule, tariff, sanction or logistics change makes a route newly viable or newly broken.",
+  "answered": [
+   "months before anything could be charged",
+   "needs real capital before any revenue",
+   "crowded, with established players",
+   "reported by a source with a record"
+  ],
+  "unanswered": [
+   "Is anyone already paying for this?",
+   "Can you reach a buyer without paying for ads?",
+   "Could you actually do the work?"
+  ],
+  "money": "needs real capital before any revenue",
+  "sources": [
+   "Reuters (2026-09-20)"
   ]
  },
  {
@@ -1050,6 +1052,25 @@
   ],
   "sources": [
    "Analytics Insight"
+  ]
+ },
+ {
+  "title": "Orion180 Insurance prices",
+  "kind": "New listing",
+  "colour": "#8b8b9a",
+  "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 0 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
+  "summary": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live.",
+  "money": "0 of a possible 0 points on the ten tests the coverage could answer",
+  "answered": [],
+  "unanswered": [
+   "Does reporting say it makes money?",
+   "Is revenue growing?",
+   "Does the money go into the business?",
+   "Is the price being called reasonable?",
+   "Did serious institutions take an allocation?"
+  ],
+  "sources": [
+   "scanx.trade"
   ]
  },
  {
