@@ -1199,6 +1199,93 @@ def run_report(settings=SETTINGS) -> None:
                 ledger.failure_modes(model, symbol)).replace("\n", "\n  "))
 
 
+def run_backtest(symbols: list[str] | None = None,
+                 settings=SETTINGS) -> None:
+    """Score the daily model against history instead of waiting for the future.
+
+    The walk-forward engine already existed and was only reachable from the
+    screener, so a month of live checks was the only way to judge an idea.
+    This exposes it: same rules (chronological only, refit on a trailing
+    window, costs charged on every signal, compared against baselines), run
+    across the board and pooled into one readable answer.
+
+    Results are NOT written to the shadow ledger. A replayed result is a
+    hypothesis about data the model may have been shaped on; a live result is
+    evidence. Mixing them is how a system starts lying about itself.
+    """
+    from .backtest import walk_forward
+    from .features import build_dataset
+
+    market = YahooProvider()
+    assets = [a for a in board_assets(settings) if a.kind != "crypto"]
+    if symbols:
+        wanted = {s.upper() for s in symbols}
+        assets = [a for a in assets if a.symbol.upper() in wanted]
+
+    end = (datetime.now(timezone.utc) + timedelta(days=1)).strftime("%Y-%m-%d")
+    results, skipped = [], []
+    for asset in assets:
+        try:
+            bars = market.history(asset.symbol, settings.history_start, end)
+            res = walk_forward(build_dataset(bars), symbol=asset.symbol)
+        except Exception as exc:  # noqa: BLE001
+            record_skip("backtest", asset.symbol, exc)
+            skipped.append(asset.symbol)
+            continue
+        if res.n_predictions:
+            results.append(res)
+        else:
+            skipped.append(asset.symbol)
+
+    print(_backtest_summary(results, skipped))
+
+
+def _backtest_summary(results, skipped) -> str:
+    """Pool the per-symbol results into one answer, with its caveats.
+
+    Pooled on purpose: a table of forty decisions per symbol invites reading
+    the best column, which is the commonest way a backtest flatters itself.
+    """
+    if not results:
+        return ("Backtest produced no decisions. Every symbol either had too "
+                "little history for the training window or failed to fetch — "
+                f"{len(skipped)} skipped. That is a result about the data, "
+                "not about the model.")
+
+    total = sum(r.n_predictions for r in results)
+    signals = sum(r.n_signals for r in results)
+    acc = sum(r.directional_accuracy * r.n_predictions
+              for r in results) / total
+    base = sum(r.base_rate * r.n_predictions for r in results) / total
+    skill = sum((r.brier_baseline - r.brier) * r.n_predictions
+                for r in results) / total
+
+    lines = [f"Backtest — daily model over {len(results)} symbol(s)", ""]
+    lines.append(f"  Decisions replayed     {total:,}")
+    lines.append(f"  Directional accuracy   {acc:.1%}")
+    lines.append(f"  Base rate (up days)    {base:.1%}")
+    lines.append(f"  Edge over base         {(acc - base) * 100:+.1f} points")
+    lines.append(f"  Brier skill vs base    {skill:+.4f}")
+    lines.append(f"  Signals that fired     {signals:,}")
+    if skipped:
+        lines.append(f"  Skipped                {len(skipped):,} symbol(s)")
+    lines.append("")
+    if acc - base > 0.02 and skill > 0:
+        lines.append("  Beats its baseline on history. That makes it worth "
+                     "running forward — it is not evidence that it works.")
+    else:
+        lines.append("  Does not beat its baseline on history. Running it "
+                     "forward would most likely reproduce that, and the live "
+                     "record so far agrees.")
+    lines.append("  Three caveats. The symbol list is the current board, so "
+                 "anything delisted or already dropped is missing and the "
+                 "number is flattered by its absence. The model may have been "
+                 "shaped on this same history. And nothing here is written to "
+                 "the ledger: a replay is a hypothesis, a live check is "
+                 "evidence.")
+    return "\n".join(lines)
+
+
 def run_paper() -> None:
     """The sixth model: replay the ledger as a portfolio and report the money.
 
@@ -1232,6 +1319,7 @@ def main(argv: list[str]) -> int:
         "day_summary": run_day_summary,
         "crypto15m": run_crypto15m,
         "paper": run_paper,
+        "backtest": run_backtest,
     }
     if cmd not in jobs:
         print(f"usage: python -m sigbot.runner [{'|'.join(jobs)}]")

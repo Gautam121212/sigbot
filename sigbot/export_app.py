@@ -302,7 +302,12 @@ def build_export(db_path: str = "shadow.db", patterns_path: str = "patterns.db",
             {"model": model_id, "symbol": sym, "tier": t.value,
              "description": DESCRIPTIONS.get(sym, ""),
              "detail": f"{cnt:,} checks, right {r:.0%} of the time, {lo:.0%} worst case",
-             "resolved": cnt}
+             "resolved": cnt,
+             # How the wrong ones went wrong. Already in the ledger; without
+             # it the page can say a call missed but never why, which is the
+             # only part a person can learn from.
+             "failures": ledger.failure_modes(model_id, sym),
+             "null_rate": round(null, 4)}
             for sym, (cnt, r, lo) in sorted(
                 ledger.stats(model_id).items(), key=lambda kv: -kv[1][0])[:8]
             for t, _, _ in [ledger.tier(model_id, sym)]

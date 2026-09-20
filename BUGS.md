@@ -31,6 +31,7 @@ more than re-reading the diff.
 | **C7** | **A cosmetic edit dropped functional code** | Did compressing or restyling this block silently delete a rule something depended on? |
 | **C8** | **Recording is not recommending** | Does this treat every stored row as an endorsed action, when most were never flagged as actionable? |
 | **C9** | **A threshold calibrated against the wrong reference** | What does *chance* score on this exact metric? Is the gate above what a good result can even produce? |
+| **C10** | **Building something that already exists** | Did I grep for this capability before writing it? B33 was nearly a duplicate of a thorough engine already in the tree. |
 
 ---
 
@@ -41,8 +42,6 @@ more than re-reading the diff.
 | **B31** | **Home shows only what each model is working on**, with no route to the rest of the board or to assets grouped by readiness. | — | Partly addressed: model cards now carry badge, window and time-to-next-tier. Still wanted: a "Ready now" strip listing qualifying assets directly. |
 | **B35** | **Per-asset pages do not state what to do** (buy / hold / sell), nor the plain-English reasons behind their wrong checks. | — | Requested. Needs the failure-mode breakdown, which the ledger already stores, rendered per asset. |
 
-| **B35** | **Per-asset pages do not state what to do** (buy / hold / sell), nor the plain-English reasons behind their wrong checks. | — | Requested. The failure-mode breakdown is already stored in the ledger; it needs rendering per asset. |
-| **B33** | **No historical backtest.** Model accuracy is only measured forward, so a new model must wait weeks before its record means anything. | — | Wanted: replay stored price history through a model, scored and kept visibly separate from live results. |
 | ~~**B37**~~ | ~~No per-day P&L view.~~ Paper trading reports one cumulative curve; wanted is a daily view — that day's starting capital, trades, wins, losses — replacing Missed in the nav. | — | Agreed design: the DISPLAY resets daily, the ledger does not. Storage keeps every trade and every miss; only the page shows one day. |
 | **B38** | **No suggested-picks view derived from paper-trading accuracy.** | — | Requested. Only meaningful for gated models, so it will be empty until more clear their bar. |
 | **B32b** | **IPO windows still shown after they close** for cards whose coverage never carried a date. The 2-day age-out only fires once a publication date exists. | C1 | Needs an absolute floor: an undated listing card cannot outlive its first sighting by more than N days regardless. |
@@ -54,6 +53,8 @@ more than re-reading the diff.
 
 | ID | Bug | Class | Fix |
 |----|-----|-------|-----|
+| **B35** | **Per-asset pages gave no reason for their misses**, and still hardcoded "a coin flip would give 50%" after the tier gate was corrected — B34 surviving one level down. | C9, C6 | Pages now show the asset's own right/wrong counts, the model's measured null, and a plain-English failure breakdown ("went the other way" vs "right but too small to cover costs"). A first version computed right/wrong from the MODEL's rate times the ASSET's n, making the per-reason shares sum past 100%; now taken from the asset's own breakdown. FIXED |
+| **B33** | **The walk-forward backtest engine existed but was unreachable** — only the screener called it, so a month of live checks was the only way to judge an idea. | — | Exposed as `python -m sigbot.runner backtest`: pooled across the board, decision-count weighted, never written to the ledger. Carries its three caveats every time (survivorship, fitting on the same history, replay-is-not-record). FIXED |
 | **B36** | **Follow-on moves had one resolved check in its entire life** — 6,661 links considered per run, 597 clearing the trigger, and essentially none recorded. Its direction gate demanded an **absolute 0.58** lower bound while the edge gate beside it asked only for `base + 3pp`; the two gates disagreed by ~16 points and the arbitrary one bound. | C9 | Gate is now `base_hit_rate + 6pp`, consistent with the tier fix. Honest footnote: this unlocks nothing today — the real links sit at 37-39% against a ~51% base, so the model genuinely has no edge in this universe. That is a result, not a bug. FIXED |
 | **B32b** | **Undated IPO cards lingered forever** — the 2-day age-out only fired once a publication date existed, so a card whose coverage never gave dates stayed live indefinitely. | C1 | Dropped at the render path, with a visible count of what was hidden and why. No date is ever guessed. FIXED |
 | **B39** | **Stored ideas rendered grey even after the colour fix** — the three-band fix applied at write time, so the 32 cards already in `opportunities.json` kept their old colour. | C1 | Ideas now sort by colour and carry a case-strength bar at the render path, so the page reflects the current rules immediately. FIXED |

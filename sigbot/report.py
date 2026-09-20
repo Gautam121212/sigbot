@@ -385,7 +385,22 @@ def _detail(model: dict, a: dict) -> str:
     sig, col, reason = _call(model, a)
     rate, floor = model.get("hit_rate"), model.get("lower_bound")
     mech, blind = MECHANISM.get(model["id"], ("", ""))
-    edge = (floor - 0.50) if floor is not None else None
+    # Against the metric's own null, not 0.50. The asset page was still
+    # hardcoding a coin flip at 50% after the tier gate was corrected — the
+    # same bug, surviving one level down.
+    null = a.get("null_rate") or model.get("null_rate") or 0.50
+    edge = (floor - null) if floor is not None else None
+    # From the asset's OWN failure breakdown, not the model's hit rate times
+    # this asset's n. Mixing those made the per-reason percentages sum past
+    # 100% — the counts described one asset and the total described another.
+    failures = a.get("failures") or {}
+    if failures:
+        right = int(failures.get("win", 0))
+        wrong = sum(v for k, v in failures.items() if k != "win")
+    else:
+        right = int(round((rate or 0) * n))
+        wrong = max(n - right, 0)
+    shortcomings = _shortcomings(failures, wrong)
     sizing = size_position(n, int(round((rate or 0) * n)), target_r=1.0) if n else None
     risk = sizing.recommended_risk_pct if sizing else 0.0
     risk_note = (_plain_risk_note(n, sizing.note) if sizing
@@ -404,7 +419,8 @@ def _detail(model: dict, a: dict) -> str:
     <dt>Times we checked</dt><dd>{n:,}</dd>
     <dt>Times we were right</dt><dd>{_pct(rate)}</dd>
     <dt>Worst case, realistically</dt><dd style="color:{col}">{_pct(floor)}</dd>
-    <dt>A coin flip would give</dt><dd>50%</dd>
+    <dt>Times we were wrong</dt><dd>{wrong:,}</dd>
+    <dt>A coin flip would give</dt><dd>{_pct(null)}</dd>
     <dt>Better than a coin by</dt>
     <dd style="color:{'var(--green)' if edge and edge > 0 else 'var(--red)'}">
       {'—' if edge is None else f'{edge * 100:+.0f} points'}</dd>
@@ -414,6 +430,9 @@ def _detail(model: dict, a: dict) -> str:
   that is what the record actually supports — the higher figure is the luckiest
   reading of the same data. Few checks means a low worst case even when the
   headline looks good. That is the honest answer, not a broken one.</p></div>
+
+  <h4>Why the wrong ones were wrong</h4>
+  <div class="card">{shortcomings}</div>
 
   <h4>What we are actually measuring</h4>
   <div class="card"><p>{_e(mech)}</p></div>
@@ -1102,3 +1121,42 @@ def _pnl_detail_pages(data: dict) -> str:
   <div class="tiles-grid">{trades or '<p>No trades.</p>'}</div>
 </div></div>""")
     return "".join(pages)
+
+
+def _shortcomings(failures: dict, wrong: int) -> str:
+    """The failure breakdown in plain English.
+
+    Saying a call missed is not useful; saying HOW it missed is the only part
+    a person can act on. "Went the other way" and "right but too small to
+    cover costs" call for different responses, and lumping them together
+    hides that.
+    """
+    if not failures or wrong <= 0:
+        return ("<p>Nothing has gone wrong yet, which with few checks means "
+                "very little either way.</p>")
+
+    plain = {
+        "direction_wrong": ("went the other way", "the call was simply "
+                            "backwards — the price moved against it"),
+        "magnitude_short": ("right but too small", "the direction was right "
+                            "and the move was smaller than the cost of "
+                            "trading it, so being right earned nothing"),
+        "unexplained": ("no clean reason", "the move does not fit either "
+                        "pattern — usually a quiet session where the price "
+                        "drifted without a story"),
+    }
+    rows = []
+    for mode, count in sorted(failures.items(), key=lambda kv: -kv[1]):
+        if mode == "win" or not count:
+            continue
+        label, explain = plain.get(mode, (mode.replace("_", " "), ""))
+        share = count / wrong * 100 if wrong else 0
+        rows.append(f"<li><b>{_e(label)}</b> — {count:,} of the "
+                    f"{wrong:,} misses ({share:.0f}%): {_e(explain)}.</li>")
+    if not rows:
+        return "<p>No breakdown recorded for these misses yet.</p>"
+    return ("<ul>" + "".join(rows) + "</ul>"
+            "<p>The split matters more than the total. A run of "
+            "\u201cright but too small\u201d means the signal works and the "
+            "horizon is too short to pay for itself; a run of "
+            "\u201cwent the other way\u201d means it does not work.</p>")

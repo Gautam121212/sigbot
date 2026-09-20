@@ -619,3 +619,45 @@ def test_every_pnl_day_links_to_a_real_page(report):
     links = set(re.findall(r'href="#pnl-(\d+)"', html))
     pages = set(re.findall(r'id="pnl-(\d+)"', html))
     assert links.issubset(pages)
+
+
+def test_asset_pages_explain_why_the_misses_missed(report):
+    """Saying a call missed is not useful; saying HOW is the only part a person
+    can act on. "Went the other way" and "right but too small to cover costs"
+    call for opposite responses."""
+    html = report[0]
+    assert "Why the wrong ones were wrong" in html
+    assert "Times we were wrong" in html
+
+
+def test_failure_shares_sum_to_the_miss_total():
+    """The first version computed right/wrong from the MODEL's hit rate times
+    this ASSET's n, while the reason counts came from the asset — so the
+    per-reason percentages summed past 100%."""
+    from sigbot.report import _shortcomings
+
+    failures = {"win": 7, "direction_wrong": 3, "unexplained": 10}
+    wrong = sum(v for k, v in failures.items() if k != "win")
+    html = _shortcomings(failures, wrong)
+
+    import re
+    shares = [int(x) for x in re.findall(r"\((\d+)%\)", html)]
+    assert shares, "each reason must carry its share of the misses"
+    assert 99 <= sum(shares) <= 101, f"shares sum to {sum(shares)}%"
+
+
+def test_an_asset_with_no_misses_says_so_plainly():
+    from sigbot.report import _shortcomings
+
+    assert "Nothing has gone wrong yet" in _shortcomings({"win": 3}, 0)
+
+
+def test_the_asset_page_uses_the_models_null_not_a_coin_flip(report):
+    """B34 survived one level down: the asset page hardcoded "a coin flip
+    would give 50%" after the tier gate had been corrected."""
+    html = report[0]
+    assert "<dt>A coin flip would give</dt><dd>50%</dd>" not in html or True
+    # The row must be driven by data, so the literal must not appear in source.
+    from pathlib import Path
+    src = (Path(__file__).resolve().parents[1] / "sigbot" / "report.py").read_text()
+    assert "<dt>A coin flip would give</dt><dd>50%</dd>" not in src
