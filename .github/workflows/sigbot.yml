@@ -85,7 +85,7 @@ jobs:
           # repository they are the ledger and must persist. One add per file,
           # so a file that does not exist yet cannot sink the others with it.
           for f in shadow.db patterns.db watchlist.db opportunities.json \
-                   universe.json paper.json app/public/index.html; do
+                   universe.json paper.json; do
             git add -f "$f" 2>/dev/null || true
           done
           # Then everything else the jobs touched. Run 2 died because the
