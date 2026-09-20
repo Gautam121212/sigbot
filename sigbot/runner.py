@@ -1524,7 +1524,7 @@ def run_stocks(settings=SETTINGS) -> None:
         ledger.record("stocks", asset.symbol, hit.candidate.side,
                       hit.conviction_pct / 100.0, 0.0, close, 24)
 
-    ledger.log_run("stocks", looked, len(hits), "")
+    ledger.log_run("stocks", looked, len(hits), "", recorded=len(hits))
     print(summarise(hits, looked))
     if skipped:
         print(f"\n  {skipped} name(s) skipped for want of price history.")

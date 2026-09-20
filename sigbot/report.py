@@ -510,7 +510,10 @@ def _model_page(m: dict) -> str:
     # anything, and a bar showing how far its floor has travelled from chance
     # to the trade gate — which is the question "where do I spend attention"
     # in its only answerable form.
-    rows = "".join(f"""
+    if m["id"] == "stocks":
+        rows = _scan_rows(m)
+    else:
+        rows = "".join(f"""
     <a href="#d-{_e(m['id'])}-{_e(a['symbol'])}"><div class="card row">
       <span class="pip" style="background:{
           TIER_COLOR.get(a.get('tier', 'SILENT'), '#8b8b9a')};margin-top:0"></span>
@@ -551,7 +554,8 @@ def _model_page(m: dict) -> str:
   <h4>What would prove this wrong</h4>
   <div class="card"><p>{_e(m.get('falsifier', ''))}</p></div>
   {_asset_split(m)}
-  <h2>What it is watching ({len(m["alerts"])})</h2>
+  <h2>{"What fired" if m["id"] == "stocks" else "What it is watching"} ({len(m["alerts"])})</h2>
+  {_scan_note(m)}
   {rows or '<div class="card"><p>Nothing has been checked for this one yet. It stays quiet until it has something to show.</p></div>'}
   <p class="note">Tap any row for the full reasoning.</p>
 </div></div>
@@ -1589,3 +1593,67 @@ def _meter(pct: float, colour: str) -> str:
     if round(pct) <= 0:
         return '<div class="meter"><i></i></div>'
     return f'<div class="meter"><i style="width:{pct:.0f}%;background:{colour}"></i></div>'
+
+
+def _scan_note(model: dict) -> str:
+    """The legend for the stocks page, stated before the rows.
+
+    A page mixing proven and unproven rows has to say so at the top. A reader
+    who works out halfway down that half the list is experimental has already
+    formed the wrong impression of the first half.
+    """
+    if model.get("id") != "stocks":
+        return ""
+    alerts = model.get("alerts") or []
+    if not alerts:
+        return ('<div class="card"><p>Nothing fired. The scan looks at every '
+                'name it can reach and stays quiet on almost all of them — '
+                'that is the usual outcome, and a quiet day costs nothing.'
+                '</p></div>')
+    proven = sum(1 for a in alerts if a.get("scan_tier") == "PROVEN")
+    return f"""
+  <div class="board-status">
+    <span><i class="pip" style="background:var(--green)"></i>{proven} worth acting on</span>
+    <span><i class="pip" style="background:var(--faint)"></i>{len(alerts) - proven} risky</span>
+  </div>
+  <p class="what-sm">Green means the reason this fired has worked in three
+  separate stretches of history. Grey means it looks promising but has not
+  proved itself — those are traded at a third of the size, on purpose, so the
+  record that would settle it actually gets built.</p>"""
+
+
+def _scan_rows(model: dict) -> str:
+    """Stocks rows: a dot, two bars, and a link through to the full page.
+
+    Two bars, as on the board, because one number cannot answer both questions
+    a reader has. Conviction is how much of the evidence bar the REASON has
+    cleared; record is how far this NAME has come toward a verdict of its own.
+    A row can be high on one and low on the other, and that combination is the
+    most useful thing on the page.
+    """
+    alerts = model.get("alerts") or []
+    if not alerts:
+        return ""
+
+    ordered = sorted(alerts, key=lambda a: (
+        0 if a.get("scan_tier") == "PROVEN" else 1,
+        -(a.get("conviction") or 0),
+        a.get("symbol", "")))
+
+    out = []
+    for a in ordered:
+        proven = a.get("scan_tier") == "PROVEN"
+        colour = "var(--green)" if proven else "var(--faint)"
+        label = "Worth acting on" if proven else "Risky — unproven"
+        conviction = a.get("conviction") or 0
+        out.append(f"""
+  <a href="#d-stocks-{_e(a['symbol'])}"><div class="card row">
+    <span class="pip" style="background:{colour};margin-top:0"></span>
+    <div class="grow"><h3>{_e(a['symbol'])}</h3>
+      <p style="color:{colour};font-weight:600">{label}</p>
+      {f'<p class="what-sm">{_e(a["description"])}</p>' if a.get("description") else ''}
+      <p>{_e(a.get('detail', ''))}</p>
+      {_bar("conviction", conviction, colour)}
+      {_bar("record", a.get("to_trade", 0), colour)}</div>
+    <span class="chev">&rsaquo;</span></div></a>""")
+    return "".join(out)

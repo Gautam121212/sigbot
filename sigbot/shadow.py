@@ -76,13 +76,47 @@ class ShadowLedger:
             con.commit()
 
     def log_run(self, job: str, considered: int = 0, signals: int = 0,
-                note: str = "") -> None:
-        """Record that a job ran. A quiet day is not a missing day."""
+                note: str = "", recorded: int | None = None) -> None:
+        """Record that a job ran. A quiet day is not a missing day.
+
+        THREE numbers, not two. `considered` is what the job looked at,
+        `recorded` is what it wrote down to be scored, and `signals` is what
+        it actually alerted on. The old two-number log collapsed the middle
+        one, and the daily model spent forty runs reporting "55 considered, 0
+        signals" while writing 2,680 predictions — every one of them real,
+        scored, and invisible in the log that was supposed to describe them.
+
+        The gap between considered and recorded is selectivity, which is the
+        single most useful thing to know about whether a model is choosing or
+        merely describing. It could not be measured at all before.
+        """
         with closing(sqlite3.connect(self.path)) as con:
+            cols = {r[1] for r in con.execute("PRAGMA table_info(runs)")}
+            if "recorded" not in cols:
+                con.execute("ALTER TABLE runs ADD COLUMN recorded INTEGER")
             con.execute(
-                "INSERT INTO runs(job,ran_at,considered,signals,note) VALUES (?,?,?,?,?)",
-                (job, datetime.now(timezone.utc).isoformat(), considered, signals, note))
+                "INSERT INTO runs(job,ran_at,considered,signals,note,recorded) "
+                "VALUES (?,?,?,?,?,?)",
+                (job, datetime.now(timezone.utc).isoformat(), considered,
+                 signals, note,
+                 signals if recorded is None else recorded))
             con.commit()
+
+    def selectivity(self, job: str) -> tuple[int, int, int]:
+        """(considered, recorded, alerted) totals for one job.
+
+        A human trader looks at many and acts on few. A model that records
+        everything it looks at is not choosing, it is describing — and that
+        distinction is invisible without these three numbers side by side.
+        """
+        with closing(sqlite3.connect(self.path)) as con:
+            cols = {r[1] for r in con.execute("PRAGMA table_info(runs)")}
+            rec = "COALESCE(SUM(recorded), 0)" if "recorded" in cols else "0"
+            row = con.execute(
+                f"SELECT COALESCE(SUM(considered),0), {rec}, "
+                "COALESCE(SUM(signals),0) FROM runs WHERE job = ?",
+                (job,)).fetchone()
+        return (int(row[0]), int(row[1]), int(row[2]))
 
     def last_run(self, job: str) -> dict | None:
         with closing(sqlite3.connect(self.path)) as con:
@@ -118,6 +152,20 @@ class ShadowLedger:
             args.append(model)
         with closing(sqlite3.connect(self.path)) as con:
             return list(con.execute(q, args))
+
+    def latest_score(self, model: str, symbol: str) -> float | None:
+        """The most recent recorded score for one asset, or None.
+
+        Used to recover a scan row's tier from what was actually written,
+        rather than storing the tier separately where it could drift out of
+        step with the number it came from.
+        """
+        with closing(sqlite3.connect(self.path)) as con:
+            row = con.execute(
+                "SELECT score FROM predictions WHERE model = ? AND symbol = ? "
+                "ORDER BY created_at DESC LIMIT 1", (model, symbol)
+            ).fetchone()
+        return float(row[0]) if row and row[0] is not None else None
 
     def resolve(self, pred_id: int, exit_price: float,
                 bar_open: float | None = None, bar_high: float | None = None,

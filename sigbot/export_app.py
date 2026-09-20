@@ -242,6 +242,24 @@ def build_charts(bars_by_symbol: dict, kinds: dict[str, str],
     return out
 
 
+def _scan_fields(ledger, model_id: str, symbol: str) -> dict:
+    """Tier and conviction for a stocks row, from the recorded score.
+
+    Derived, not stored a second time. A duplicated tier is a tier that can
+    drift out of step with the number it was derived from, and then the colour
+    and the bar on the same row disagree.
+    """
+    if model_id != "stocks":
+        return {}
+    try:
+        score = ledger.latest_score(model_id, symbol)
+    except Exception:  # noqa: BLE001  # handled: an unreadable score renders as risky, never as proven
+        score = None
+    conviction = (score or 0.0) * 100.0
+    return {"conviction": round(conviction, 1),
+            "scan_tier": "PROVEN" if conviction >= 99.0 else "RISKY"}
+
+
 def _distance_to_trade(lower: float, null: float) -> float:
     """0-100: how far this asset's floor has travelled from chance to TRADE.
 
@@ -369,7 +387,11 @@ def build_export(db_path: str = "shadow.db", patterns_path: str = "patterns.db",
              "rate": round(r, 4), "lower": round(lo, 4),
              # How close this asset is to its model's trade bar, as a
              # percentage of the distance from chance to the gate.
-             "to_trade": _distance_to_trade(lo, null)}
+             "to_trade": _distance_to_trade(lo, null),
+             # The scan records conviction as the score, so the tier can be
+             # recovered from the ledger rather than stored twice and allowed
+             # to disagree with itself.
+             **_scan_fields(ledger, model_id, sym)}
             # Every asset the model has scored, not the busiest eight. A page
             # that shows a tenth of the board cannot answer "where should I
             # look", which is the only question it is there for. Ordered by
