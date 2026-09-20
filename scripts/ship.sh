@@ -88,8 +88,12 @@ for gen in app/data.json app/public/index.html app/sigbot-report.html \
            outbox.log .wrangler; do
   git rm --cached -rf --ignore-unmatch "$gen" >/dev/null 2>&1 || true
 done
+# The LEDGER only. app/public/index.html was in this list, and `git add -f`
+# overrides .gitignore — so the untrack two lines above was undone on the very
+# same run, and the file went straight back to the remote. That single word was
+# the whole conflict loop.
 for f in shadow.db patterns.db watchlist.db opportunities.json universe.json \
-         paper.json themes.json app/public/index.html; do
+         paper.json themes.json; do
   git add -f "$f" 2>/dev/null || true
 done
 git add -A
