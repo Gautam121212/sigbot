@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0a0a0f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon.svg">
+<title>Sigbot</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0a0f; --card:#111118; --card-border:#1a1a24;
+  --teal:#00d4aa; --teal-glow:rgba(0,212,170,.15);
+  --green:#00e676; --purple:#7c4dff; --red:#ff6b6b; --yellow:#ffd93d;
+  --white:#fff; --gray:#8b8b9a; --light-gray:#b0b0c0;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:Inter,-apple-system,BlinkMacSystemFont,sans-serif;background:var(--bg);
+  color:var(--white);-webkit-font-smoothing:antialiased;overflow:hidden}
+.app{max-width:430px;height:100vh;height:100dvh;margin:0 auto;display:flex;
+  flex-direction:column;position:relative;overflow:hidden}
+.topbar{display:flex;justify-content:space-between;align-items:baseline;
+  padding:16px 24px 6px}
+.brand{font-size:15px;font-weight:800;letter-spacing:-.2px}
+.stamp{font-size:11px;color:var(--gray)}
+.main{flex:1;overflow-y:auto;overflow-x:hidden;padding:0 16px 104px;scrollbar-width:none}
+.main::-webkit-scrollbar{display:none}
+.screen{animation:slideUp .35s cubic-bezier(.4,0,.2,1)}
+@keyframes slideUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+
+.card{background:var(--card);border:1.5px solid var(--card-border);border-radius:20px;
+  padding:20px;position:relative;overflow:hidden;
+  transition:border-color .3s cubic-bezier(.4,0,.2,1),transform .3s cubic-bezier(.4,0,.2,1),box-shadow .3s}
+.card::before{content:'';position:absolute;inset:0 0 auto 0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.06),transparent)}
+.tap{cursor:pointer}
+.tap:hover{border-color:rgba(255,255,255,.1);transform:translateY(-2px);
+  box-shadow:0 8px 32px rgba(0,0,0,.4)}
+.tap:active{transform:translateY(0)}
+
+/* Signature: the evidence ring. This product is about how much is proven,
+   so the hero is a proof meter rather than a balance. */
+.hero{margin-top:8px;display:flex;gap:20px;align-items:center}
+.hero-glow{position:absolute;top:-60%;left:-15%;width:220px;height:220px;
+  background:radial-gradient(circle,var(--teal-glow) 0%,transparent 70%);pointer-events:none}
+.ring{position:relative;flex-shrink:0;width:92px;height:92px}
+.ring svg{transform:rotate(-90deg)}
+.ring-num{position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;line-height:1}
+.ring-num b{font-size:26px;font-weight:800;letter-spacing:-1px}
+.ring-num span{font-size:9px;color:var(--gray);letter-spacing:.6px;margin-top:3px}
+.hero-text{position:relative;z-index:1;min-width:0}
+.hero-text h2{font-size:14px;font-weight:700;line-height:1.35;margin-bottom:8px}
+.hero-text p{font-size:11.5px;color:var(--gray);line-height:1.5}
+
+.section-head{display:flex;justify-content:space-between;align-items:center;margin:26px 0 12px}
+.section-head h3{font-size:16px;font-weight:700;letter-spacing:-.2px}
+.see-all{font-size:12px;color:var(--teal);font-weight:600;cursor:pointer;
+  background:none;border:none;font-family:inherit}
+.list{display:flex;flex-direction:column;gap:12px}
+
+.model{display:flex;align-items:center;gap:15px;padding:17px 18px}
+.avatar{width:46px;height:46px;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-size:16px;font-weight:800;flex-shrink:0;border:1.5px solid}
+.model-info{flex:1;min-width:0}
+.model-info h4{font-size:14.5px;font-weight:700;margin-bottom:2px}
+.model-info p{font-size:11.5px;color:var(--gray);line-height:1.4}
+.chevron{font-size:20px;color:var(--gray);font-weight:300;flex-shrink:0}
+.badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;
+  font-size:10px;font-weight:700;letter-spacing:.4px;margin-top:6px}
+
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:16px 0 20px}
+.stat{padding:14px 8px;text-align:center}
+.stat b{display:block;font-size:15px;font-weight:800;margin-bottom:4px}
+.stat span{font-size:9px;color:var(--gray);text-transform:uppercase;letter-spacing:.5px}
+
+.meter{height:6px;background:var(--card-border);border-radius:3px;overflow:hidden;margin:12px 0 8px}
+.meter i{display:block;height:100%;border-radius:3px;transition:width .9s cubic-bezier(.4,0,.2,1)}
+
+.row{display:flex;align-items:center;gap:12px;padding:15px 18px;position:relative}
+.row-bar{position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:0 3px 3px 0}
+.row-body{flex:1;min-width:0}
+.row-body h4{font-size:13px;font-weight:700;margin-bottom:3px}
+.row-body p{font-size:11px;color:var(--gray);line-height:1.45}
+
+.tabs{display:flex;gap:8px;margin:10px 0 18px;overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{background:var(--card);border:1.5px solid var(--card-border);color:var(--gray);
+  padding:8px 17px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;
+  white-space:nowrap;transition:all .2s;font-family:inherit}
+.tab.on{background:var(--teal);border-color:var(--teal);color:var(--bg)}
+.tab:hover:not(.on){border-color:rgba(255,255,255,.15);color:var(--white)}
+
+.back{background:none;border:none;color:var(--gray);font-size:14px;cursor:pointer;
+  padding:10px 0;display:flex;align-items:center;gap:6px;font-family:inherit;font-weight:600}
+.back:hover{color:var(--white)}
+.note{font-size:11px;color:var(--gray);line-height:1.6;padding:16px 4px 0}
+.empty{text-align:center;padding:44px 24px;color:var(--gray);font-size:13px;line-height:1.6}
+.empty b{display:block;color:var(--white);font-size:15px;margin-bottom:8px}
+
+.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;
+  max-width:430px;background:linear-gradient(to top,var(--bg) 72%,transparent);
+  display:flex;justify-content:space-around;padding:12px 0 max(20px,env(safe-area-inset-bottom));z-index:100}
+.nav button{background:none;border:none;display:flex;flex-direction:column;align-items:center;
+  gap:5px;color:var(--gray);cursor:pointer;padding:4px 18px;transition:color .2s;font-family:inherit}
+.nav button.on{color:var(--teal)}
+.nav button:hover{color:var(--white)}
+.nav b{font-size:16px;font-weight:800}
+.nav span{font-size:9.5px;font-weight:600}
+:focus-visible{outline:2px solid var(--teal);outline-offset:3px;border-radius:8px}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media(max-width:480px){.app,.nav{max-width:100vw}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="topbar"><div class="brand">Sigbot</div><div class="stamp" id="stamp"></div></div>
+  <div class="main" id="main"></div>
+  <nav class="nav" id="nav"></nav>
+</div>
+
+<script id="inline-data" type="application/json">null</script>
+<script>
+const C = {teal:'#00d4aa', purple:'#7c4dff', red:'#ff6b6b', green:'#00e676',
+           gray:'#8b8b9a', yellow:'#ffd93d'};
+const TIER_COLOR = {TRADE:C.green, CAUTION:C.yellow, WATCH:C.teal, SILENT:C.gray};
+const pct = v => v==null ? '—' : (v*100).toFixed(0)+'%';
+const rgba = (hex,a) => {const n=parseInt(hex.slice(1),16);
+  return `rgba(${n>>16&255},${n>>8&255},${n&255},${a})`};
+
+let DATA = null, view = {tab:'home', model:null, filter:'all'};
+
+function inlineData(){
+  try{
+    const el = document.getElementById('inline-data');
+    const parsed = el && JSON.parse(el.textContent);
+    return (parsed && parsed.models) ? parsed : null;
+  }catch(e){ return null; }
+}
+
+async function load(){
+  // Try the served file first so a refresh always shows the newest export.
+  try{
+    const r = await fetch('data.json', {cache:'no-store'});
+    if(!r.ok) throw new Error('HTTP ' + r.status);
+    DATA = await r.json();
+  }catch(e){
+    // Opened straight from a file, or offline: use the copy baked in at build
+    // time. Without this the app is blank from file://, because fetch() is
+    // blocked there for local files.
+    DATA = inlineData() || {error:String(e)};
+  }
+  render();
+}
+
+function ringSvg(done, total){
+  const R=40, CIRC=2*Math.PI*R, frac= total? done/total : 0;
+  return `<svg width="92" height="92" viewBox="0 0 92 92">
+    <circle cx="46" cy="46" r="${R}" fill="none" stroke="#1a1a24" stroke-width="7"/>
+    <circle cx="46" cy="46" r="${R}" fill="none" stroke="${done?C.teal:C.gray}"
+      stroke-width="7" stroke-linecap="round"
+      stroke-dasharray="${CIRC}" stroke-dashoffset="${CIRC*(1-frac)}"/>
+  </svg>`;
+}
+
+function home(){
+  const h = DATA.headline, ms = DATA.models;
+  return `<div class="screen">
+    <div class="card hero">
+      <div class="hero-glow"></div>
+      <div class="ring">${ringSvg(h.models_alertable, h.models_total)}
+        <div class="ring-num"><b>${h.models_alertable}/${h.models_total}</b><span>PROVEN</span></div></div>
+      <div class="hero-text">
+        <h2>${h.message}</h2>
+        <p>${h.observations_total.toLocaleString()} resolved observations so far.
+        A model alerts only once its record clears the bar.</p>
+      </div>
+    </div>
+
+    <div class="section-head"><h3>Models</h3>
+      <button class="see-all" onclick="go('history')">History</button></div>
+    <div class="list">${ms.map(m=>{
+      const col=C[m.accent], tc=TIER_COLOR[m.tier];
+      return `<div class="card model tap" tabindex="0" role="button"
+        onclick="openModel('${m.id}')" onkeydown="if(event.key==='Enter')openModel('${m.id}')">
+        <div class="avatar" style="background:${rgba(col,.12)};border-color:${rgba(col,.35)};color:${col}">
+          ${m.name[0]}</div>
+        <div class="model-info">
+          <h4>${m.name}</h4><p>${m.subtitle}</p>
+          <span class="badge" style="background:${rgba(tc,.12)};color:${tc}">${m.tier}</span>
+        </div>
+        <div class="chevron">›</div></div>`}).join('')}</div>
+
+    <p class="note">${DATA.disclaimer}</p></div>`;
+}
+
+function modelScreen(id){
+  const m = DATA.models.find(x=>x.id===id);
+  if(!m) return home();
+  const col=C[m.accent], tc=TIER_COLOR[m.tier];
+  const bar = m.lower_bound!=null ? Math.min(100, m.lower_bound*100) : 0;
+  return `<div class="screen">
+    <button class="back" onclick="go('home')">‹ Models</button>
+    <div class="card">
+      <h2 style="font-size:18px;font-weight:700;margin-bottom:6px">${m.name}</h2>
+      <p style="font-size:12.5px;color:var(--gray);margin-bottom:12px">${m.subtitle}</p>
+      <span class="badge" style="background:${rgba(tc,.12)};color:${tc}">${m.tier} · ${m.tier_label}</span>
+      <div class="meter"><i style="width:${bar}%;background:${tc}"></i></div>
+      <p style="font-size:11.5px;color:var(--gray)">${m.status_line}</p>
+    </div>
+    <div class="stats">
+      <div class="card stat"><b>${m.resolved.toLocaleString()}</b><span>Resolved</span></div>
+      <div class="card stat"><b>${pct(m.hit_rate)}</b><span>Hit rate</span></div>
+      <div class="card stat" title="90% Wilson lower bound"><b style="color:${tc}">${pct(m.lower_bound)}</b><span>Floor</span></div>
+    </div>
+    ${m.needed_for_trade ? `<p class="note" style="padding-top:0">At this hit rate,
+      the top tier needs about ${m.needed_for_trade.toLocaleString()} resolved
+      observations. The floor is the number to trust — it is what the record
+      supports at 90% confidence, not the best reading of it.</p>`:''}
+    <div class="section-head"><h3>By asset</h3></div>
+    ${m.alerts.length ? `<div class="list">${m.alerts.map(a=>rowFor(a,col)).join('')}</div>`
+      : `<div class="card empty"><b>Nothing resolved yet</b>
+         This model has produced no scored observations. It will stay quiet until it has.</div>`}
+  </div>`;
+}
+
+function rowFor(a, col){
+  const tc = TIER_COLOR[a.tier] || C.gray;
+  return `<div class="card row"><div class="row-bar" style="background:${tc}"></div>
+    <div class="avatar" style="width:36px;height:36px;font-size:12px;
+      background:${rgba(col,.12)};border-color:${rgba(col,.3)};color:${col}">
+      ${a.symbol.slice(0,3)}</div>
+    <div class="row-body"><h4>${a.symbol}</h4><p>${a.detail}</p></div>
+    <span class="badge" style="background:${rgba(tc,.12)};color:${tc}">${a.tier}</span></div>`;
+}
+
+function history(){
+  const f = view.filter;
+  const items = DATA.alerts.filter(a=>f==='all'||a.model===f);
+  const tabs = [['all','All'], ...DATA.models.map(m=>[m.id, m.name.split(' ')[0]])];
+  return `<div class="screen">
+    <div class="section-head" style="margin-top:8px"><h3>History</h3></div>
+    <div class="tabs">${tabs.map(([k,l])=>
+      `<button class="tab ${f===k?'on':''}" onclick="setFilter('${k}')">${l}</button>`).join('')}</div>
+    ${items.length ? `<div class="list">${items.map(a=>{
+        const m=DATA.models.find(x=>x.id===a.model)||{accent:'teal'};
+        return rowFor(a, C[m.accent]);}).join('')}</div>`
+      : `<div class="card empty"><b>No entries</b>
+         Nothing has resolved under this filter yet.</div>`}
+    <p class="note">Each row is a resolved record, not a prediction. Rows appear
+    only after the outcome is known.</p></div>`;
+}
+
+function evidence(){
+  const p = DATA.patterns || {};
+  const stages=[['confirmed','Confirmed',C.green],['confirming','Confirming',C.yellow],
+                ['discovery','Discovery',C.teal],['pruned','Dropped',C.gray]];
+  return `<div class="screen">
+    <div class="section-head" style="margin-top:8px"><h3>Evidence</h3></div>
+    ${stages.map(([k,label,col])=>{
+      const rows=p[k]||[];
+      return `<div class="section-head"><h3 style="font-size:13px;color:${col}">${label}
+        <span style="color:var(--gray);font-weight:600"> ${rows.length}</span></h3></div>
+        ${rows.length? `<div class="list">${rows.map(r=>
+          `<div class="card row"><div class="row-bar" style="background:${col}"></div>
+           <div class="row-body"><h4>${r.key}</h4>
+           <p>${r.n?`${r.n} obs · ${pct(r.rate)} · floor ${pct(r.lower)}`:'no observations'}</p>
+           </div></div>`).join('')}</div>`
+         : `<p class="note" style="padding-top:0">None.</p>`}`}).join('')}
+    <p class="note">A pattern is discovered on one sample and confirmed on a fresh
+    one. Only the fresh sample is quoted, because a pattern measured on the data
+    that selected it reads about 10 points too high.</p></div>`;
+}
+
+function render(){
+  const main=document.getElementById('main'), nav=document.getElementById('nav');
+  if(DATA && DATA.error){
+    main.innerHTML=`<div class="card empty" style="margin-top:24px"><b>No data file</b>
+      Run <code>python -m sigbot.export_app app/data.json</code>, then reload.
+      If you opened this file directly rather than through a server, rebuild the
+      portable copy with <code>python -m sigbot.build_standalone</code> — it bakes
+      the data into the page so it works with no server at all.</div>`;
+    return;
+  }
+  document.getElementById('stamp').textContent =
+    'as of ' + new Date(DATA.generated_at).toLocaleString(undefined,
+      {month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
+  main.innerHTML = view.tab==='home' ? (view.model? modelScreen(view.model) : home())
+    : view.tab==='history' ? history() : evidence();
+  main.scrollTop = 0;
+  const tabs=[['home','◇','Models'],['history','≡','History'],['evidence','◈','Evidence']];
+  nav.innerHTML = tabs.map(([k,i,l])=>
+    `<button class="${view.tab===k?'on':''}" onclick="go('${k}')" aria-label="${l}">
+      <b>${i}</b><span>${l}</span></button>`).join('');
+}
+
+function go(tab){ view.tab=tab; view.model=null; render(); }
+function openModel(id){ view.tab='home'; view.model=id; render(); }
+function setFilter(f){ view.filter=f; render(); }
+
+load();
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('sw.js').catch(()=>{});
+}
+</script>
+</body>
+</html>

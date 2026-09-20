@@ -1,0 +1,13 @@
+{
+  "name": "sigbot",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Verified-prediction market tracker. Python does the work; these scripts are shortcuts.",
+  "scripts": {
+    "github": "bash scripts/ship.sh",
+    "test": "bash -c 'source .venv/bin/activate && python -m pytest tests -q'",
+    "publish": "bash -c 'source .venv/bin/activate && set -a && source .env 2>/dev/null; set +a; python -m sigbot.runner publish'",
+    "paper": "bash -c 'source .venv/bin/activate && python -m sigbot.runner paper'",
+    "doctor": "bash -c 'source .venv/bin/activate && python -m sigbot.doctor'"
+  }
+}

@@ -1,0 +1,17 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+
+# Databases hold your own record. They are yours, not part of the code.
+*.db
+
+# Generated output
+app/data.json
+app/sigbot-report.html
+app/sigbot-standalone.html
+app/charts.html
+outbox.log
+backtest_predictions.csv
