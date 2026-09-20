@@ -155,7 +155,7 @@
   "sources": [
    "Latest Share Market News, Sensex, Nifty, BSE, NSE Today | The HinduBusinessLine (2026-09-20)",
    "Share Market Today (2026-09-20)",
-   "business-standard.com (2026-09-20)"
+   "Business Standard (2026-09-20)"
   ]
  },
  {
@@ -593,25 +593,6 @@
   ]
  },
  {
-  "title": "SS Retail",
-  "kind": "New listing",
-  "colour": "#8b8b9a",
-  "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 0 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
-  "summary": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live.",
-  "money": "0 of a possible 0 points on the ten tests the coverage could answer",
-  "answered": [],
-  "unanswered": [
-   "Does reporting say it makes money?",
-   "Is revenue growing?",
-   "Does the money go into the business?",
-   "Is the price being called reasonable?",
-   "Did serious institutions take an allocation?"
-  ],
-  "sources": [
-   "IPO Watch"
-  ]
- },
- {
   "title": "NSE",
   "kind": "New listing",
   "colour": "#8b8b9a",
@@ -650,7 +631,7 @@
   ]
  },
  {
-  "title": "Jindal Supreme",
+  "title": "Sonaselection India",
   "kind": "New listing",
   "colour": "#8b8b9a",
   "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 0 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
@@ -688,26 +669,7 @@
   ]
  },
  {
-  "title": "Liqvd Digital India issue to open on Sep 23, price band fixed at \u20b951-54 - business-standard.com",
-  "kind": "New listing",
-  "colour": "#8b8b9a",
-  "verdict": "Only 0 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
-  "summary": "Opens in 3 day(s), on 23 Sep.",
-  "money": "0 of a possible 0 points on the ten tests the coverage could answer",
-  "answered": [],
-  "unanswered": [
-   "Does reporting say it makes money?",
-   "Is revenue growing?",
-   "Does the money go into the business?",
-   "Is the price being called reasonable?",
-   "Did serious institutions take an allocation?"
-  ],
-  "sources": [
-   "business-standard.com"
-  ]
- },
- {
-  "title": "Sonaselection India",
+  "title": "Jindal Supreme",
   "kind": "New listing",
   "colour": "#8b8b9a",
   "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 0 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
@@ -723,6 +685,25 @@
   ],
   "sources": [
    "IPO Watch"
+  ]
+ },
+ {
+  "title": "Liqvd Digital India issue to open on Sep 23, price band fixed at \u20b951-54 - Business Standard",
+  "kind": "New listing",
+  "colour": "#8b8b9a",
+  "verdict": "Only 0 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
+  "summary": "Opens in 3 day(s), on 23 Sep.",
+  "money": "0 of a possible 0 points on the ten tests the coverage could answer",
+  "answered": [],
+  "unanswered": [
+   "Does reporting say it makes money?",
+   "Is revenue growing?",
+   "Does the money go into the business?",
+   "Is the price being called reasonable?",
+   "Did serious institutions take an allocation?"
+  ],
+  "sources": [
+   "Business Standard"
   ]
  },
  {
@@ -800,7 +781,7 @@
    "Did serious institutions take an allocation?"
   ],
   "sources": [
-   "ipocentral.in"
+   "IPO Central"
   ]
  },
  {
@@ -842,13 +823,15 @@
   ]
  },
  {
-  "title": "Elevate Campuses",
+  "title": "National Stock Exchange of India",
   "kind": "New listing",
   "colour": "#8b8b9a",
-  "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 0 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
+  "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 10 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
   "summary": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live.",
-  "money": "0 of a possible 0 points on the ten tests the coverage could answer",
-  "answered": [],
+  "money": "10 of a possible 10 points on the ten tests the coverage could answer",
+  "answered": [
+   "Is the book filling?"
+  ],
   "unanswered": [
    "Does reporting say it makes money?",
    "Is revenue growing?",
@@ -857,7 +840,7 @@
    "Did serious institutions take an allocation?"
   ],
   "sources": [
-   "IPO Watch"
+   "scanx.trade"
   ]
  },
  {
@@ -880,15 +863,13 @@
   ]
  },
  {
-  "title": "National Stock Exchange of India",
+  "title": "Elevate Campuses",
   "kind": "New listing",
   "colour": "#8b8b9a",
-  "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 10 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
+  "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 0 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
   "summary": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live.",
-  "money": "10 of a possible 10 points on the ten tests the coverage could answer",
-  "answered": [
-   "Is the book filling?"
-  ],
+  "money": "0 of a possible 0 points on the ten tests the coverage could answer",
+  "answered": [],
   "unanswered": [
    "Does reporting say it makes money?",
    "Is revenue growing?",
@@ -897,7 +878,7 @@
    "Did serious institutions take an allocation?"
   ],
   "sources": [
-   "scanx.trade"
+   "IPO Watch"
   ]
  },
  {
@@ -958,7 +939,7 @@
   ]
  },
  {
-  "title": "ArMee Infotech",
+  "title": "Shakti Polytarp",
   "kind": "New listing",
   "colour": "#8b8b9a",
   "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 0 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
@@ -977,7 +958,7 @@
   ]
  },
  {
-  "title": "Shakti Polytarp",
+  "title": "ArMee Infotech",
   "kind": "New listing",
   "colour": "#8b8b9a",
   "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 0 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
@@ -1011,7 +992,7 @@
    "Did serious institutions take an allocation?"
   ],
   "sources": [
-   "Goodreturns"
+   "goodreturns.in"
   ]
  },
  {
