@@ -235,7 +235,15 @@ def event_response(
 @dataclass(frozen=True)
 class ContagionGates:
     min_events: int = 40          # 2σ shocks are rare: 10 years gives ~50
-    min_hit_lower: float = 0.58
+    # A MARGIN over the follower's own base rate, not an absolute rate. The
+    # old 0.58 absolute was the same mistake the tier gate carried: this
+    # metric's chance level is `base_hit_rate` — the share of all periods the
+    # follower rose, typically 0.50-0.52 — not some fixed number. Demanding
+    # an absolute 0.58 lower bound needed roughly 70% observed accuracy at
+    # min_events=40, while the edge gate beside it asked only for base+3pp.
+    # The two gates disagreed by about 16 points and the stricter one was the
+    # arbitrary one.
+    min_hit_lower_over_base: float = 0.06
     min_edge_over_base: float = 0.03
     cost_pct: float = 0.0015
     max_q: float = 0.10
@@ -248,9 +256,11 @@ def gate(resp: Response, link: Link, gates: ContagionGates) -> tuple[bool, list[
         blocked.append(f"lagged link not significant after FDR (q={link.q_lagged:.3f})")
     if resp.n_events < gates.min_events:
         blocked.append(f"only {resp.n_events} historical shocks (need {gates.min_events})")
-    if resp.hit_lower < gates.min_hit_lower:
+    lower_bar = resp.base_hit_rate + gates.min_hit_lower_over_base
+    if resp.hit_lower < lower_bar:
         blocked.append(
-            f"direction lower bound {resp.hit_lower:.0%} < {gates.min_hit_lower:.0%}"
+            f"direction lower bound {resp.hit_lower:.0%} < {lower_bar:.0%} "
+            f"(base {resp.base_hit_rate:.0%} + {gates.min_hit_lower_over_base:.0%})"
         )
     if resp.hit_rate - resp.base_hit_rate < gates.min_edge_over_base:
         blocked.append(

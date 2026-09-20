@@ -194,3 +194,44 @@ def test_only_gated_models_are_traded(tmp_path):
     everything = paper.replay(path)
     assert len(focused.trades) < len(everything.trades)
     assert focused.total_return > everything.total_return
+
+
+def test_days_reset_the_view_but_not_the_record(tmp_path):
+    """The cumulative curve answers "is this worth anything over time"; a
+    person reading daily needs "what happened today". Both come from the same
+    trades, so the daily view is derived and the storage is never reset."""
+    from sigbot import paper
+    from sigbot.shadow import ShadowLedger
+
+    path = str(tmp_path / "s.db")
+    ledger = ShadowLedger(path)
+    for i in range(6):
+        pid = ledger.record("news", f"S{i}", "BUY", 0.8, 0.02, 100.0)
+        ledger.resolve(pid, 104.0 if i % 2 else 97.0)
+
+    book = paper.replay(path)
+    days = paper.by_day(book)
+    assert days, "trades must roll up into at least one day"
+
+    # Every trade is still present in the cumulative record.
+    assert sum(len(d["trades"]) for d in days) == len(book.trades)
+    # Each day carries both sides, never only the wins.
+    assert any(d["losses"] for d in days)
+    # Opening and closing equity must chain: no day invents capital.
+    chained = sorted(days, key=lambda d: d["date"])
+    assert chained[0]["opening"] == book.starting_cash
+    for earlier, later in zip(chained, chained[1:]):
+        assert later["opening"] == earlier["closing"]
+
+
+def test_a_days_percentage_is_against_its_own_opening(tmp_path):
+    from sigbot import paper
+    from sigbot.shadow import ShadowLedger
+
+    path = str(tmp_path / "s.db")
+    ledger = ShadowLedger(path)
+    pid = ledger.record("news", "AAPL", "BUY", 0.8, 0.02, 100.0)
+    ledger.resolve(pid, 110.0)
+
+    day = paper.by_day(paper.replay(path))[0]
+    assert day["pct"] == pytest.approx(day["pnl"] / day["opening"] * 100.0)

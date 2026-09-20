@@ -160,3 +160,50 @@ def test_thesis_card_forces_disconfirmation():
 
 def test_empty_digest_is_explicit():
     assert "nothing matched" in render_digest([])
+
+
+def _link():
+    from sigbot.contagion import Link
+
+    return Link(anchor="ADBE", dependent="INTC", beta_contemp=0.3,
+                beta_lagged=0.2, t_lagged=4.0, p_lagged=0.001, q_lagged=0.01,
+                n_obs=800, interval="1d")
+
+
+def _response(hit_lower, hit_rate, base):
+    from sigbot.contagion import Response
+
+    return Response(anchor="ADBE", dependent="INTC", sigma_threshold=2.0,
+                    n_events=60, mean_response=0.012, median_response=0.01,
+                    q10=-0.01, q90=0.03, hit_rate=hit_rate,
+                    hit_lower=hit_lower, base_hit_rate=base)
+
+
+def test_the_direction_gate_is_relative_to_the_follower_s_base_rate():
+    """The old gate demanded an absolute 0.58 lower bound. This metric's
+    chance level is the follower's own base rate — the share of all periods it
+    rose, typically 0.50-0.52 — so an absolute 0.58 needed roughly 70%
+    observed accuracy at min_events=40, while the edge gate beside it asked
+    only for base+3pp. Two gates on the same quantity disagreeing by 16
+    points, with the arbitrary one binding."""
+    from sigbot.contagion import ContagionGates, gate
+
+    gates = ContagionGates()
+    passes, why = gate(_response(0.58, 0.62, 0.51), _link(), gates)
+    assert passes, why
+
+    # A follower that rises 70% of all periods anyway must clear a higher bar,
+    # not the same one — otherwise the link earns credit for the drift.
+    drifty, why = gate(_response(0.58, 0.62, 0.70), _link(), gates)
+    assert not drifty
+    assert any("base 70%" in r for r in why)
+
+
+def test_a_link_with_no_edge_is_still_rejected():
+    """The real ledger's links sat at 37-39% lower bound against a ~51% base.
+    Relaxing the calibration must not turn that into a signal."""
+    from sigbot.contagion import ContagionGates, gate
+
+    passes, why = gate(_response(0.38, 0.40, 0.51), _link(), ContagionGates())
+    assert not passes
+    assert len(why) >= 2, "both the direction and the edge gate should block"

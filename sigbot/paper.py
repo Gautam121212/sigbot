@@ -230,6 +230,40 @@ def replay(db_path: str, starting_cash: float = STARTING_CASH,
     return book
 
 
+def by_day(book: Portfolio) -> list[dict]:
+    """One row per trading day, newest first.
+
+    The cumulative curve answers "is this worth anything over time"; a person
+    reading the page daily needs "what happened today". Both come from the
+    same trades, so the daily view resets while the record does not — the
+    display is derived, never the storage.
+    """
+    days: dict[str, dict] = {}
+    for trade in book.trades:                    # already in ledger order
+        key = str(trade.opened_at)[:10]
+        row = days.setdefault(key, {
+            "date": key, "trades": [], "pnl": 0.0, "wins": 0, "losses": 0,
+            "costs": 0.0, "opening": None, "closing": None})
+        row["trades"].append(trade.as_row())
+        row["pnl"] += trade.pnl
+        row["costs"] += trade.cost
+        if trade.pnl > 0:
+            row["wins"] += 1
+        elif trade.pnl < 0:
+            row["losses"] += 1
+
+    # Walk forward once to attach the opening and closing equity of each day.
+    equity = book.starting_cash
+    for key in sorted(days):
+        row = days[key]
+        row["opening"] = equity
+        equity += row["pnl"]
+        row["closing"] = equity
+        row["pct"] = (row["pnl"] / row["opening"] * 100.0) if row["opening"] else 0.0
+
+    return [days[k] for k in sorted(days, reverse=True)]
+
+
 def verdict(book: Portfolio) -> str:
     """One sentence a person can act on, or decline to act on.
 
@@ -332,5 +366,8 @@ def write_state(book: Portfolio, path: str | Path = "paper.json",
         "benchmark_trades": (len(benchmark.trades)
                              if benchmark is not None else 0),
         "recent_trades": [t.as_row() for t in book.trades[-25:]],
+        # Newest 30 days. The full history stays in the ledger; this is the
+        # slice the page renders.
+        "days": by_day(book)[:30],
     }, indent=2), encoding="utf-8")
     return out

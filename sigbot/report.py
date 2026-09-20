@@ -857,6 +857,18 @@ def build_report(data: dict) -> str:
   gate. Finding out whether they are worth money is exactly what it is for,
   and the answer is allowed to be no.</p>
 </div></div>
+<div class="page" id="pnl"><div class="wrap">
+  <div class="top"><span class="brand">Daily P&amp;L</span>
+    <span class="stamp">{_e(_pnl_stamp(data))}</span></div>
+  <p class="lead">One row per day of paper trading. Profits and losses both,
+  because a day is only readable with its losses in it. No broker is
+  connected and no order was placed.</p>
+  {_pnl_rows(data)}
+  <p class="note">The daily view resets; the record does not. Every trade —
+  winning and losing — stays in the ledger and feeds the learning loop. This
+  page shows one day at a time so it can be understood at a glance.</p>
+</div></div>
+{_pnl_detail_pages(data)}
 <div class="page" id="missed"><div class="wrap">
   <div class="top"><span class="brand">Where it missed</span>
     <span class="stamp">{len(failures)} misses</span></div>
@@ -873,7 +885,7 @@ def build_report(data: dict) -> str:
   <a class="n-ideas" href="#ideas"><b>&#10022;</b><span>Ideas</span></a>
   <a class="n-learn" href="#learned"><b>&#8599;</b><span>Top picks</span></a>
   <a class="n-paper" href="#paper"><b>&#8942;</b><span>Paper</span></a>
-  <a class="n-miss" href="#missed"><b>&#8961;</b><span>Missed</span></a>
+  <a class="n-pnl" href="#pnl"><b>&#8942;</b><span>Daily P&amp;L</span></a>
 </nav>
 </body></html>"""
 
@@ -1021,3 +1033,72 @@ def _wins(learning: list[dict]) -> list[dict]:
     happening here.
     """
     return [e for e in learning if e.get("hit")]
+
+def _paper_days(data: dict) -> list[dict]:
+    state = data.get("paper") or {}
+    return state.get("days") or []
+
+
+def _pnl_stamp(data: dict) -> str:
+    days = _paper_days(data)
+    return f"{len(days)} day(s)" if days else "not run yet"
+
+
+def _pnl_rows(data: dict) -> str:
+    """A row per day, newest first, each linking to its own breakdown."""
+    days = _paper_days(data)
+    if not days:
+        return ('<div class="card"><p>No paper trading days yet. A day appears '
+                'here once the first gated signal has been scored.</p></div>')
+
+    out = []
+    for i, d in enumerate(days):
+        up = (d.get("pct") or 0) >= 0
+        colour = "var(--green)" if up else "var(--red)"
+        out.append(f"""
+  <a href="#pnl-{i}"><div class="tile">
+    <span class="pip" style="background:{colour}"></span>
+    <b>{_e(d.get('date', ''))}</b>
+    <div class="grow"><p style="color:{colour};font-weight:600">
+      {d.get('pct', 0):+.2f}% · {d.get('closing', 0):,.0f}</p>
+      <p>{len(d.get('trades') or [])} trade(s), {d.get('wins', 0)} in profit,
+      {d.get('losses', 0)} at a loss</p></div>
+    <span class="chev">&rsaquo;</span></div></a>""")
+    return "".join(out)
+
+
+def _pnl_detail_pages(data: dict) -> str:
+    """One page per day: the banner, then every trade that made it."""
+    pages = []
+    for i, d in enumerate(_paper_days(data)):
+        up = (d.get("pct") or 0) >= 0
+        colour = "var(--green)" if up else "var(--red)"
+        trades = "".join(f"""
+  <div class="tile"><span class="pip" style="background:{
+        'var(--green)' if t.get('pnl', 0) > 0 else 'var(--red)'}"></span>
+    <b>{_e(str(t.get('symbol', '')))}</b>
+    <div class="grow"><p>{t.get('pnl', 0):+,.2f} on a
+      {_e(str(t.get('side', '')))} of {t.get('size', 0):,.0f}</p>
+      <p>{_e(str(t.get('model', '')))} · entry {t.get('entry_price', 0):,.4f}
+      · exit {t.get('exit_price', 0):,.4f}
+      · {t.get('gross_ret', 0) * 100:+.2f}% before costs</p></div></div>"""
+            for t in (d.get("trades") or []))
+
+        pages.append(f"""
+<div class="page" id="pnl-{i}"><div class="wrap">
+  <a class="back" href="#pnl">&lsaquo; Daily P&amp;L</a>
+  <div class="card call">
+    <div class="eyebrow"><span class="dot"></span>{_e(d.get('date', ''))}</div>
+    <h1 style="color:{colour}">{d.get('pct', 0):+.2f}%</h1>
+    <p class="lead">Opened at {d.get('opening', 0):,.0f}, closed at
+    {d.get('closing', 0):,.0f}. {d.get('costs', 0):,.2f} paid in costs.</p>
+  </div>
+  <div class="stats">
+    <div class="stat"><b>{len(d.get('trades') or [])}</b><span>Trades</span></div>
+    <div class="stat"><b>{d.get('wins', 0)}</b><span>In profit</span></div>
+    <div class="stat"><b>{d.get('losses', 0)}</b><span>At a loss</span></div>
+  </div>
+  <h2>Every trade that day</h2>
+  <div class="tiles-grid">{trades or '<p>No trades.</p>'}</div>
+</div></div>""")
+    return "".join(pages)

@@ -598,3 +598,24 @@ def test_idea_precision_is_a_share_of_the_question_set():
     assert _idea_precision({"answered": ["a", "b"], "unanswered": ["c", "d"]}) == 50.0
     assert _idea_precision({"answered": [], "unanswered": []}) == 0.0
     assert _idea_precision({"answered": ["a"], "unanswered": []}) == 100.0
+
+
+def test_daily_pnl_replaces_missed_in_the_nav(report):
+    """Missed was replaced because the reason-code breakdown was unreadable.
+    The failure information is not lost: the P&L page prices every loss."""
+    html = report[0]
+    assert ">Daily P&amp;L</span>" in html
+    assert ">Missed</span>" not in html, "Missed must be off the nav"
+    assert "daily view resets; the record does not" in html, (
+        "the page must say the storage is intact")
+
+
+def test_every_pnl_day_links_to_a_real_page(report):
+    """Index drift between a list and its detail pages sends every row to the
+    wrong day."""
+    import re
+
+    html = report[0]
+    links = set(re.findall(r'href="#pnl-(\d+)"', html))
+    pages = set(re.findall(r'id="pnl-(\d+)"', html))
+    assert links.issubset(pages)
