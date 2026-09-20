@@ -119,18 +119,65 @@ SETUPS: tuple[Setup, ...] = (
 )
 
 
-def evaluate(row: dict) -> Setup | None:
+def evaluate(row: dict, profile=None) -> Setup | None:
     """The validated setup that fires on this row, or None.
 
     None is the expected answer. Across the measured sample a setup fired on
     roughly one session in 170, and that rarity IS the design: the old model
     made 141,123 decisions to find no edge, and this one makes a few hundred
     to find a measurable one.
+
+    `profile` is the asset's own behavioural record. A setup validated across
+    a pooled universe still has to survive the name it is about to fire on:
+    the same washout gets bought in one stock and keeps falling in another,
+    and that difference persisted across a decade. Passing None skips the
+    check, which is right when the history is not available but is never the
+    preferred path.
     """
+    from .personality import veto
+
     for setup in SETUPS:
-        if setup.is_validated() and setup.condition(row):
-            return setup
+        if not (setup.is_validated() and setup.condition(row)):
+            continue
+        if veto(profile, setup.side):
+            continue
+        return setup
     return None
+
+
+def context_multiplier(row: dict) -> tuple[float, str]:
+    """How much the surrounding conditions favour this setup, and why.
+
+    Measured, not assumed. Splitting deep-oversold days by trend, volume and
+    volatility gave a spread from 51% to 73%, and the strongest cell was
+    capitulation — a volume spike in an otherwise calm name, which is what
+    forced selling looks like when it finishes. The weakest was a volume spike
+    in an already-violent name, which is what forced selling looks like when
+    it is still going.
+
+    Returned as a weight rather than a filter because the sample in the best
+    cell was 22 occurrences. That is enough to lean on and nowhere near enough
+    to gate on, and treating it as a gate would be the same overreach as
+    trusting any single backtested slice.
+    """
+    close = row.get("close") or 0.0
+    atr = row.get("atr_14")
+    volume = row.get("volume")
+    vol_ma = row.get("volume_ma_20")
+
+    calm = atr is not None and close > 0 and (atr / close) <= 0.04
+    spike = volume is not None and vol_ma and volume > vol_ma * 1.5
+
+    if calm and spike:
+        return 1.5, ("Looks like capitulation: a burst of selling in a name "
+                     "that is not normally this volatile. Historically the "
+                     "strongest version of this setup.")
+    if not calm and spike:
+        return 0.6, ("Heavy selling in an already-volatile name. Historically "
+                     "the weakest version — the fall often is not finished.")
+    if calm:
+        return 1.2, "A quiet name that has fallen hard. A clean version."
+    return 1.0, "Ordinary conditions for this setup."
 
 
 def unvalidated() -> tuple[Setup, ...]:

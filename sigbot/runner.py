@@ -1406,7 +1406,8 @@ def run_setups(settings=SETTINGS) -> None:
     """
     from datetime import datetime, timedelta, timezone
 
-    from .setups import evaluate
+    from .personality import profile_from_closes
+    from .setups import context_multiplier, evaluate
     from .shadow import ShadowLedger
 
     ledger = ShadowLedger(settings.shadow_db)
@@ -1426,13 +1427,27 @@ def run_setups(settings=SETTINGS) -> None:
             continue
 
         looked += 1
-        setup = evaluate({"rsi_14": rsi, "close": close})
+        closes = [float(x) for x in bars["close"].tolist() if x and x > 0]
+        profile = profile_from_closes(asset.symbol, closes)
+
+        row = {"rsi_14": rsi, "close": close}
+        for col, key in (("atr_14", "atr_14"), ("volume", "volume")):
+            if col in bars:
+                row[key] = float(bars[col].iloc[-1])
+        if "volume" in bars and len(bars) >= 20:
+            row["volume_ma_20"] = float(bars["volume"].tail(20).mean())
+
+        setup = evaluate(row, profile)
         if setup is None:
             continue
 
-        ledger.record("setups", asset.symbol, setup.side,
-                      setup.measured_edge_pp / 100.0, 0.0, close, 24)
-        fired.append(f"{asset.symbol}: {setup.name} (RSI {rsi:.1f})")
+        # Context scales the score, never the decision. The strongest context
+        # cell held 22 occurrences — enough to lean on, nowhere near enough
+        # to gate on.
+        weight, why = context_multiplier(row)
+        score = min(setup.measured_edge_pp / 100.0 * weight, 0.99)
+        ledger.record("setups", asset.symbol, setup.side, score, 0.0, close, 24)
+        fired.append(f"{asset.symbol}: {setup.name} (RSI {rsi:.1f}) — {why}")
 
     ledger.log_run("setups", looked, len(fired), "")
     if fired:
@@ -1444,6 +1459,40 @@ def run_setups(settings=SETTINGS) -> None:
               "silence costs nothing.")
     if skipped:
         print(f"{skipped} skipped (no price data).")
+
+
+def run_profiles(settings=SETTINGS) -> None:
+    """Measure how each board name behaves after a fall.
+
+    This is the replacement purpose for the daily model. Predicting tomorrow's
+    direction on every asset every session produced 51.4% against a 52.2%
+    base across 141,123 decisions — a question that could not be answered.
+    "How does this name behave after a fall?" IS answerable: the rank order
+    persisted at Spearman +0.398 across two halves of a decade, and the
+    bottom of that order persisted roughly twice as well as the top.
+
+    The output is not a forecast. It is the veto list every other model
+    consults before acting, which is worth more than another daily guess.
+    """
+    from datetime import datetime, timedelta, timezone
+
+    from .personality import profile_from_closes, summarise
+
+    market = YahooProvider()
+    end = (datetime.now(timezone.utc) + timedelta(days=1)).strftime("%Y-%m-%d")
+
+    profiles = []
+    for asset in board_assets(settings):
+        try:
+            bars = market.history(asset.symbol, settings.history_start, end)
+            closes = [float(x) for x in bars["close"].tolist() if x and x > 0]
+        except Exception as exc:  # noqa: BLE001
+            record_skip("profiles", asset.symbol, exc)
+            continue
+        if len(closes) > 60:
+            profiles.append(profile_from_closes(asset.symbol, closes))
+
+    print(summarise(profiles))
 
 
 def run_diagnose(settings=SETTINGS) -> None:
@@ -1671,6 +1720,7 @@ def main(argv: list[str]) -> int:
         "horizons": run_horizons,
         "diagnose": run_diagnose,
         "setups": run_setups,
+        "profiles": run_profiles,
         "reset": run_reset,
         "reset-all": lambda: run_reset(full=True),
     }
