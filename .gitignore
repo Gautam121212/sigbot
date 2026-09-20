@@ -26,3 +26,6 @@ app/sigbot-report.html
 #   opportunities.json universe.json paper.json
 # These are the product. Everything above is a rendering of them.
 *.db
+
+# Wrangler cache — local tooling state, never source
+.wrangler/
