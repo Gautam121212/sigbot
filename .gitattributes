@@ -1,3 +1,6 @@
 shadow.db merge=ours
 patterns.db merge=ours
 watchlist.db merge=ours
+shadow.db merge=ours
+patterns.db merge=ours
+watchlist.db merge=ours
