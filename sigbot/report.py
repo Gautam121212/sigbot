@@ -51,6 +51,15 @@ TIER_PLAIN = {
 }
 
 MECHANISM = {
+    "setups": ("It waits. Most days it says nothing at all, because the "
+               "condition it looks for is rare. When a price has fallen far "
+               "and fast enough that selling looks exhausted, it says so — "
+               "and that condition was tested on ten years of history across "
+               "three separate periods before it was allowed to speak.",
+               "It cannot tell you WHY the price fell. A washout on bad news "
+               "that keeps getting worse looks identical to one that is "
+               "about to bounce."),
+
     "crypto15m": ("A guess at where a crypto pair goes over the next hour, from "
                   "fifteen-minute price and volume patterns. The count is how "
                   "often the direction was right.",

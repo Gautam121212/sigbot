@@ -1395,6 +1395,57 @@ def run_reset(settings=SETTINGS, full: bool = False) -> None:
           "automatically on the next publish.")
 
 
+def run_setups(settings=SETTINGS) -> None:
+    """Scan the board for validated setups and record what fires.
+
+    Records a forecast ONLY when a setup fires. That is the whole change from
+    the old daily model: it had an opinion on every asset every session and
+    scored 51.4% against a 52.2% base across 141,123 replayed decisions. This
+    will produce a few hundred forecasts a year and each one carries a
+    measured, out-of-sample-validated reason.
+    """
+    from datetime import datetime, timedelta, timezone
+
+    from .setups import evaluate
+    from .shadow import ShadowLedger
+
+    ledger = ShadowLedger(settings.shadow_db)
+    market = YahooProvider()
+    end = (datetime.now(timezone.utc) + timedelta(days=1)).strftime("%Y-%m-%d")
+
+    fired, looked, skipped = [], 0, 0
+    for asset in [a for a in board_assets(settings) if a.kind != "crypto"]:
+        try:
+            bars = market.history(asset.symbol, settings.history_start, end)
+            from .features import _rsi
+            rsi = float(_rsi(bars["close"]).iloc[-1])
+            close = float(bars["close"].iloc[-1])
+        except Exception as exc:  # noqa: BLE001
+            record_skip("setups", asset.symbol, exc)
+            skipped += 1
+            continue
+
+        looked += 1
+        setup = evaluate({"rsi_14": rsi, "close": close})
+        if setup is None:
+            continue
+
+        ledger.record("setups", asset.symbol, setup.side,
+                      setup.measured_edge_pp / 100.0, 0.0, close, 24)
+        fired.append(f"{asset.symbol}: {setup.name} (RSI {rsi:.1f})")
+
+    ledger.log_run("setups", looked, len(fired), "")
+    if fired:
+        default_messenger().send("Setups fired:\n  " + "\n  ".join(fired))
+        print(f"{len(fired)} setup(s) fired out of {looked} looked at.")
+    else:
+        print(f"Looked at {looked} asset(s); no validated setup fired. That is "
+              "the normal state — the condition is rare on purpose, and "
+              "silence costs nothing.")
+    if skipped:
+        print(f"{skipped} skipped (no price data).")
+
+
 def run_diagnose(settings=SETTINGS) -> None:
     """Name what is blocking each model, now, instead of in six months.
 
@@ -1619,6 +1670,7 @@ def main(argv: list[str]) -> int:
         "backtest": run_backtest,
         "horizons": run_horizons,
         "diagnose": run_diagnose,
+        "setups": run_setups,
         "reset": run_reset,
         "reset-all": lambda: run_reset(full=True),
     }

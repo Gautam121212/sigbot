@@ -27,6 +27,15 @@ class Horizon:
 # Ordered shortest window first, because that is how a reader triages: what
 # needs a decision today sits above what needs one this quarter.
 HORIZONS: dict[str, Horizon] = {
+    "setups": Horizon(
+        badge="Trade",
+        window="next session",
+        colour="var(--green)",
+        falsifier="Over 120 live checks the setup stops beating what a coin "
+                  "flip would score on the same measure, or a fresh stretch "
+                  "of history shows it losing. Either one kills it: it was "
+                  "admitted because it worked in three separate periods, so "
+                  "failing in one is exactly what would disprove it."),
     "crypto15m": Horizon(
         badge="Trade",
         window="next 3 hours",

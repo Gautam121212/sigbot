@@ -27,7 +27,7 @@ from .watchlist import Flag, Watchlist
 # in the export rather than at the definition. A test now checks the two maps
 # agree, because the failure surfaced twenty-four tests away from its cause.
 ACCENTS = {"news": "teal", "daily": "purple", "contagion": "red",
-           "crypto15m": "amber", "opportunity": "green"}
+           "crypto15m": "amber", "opportunity": "green", "setups": "green"}
 
 # Plain-English names for what went wrong. The stored codes are precise; these
 # are what a person reads at 8am without a finance degree.
@@ -61,6 +61,10 @@ TARGET_CHECKS = {
     "contagion": 2000,
     "crypto15m": 6000,
     "opportunity": 200,
+    # Low on purpose. A setup fires on roughly one session in 170, so 120
+    # checks is a year of evidence rather than a week — and a target sized to
+    # the rate it actually accumulates is the only kind that means anything.
+    "setups": 120,
 }
 
 MODEL_META = {
@@ -73,6 +77,7 @@ MODEL_META = {
     "crypto15m": ("Crypto, every 3 hours",
                   "One-hour direction on the most traded pairs"),
     "opportunity": ("Opportunities", "Investments and business gaps, rated on evidence"),
+    "setups": ("Tested setups", "Speaks only when a condition with a measured edge occurs"),
 }
 
 
