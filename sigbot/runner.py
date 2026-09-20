@@ -1477,7 +1477,9 @@ def run_stocks(settings=SETTINGS) -> None:
     """
     from datetime import datetime, timedelta, timezone
 
+    from .exits import plan as exit_plan
     from .features import _mfi, _rsi
+    from .risk import RiskState, decide
     from .scan import PROVEN, scan_row, summarise
     from .shadow import ShadowLedger
 
@@ -1488,6 +1490,12 @@ def run_stocks(settings=SETTINGS) -> None:
     universe = [s for s in UNIVERSE
                 if "-USD" not in s.symbol and s.kind != "crypto"]
     hits, looked, skipped = [], 0, 0
+    refused: list[str] = []
+    # The book as the risk rules see it. Positions accumulate within this run
+    # so the sector and count limits actually bind — checking each signal
+    # against an empty book would make every limit vacuous.
+    state = RiskState(equity=100_000.0)
+    sector_count: dict[str, int] = {}
 
     for asset in universe:
         try:
@@ -1518,14 +1526,63 @@ def run_stocks(settings=SETTINGS) -> None:
         if hit is None:
             continue
 
-        hits.append(hit)
-        # Conviction becomes the recorded score, so the live record can later
-        # be split by tier and the risky rows judged on their own terms.
-        ledger.record("stocks", asset.symbol, hit.candidate.side,
-                      hit.conviction_pct / 100.0, 0.0, close, 24)
+        # EVERY firing signal is recorded, whether or not risk lets it be
+        # traded. Recording and acting are different decisions — conflating
+        # them is the bug that left contagion with one check in its life
+        # (B36/B52) and hid 2,680 daily predictions from its own run log
+        # (B68). A signal refused on risk grounds is still evidence about the
+        # setup, and throwing it away would make the risk rules invisible in
+        # the record they distort.
+        atr = row.get("atr_14")
+        plan = exit_plan(close, atr) if atr else None
+        sector = getattr(asset, "sector", "") or "unknown"
 
-    ledger.log_run("stocks", looked, len(hits), "", recorded=len(hits))
+        if plan is None:
+            refused.append(f"{asset.symbol}: no volatility reading, so no "
+                           "stop could be placed")
+            decision = None
+        else:
+            decision = decide(
+                RiskState(equity=state.equity, open_risk=state.open_risk,
+                          deployed=state.deployed,
+                          open_positions=state.open_positions,
+                          sector_positions=sector_count.get(sector, 0),
+                          loss_streak=state.loss_streak),
+                entry_price=close, stop_price=plan.stop_price)
+            if not decision.allowed:
+                refused.append(f"{asset.symbol}: {decision.reason}")
+
+        # The recorded score is conviction, so the live record can later be
+        # split by tier. The exit plan rides along in expected_move, which is
+        # what the paper model sizes from.
+        ledger.record("stocks", asset.symbol, hit.candidate.side,
+                      hit.conviction_pct / 100.0,
+                      plan.stop_distance_pct if plan else 0.0, close, 24)
+
+        if decision and decision.allowed:
+            hits.append(hit)
+            state = RiskState(
+                equity=state.equity,
+                open_risk=state.open_risk + decision.risk_fraction,
+                deployed=state.deployed + decision.size,
+                open_positions=state.open_positions + 1,
+                loss_streak=state.loss_streak)
+            sector_count[sector] = sector_count.get(sector, 0) + 1
+
+    # `recorded` counts every signal written down; `signals` counts what risk
+    # actually allowed. The gap between them is the risk rules doing their job
+    # and must stay visible.
+    ledger.log_run("stocks", looked, len(hits), "",
+                   recorded=len(hits) + len(refused))
     print(summarise(hits, looked))
+    if refused:
+        print(f"\n  {len(refused)} signal(s) recorded but NOT taken — the risk "
+              "rules refused them. They stay in the record as evidence about "
+              "the setup; they were simply not affordable.")
+        for line in refused[:8]:
+            print(f"    {line}")
+        if len(refused) > 8:
+            print(f"    ... and {len(refused) - 8} more")
     if skipped:
         print(f"\n  {skipped} name(s) skipped for want of price history.")
     proven = [h for h in hits if h.tier == PROVEN]

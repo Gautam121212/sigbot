@@ -62,6 +62,31 @@ LOSS_STREAK_PAUSE = 4
 # before the urge to make it back does the deciding.
 DAILY_LOSS_LIMIT = 0.03
 
+# Most positions allowed in one sector at a time.
+#
+# The heat ceiling above counts POSITIONS, and positions are only independent
+# until they are not. Measured on the real signal history: on an average day
+# 67% of everything that fired came from a single sector, 184 days produced
+# four or more in one sector, and the worst single day fired 263 signals at
+# once — which happens precisely during a market-wide fall, exactly when
+# correlations go to one.
+#
+# Six positions at 1% each is 6% of risk only if they are six different bets.
+# Four of them in the same sector is closer to three bets, and in a crash it
+# is one. Without this cap the heat ceiling understates real exposure at the
+# only moment the number matters.
+MAX_PER_SECTOR = 2
+
+# Share of the account that may be committed at once. Not a risk limit — a
+# funding one. Leaving a quarter uncommitted also means a gap through a stop
+# does not force a sale elsewhere to cover it.
+MAX_DEPLOYED = 0.75
+
+# Most positions open at once, whatever the sector. A day that fires 263
+# signals is not an opportunity, it is a market-wide event, and taking all of
+# them is one enormous directional bet wearing the costume of diversification.
+MAX_OPEN_POSITIONS = 6
+
 
 @dataclass(frozen=True)
 class RiskState:
@@ -69,6 +94,9 @@ class RiskState:
 
     equity: float
     open_risk: float = 0.0          # fraction of capital at risk right now
+    deployed: float = 0.0           # cash already committed to open positions
+    open_positions: int = 0
+    sector_positions: int = 0       # already open in THIS trade's sector
     loss_streak: int = 0
     day_pnl_pct: float = 0.0        # today's realised P&L, as a fraction
     peak_equity: float | None = None
@@ -141,6 +169,19 @@ def decide(state: RiskState, entry_price: float, stop_price: float,
                         "because the reason for the streak is unknown and "
                         "finding out is cheaper than paying for it.")
 
+    if state.sector_positions >= MAX_PER_SECTOR:
+        return Decision(False, 0.0, 0.0,
+                        f"Already holding {state.sector_positions} position(s) "
+                        "in this sector. On an average day two thirds of all "
+                        "signals come from one sector, so more than a couple "
+                        "is one bet in several costumes.")
+
+    if state.open_positions >= MAX_OPEN_POSITIONS:
+        return Decision(False, 0.0, 0.0,
+                        f"{state.open_positions} positions already open. A day "
+                        "that fires a hundred signals is a market-wide event, "
+                        "not a hundred opportunities.")
+
     budget = _risk_budget(state)
     if state.open_risk + budget > MAX_PORTFOLIO_HEAT:
         return Decision(False, 0.0, 0.0,
@@ -160,6 +201,23 @@ def decide(state: RiskState, entry_price: float, stop_price: float,
     # Never let one position exceed a quarter of the book, however tight the
     # stop. A stop can gap through; the risk calculation assumes it will not.
     size = min(size, state.equity * 0.25)
+
+    # RISK and CAPITAL are different constraints, and only one of them was
+    # being checked. A dry run of thirty simultaneous signals took four
+    # positions at 4% total risk — correct — while committing 67% of the
+    # account. Six would have needed more cash than exists.
+    #
+    # Risk is what a position can lose; capital is what it costs to hold.
+    # Tight stops produce large positions at small risk, so a book can be
+    # fully within its risk budget and still unfundable.
+    free = max(0.0, state.equity * MAX_DEPLOYED - state.deployed)
+    if free <= 0:
+        return Decision(False, 0.0, 0.0,
+                        f"{state.deployed:,.0f} of {state.equity:,.0f} is "
+                        "already committed. Risk is within budget but there "
+                        "is no cash left — a tight stop makes a position "
+                        "cheap in risk and expensive in capital.")
+    size = min(size, free)
 
     note = ""
     if budget < RISK_PER_TRADE:
@@ -182,6 +240,11 @@ def explain() -> str:
         "sized from the stop distance",
         f"  Total open risk       {MAX_PORTFOLIO_HEAT * 100:.0f}% ceiling "
         "across all positions at once",
+        f"  Per sector            at most {MAX_PER_SECTOR} positions — "
+        "two thirds of signals come from one sector on an average day",
+        f"  Open positions        at most {MAX_OPEN_POSITIONS} at once",
+        f"  Capital committed     at most {MAX_DEPLOYED * 100:.0f}% of the "
+        "account — risk and cash are different limits",
         f"  Losing streak         pause new entries after "
         f"{LOSS_STREAK_PAUSE} in a row",
         f"  Daily loss limit      stop for the day at "

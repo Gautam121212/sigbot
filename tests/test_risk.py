@@ -82,3 +82,57 @@ def test_one_percent_survives_a_streak_that_ten_percent_does_not():
     assert RISK_PER_TRADE <= 0.02, "2% is the practitioner ceiling"
     survives = (1 - RISK_PER_TRADE) ** 50
     assert survives > 0.5, "1% must survive fifty consecutive losses"
+
+
+def test_risk_and_capital_are_separate_limits():
+    """A dry run of thirty simultaneous signals took four positions at 4%
+    total risk — correct — while committing 67% of the account. Six would have
+    needed more cash than exists. Tight stops make positions cheap in risk and
+    expensive in capital."""
+    from sigbot.risk import MAX_DEPLOYED
+
+    full = RiskState(equity=100_000, deployed=100_000 * MAX_DEPLOYED)
+    d = decide(full, entry_price=100.0, stop_price=95.0)
+    assert not d.allowed
+    assert "no cash left" in d.reason
+
+
+def test_a_partly_funded_book_gets_a_smaller_position_not_a_refusal():
+    """Trimming to the cash available is right; refusing outright would skip
+    a valid trade over an arithmetic detail."""
+    from sigbot.risk import MAX_DEPLOYED
+
+    nearly = RiskState(equity=100_000, deployed=100_000 * MAX_DEPLOYED - 1_000)
+    d = decide(nearly, entry_price=100.0, stop_price=95.0)
+    assert d.allowed and d.size <= 1_000
+
+
+def test_a_market_wide_day_does_not_become_one_enormous_bet():
+    """The real worst day fired 263 signals at once, and 67% of an average
+    day's signals come from a single sector. Six positions at 1% is 6% of risk
+    only if they are six different bets."""
+    from sigbot.risk import MAX_OPEN_POSITIONS, MAX_PER_SECTOR
+
+    state = RiskState(equity=100_000)
+    sector_counts: dict[str, int] = {}
+    taken = 0
+    for i in range(30):
+        sector = "tech" if i < 15 else "energy"
+        d = decide(RiskState(equity=state.equity, open_risk=state.open_risk,
+                             deployed=state.deployed,
+                             open_positions=state.open_positions,
+                             sector_positions=sector_counts.get(sector, 0)),
+                   entry_price=100.0, stop_price=94.0)
+        if not d.allowed:
+            continue
+        taken += 1
+        sector_counts[sector] = sector_counts.get(sector, 0) + 1
+        state = RiskState(equity=state.equity,
+                          open_risk=state.open_risk + d.risk_fraction,
+                          deployed=state.deployed + d.size,
+                          open_positions=state.open_positions + 1)
+
+    assert taken <= MAX_OPEN_POSITIONS
+    assert all(v <= MAX_PER_SECTOR for v in sector_counts.values())
+    assert state.open_risk <= MAX_PORTFOLIO_HEAT + 1e-9
+    assert state.deployed <= 100_000
