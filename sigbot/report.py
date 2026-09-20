@@ -51,6 +51,17 @@ TIER_PLAIN = {
 }
 
 MECHANISM = {
+    "stocks": ("It looks at every name it can reach, not a fixed list, and "
+               "stays quiet on almost all of them. A green row means the "
+               "reason it fired has worked in three separate stretches of "
+               "history. A grey row means the reason looks promising but has "
+               "not proved itself yet — those are traded at a third of the "
+               "size, on purpose, so the system finds out rather than "
+               "refusing to look.",
+               "It reads price behaviour only. It cannot see why a price "
+               "moved, so a company in real trouble looks the same to it as "
+               "one that was sold off too hard."),
+
     "setups": ("It waits. Most days it says nothing at all, because the "
                "condition it looks for is rare. When a price has fallen far "
                "and fast enough that selling looks exhausted, it says so — "

@@ -1462,6 +1462,98 @@ def run_setups(settings=SETTINGS) -> None:
         print(f"{skipped} skipped (no price data).")
 
 
+def run_stocks(settings=SETTINGS) -> None:
+    """Scan the WHOLE universe, record only what fired.
+
+    Deliberately not `board_assets`. Every model ran on the same 100 names,
+    which caps learning twice: a setup can only be seen where the board
+    happens to look, and the board only rotates on evidence gathered from that
+    same narrow window. A scanner that cannot find what it is not watching is
+    not a scanner.
+
+    Records both tiers. Risky rows are recorded at a third of normal size
+    precisely so they accumulate the live record that would promote or kill
+    them — a gate admitting only certainty never validates anything new.
+    """
+    from datetime import datetime, timedelta, timezone
+
+    from .features import _mfi, _rsi
+    from .scan import PROVEN, scan_row, summarise
+    from .shadow import ShadowLedger
+
+    ledger = ShadowLedger(settings.shadow_db)
+    market = YahooProvider()
+    end = (datetime.now(timezone.utc) + timedelta(days=1)).strftime("%Y-%m-%d")
+
+    universe = [s for s in UNIVERSE
+                if "-USD" not in s.symbol and s.kind != "crypto"]
+    hits, looked, skipped = [], 0, 0
+
+    for asset in universe:
+        try:
+            bars = market.history(asset.symbol, settings.history_start, end)
+            if len(bars) < 200:
+                skipped += 1
+                continue
+            close = float(bars["close"].iloc[-1])
+            row = {
+                "close": close,
+                "prev_close": float(bars["close"].iloc[-2]),
+                "rsi_14": float(_rsi(bars["close"]).iloc[-1]),
+                "mfi_14": float(_mfi(bars).iloc[-1]),
+                "sma_200": float(bars["close"].tail(200).mean()),
+                "willr_14": _williams(bars),
+                "atr_14": _atr_last(bars),
+                "volume": float(bars["volume"].iloc[-1]) if "volume" in bars else None,
+                "volume_ma_20": (float(bars["volume"].tail(20).mean())
+                                 if "volume" in bars else None),
+            }
+        except Exception as exc:  # noqa: BLE001
+            record_skip("stocks", asset.symbol, exc)
+            skipped += 1
+            continue
+
+        looked += 1
+        hit = scan_row(asset.symbol, row)
+        if hit is None:
+            continue
+
+        hits.append(hit)
+        # Conviction becomes the recorded score, so the live record can later
+        # be split by tier and the risky rows judged on their own terms.
+        ledger.record("stocks", asset.symbol, hit.candidate.side,
+                      hit.conviction_pct / 100.0, 0.0, close, 24)
+
+    ledger.log_run("stocks", looked, len(hits), "")
+    print(summarise(hits, looked))
+    if skipped:
+        print(f"\n  {skipped} name(s) skipped for want of price history.")
+    proven = [h for h in hits if h.tier == PROVEN]
+    if proven:
+        default_messenger().send(
+            "Worth acting on:\n  " + "\n  ".join(
+                f"{h.symbol}: {h.candidate.plain}" for h in proven))
+
+
+def _williams(bars) -> float | None:
+    """Williams %R over the last 14 sessions, or None if it cannot be formed."""
+    if len(bars) < 14 or "high" not in bars or "low" not in bars:
+        return None
+    high = float(bars["high"].tail(14).max())
+    low = float(bars["low"].tail(14).min())
+    if high <= low:
+        return None
+    return (high - float(bars["close"].iloc[-1])) / (high - low) * -100.0
+
+
+def _atr_last(bars) -> float | None:
+    """Average true range, or None when the columns are not present."""
+    if len(bars) < 14 or "high" not in bars or "low" not in bars:
+        return None
+    spans = (bars["high"].tail(14) - bars["low"].tail(14))
+    return float(spans.mean())
+
+
 def run_profiles(settings=SETTINGS) -> None:
     """Measure how each board name behaves after a fall.
 
@@ -1722,6 +1814,7 @@ def main(argv: list[str]) -> int:
         "diagnose": run_diagnose,
         "setups": run_setups,
         "profiles": run_profiles,
+        "stocks": run_stocks,
         "reset": run_reset,
         "reset-all": lambda: run_reset(full=True),
     }

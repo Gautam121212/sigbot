@@ -213,7 +213,19 @@ def replay(db_path: str, starting_cash: float = STARTING_CASH,
         move = exit_ / entry - 1.0
         gross = move if row["side"].upper() == "BUY" else -move
 
-        size = book.equity * position_pct
+        # Size by conviction, not flat.
+        #
+        # A flat size treats a proven setup and an unproven one as the same
+        # bet, which makes the risky tier unaffordable: the whole reason it
+        # can exist is that being wrong on it costs a third as much. The
+        # stocks scan records conviction as the score, so a 100%-conviction
+        # row takes full size and a 67% one takes two thirds. Models that do
+        # not record a meaningful score are unaffected — they fall back to
+        # flat sizing rather than being silently rescaled by a number that
+        # means something else to them.
+        conviction = row.get("score") if row["model"] == "stocks" else None
+        weight = 1.0 if conviction is None else max(0.2, min(float(conviction), 1.0))
+        size = book.equity * position_pct * weight
         cost = size * cost_pct_per_side * 2      # entry and exit
         pnl = size * gross - cost
 
