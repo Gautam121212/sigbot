@@ -573,8 +573,21 @@ def test_dead_ideas_are_dropped_not_guessed(report):
     assert _idea_is_dead({"kind": "IPO — dates unknown", "summary": ""})
     assert _idea_is_dead({"kind": "New listing",
                           "summary": "The coverage gives no dates, so ..."})
-    assert not _idea_is_dead({"kind": "New listing",
-                              "summary": "Opens 8 September, closes 10th."})
+    # A window still ahead is live; one that has passed is not. The date has
+    # to be in the future for this case to mean anything, so it is computed
+    # rather than written as a literal that goes stale.
+    from datetime import datetime, timedelta, timezone
+
+    soon = datetime.now(timezone.utc).date() + timedelta(days=5)
+    assert not _idea_is_dead(
+        {"kind": "New listing",
+         "summary": f"Opens {soon.day} {soon.strftime('%b')}, closes later."})
+
+    gone = datetime.now(timezone.utc).date() - timedelta(days=9)
+    assert _idea_is_dead(
+        {"kind": "New listing",
+         "summary": f"Last day — closes today, {gone.day} {gone.strftime('%b')}."}), (
+        "a window that shut nine days ago is not an idea")
 
 
 def test_ideas_are_sorted_by_colour_then_case_strength():
@@ -661,3 +674,41 @@ def test_the_asset_page_uses_the_models_null_not_a_coin_flip(report):
     from pathlib import Path
     src = (Path(__file__).resolve().parents[1] / "sigbot" / "report.py").read_text()
     assert "<dt>A coin flip would give</dt><dd>50%</dd>" not in src
+
+
+def test_no_raw_template_placeholders_reach_the_page(report):
+    """The paper page shipped showing literal `{_e(model)}` and
+    `{row["pnl"]:+,.0f}` as text, because an F541 lint warning was silenced by
+    dropping the `f` prefix from a concatenated literal that did need
+    interpolation. Any unrendered placeholder is this class of bug."""
+    import re
+
+    html = report[0]
+    # Only the markup. CSS is full of braces, so scanning the stylesheet
+    # produces nothing but false positives.
+    body = html[html.index("</style>"):] if "</style>" in html else html
+    suspects = re.findall(r"\{[^{}\n]{1,80}\}", body)
+    real = [s for s in suspects
+            if any(t in s for t in ("_e(", ".get(", '["', "['", ":,.", ":+,"))]
+    assert not real, f"unrendered placeholders on the page: {real[:5]}"
+
+
+def test_the_board_shows_its_status_counts_once(report):
+    """Two legends printed the same counts twice, the second one unstyled."""
+    import re
+
+    html = report[0]
+    board = html[html.index('id="board"'):]
+    board = board[:board.index('<div class="page"')]
+    assert len(re.findall(r"\d+ ready</span>", board)) == 1
+
+
+def test_the_null_sentence_never_contradicts_itself():
+    """It read "chance scores 50% ... so that is the bar to beat, not 50%"
+    whenever the fallback null was in use."""
+    from sigbot.report import _null_note
+
+    assert "not 50%" not in _null_note({"null_rate": 0.50})
+    assert "coin flip is the bar" in _null_note({"null_rate": 0.50})
+    assert "not 50%" in _null_note({"null_rate": 0.30})
+    assert "not been measured" in _null_note({"null_rate": None})

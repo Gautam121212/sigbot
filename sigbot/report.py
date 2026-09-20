@@ -475,8 +475,7 @@ def _model_page(m: dict) -> str:
       border-color:{_e(m.get('badge_colour', 'var(--line)'))}33">
       {_e(m.get('badge', ''))} · {_e(m.get('window', ''))}</span>
     <p class="what-sm" style="margin-top:10px">Next tier: {_e(m.get('ready_in', ''))}.
-    Chance scores {(m.get('null_rate') or 0.5) * 100:.0f}% on this model's
-    measure, so that is the bar to beat, not 50%.</p>
+    {_e(_null_note(m))}</p>
     <p class="what-sm">Intake: {_e(m.get('intake', ''))}.</p>
     <span class="badge" style="background:{tc}1f;color:{tc}">{_e(TIER_PLAIN.get(m['tier'], m['tier']))}</span>
     <div class="meter"><i style="width:{(m.get('lower_bound') or 0) * 100:.0f}%;background:{tc}"></i></div>
@@ -811,11 +810,6 @@ def build_report(data: dict) -> str:
     <span><i class="pip" style="background:var(--red)"></i>{b.get("counts", dict()).get("RED", 0)} avoid</span>
     <span><i class="pip" style="background:var(--faint)"></i>{b.get("counts", dict()).get("TESTING", 0)} testing</span>
   </div>
-  <div class="legend">
-    <span><i class="pip" style="background:#00e676"></i>{b.get("counts", {}).get("GREEN", 0)} ready</span>
-    <span><i class="pip" style="background:#ffd93d"></i>{b.get("counts", {}).get("AMBER", 0)} risky</span>
-    <span><i class="pip" style="background:#ff6b6b"></i>{b.get("counts", {}).get("RED", 0)} avoid</span>
-  </div>
   {tiles or empty}
   {grave}
 </div></div>
@@ -843,10 +837,10 @@ def build_report(data: dict) -> str:
   outcomes, and single events cannot be: an IPO or a policy change happens once,
   so there is nothing to compare a new one against. This is material to think
   about, not a signal.</p>
-  <div class="legend">
-    <span><i class="pip" style="background:#00e676"></i>ready to judge</span>
-    <span><i class="pip" style="background:#ffd93d"></i>questions open</span>
-    <span><i class="pip" style="background:#8b8b9a"></i>context only</span>
+  <div class="board-status">
+    <span><i class="pip" style="background:var(--green)"></i>ready to judge</span>
+    <span><i class="pip" style="background:var(--amber)"></i>questions open</span>
+    <span><i class="pip" style="background:var(--faint)"></i>context only</span>
   </div>
   {idea_cards or empty_ideas}
 </div></div>
@@ -945,9 +939,14 @@ def _paper_body(data: dict) -> str:
     ret = state.get("total_return") or 0.0
     colour = "var(--green)" if ret > 0 else "var(--red)" if ret < 0 else "var(--dim)"
     wr = state.get("win_rate")
+    # One f-string, start to finish. An earlier version silenced an F541 lint
+    # warning by dropping the `f` prefix from the second half of a
+    # concatenated literal, which left every placeholder in it rendering as
+    # raw text on the live page: {_e(model)}, {row["pnl"]}, all of it.
     rows = "".join(
-        '''<div class="tile"><span class="pip" style="background:'''
-        + ("var(--green)" if row["pnl"] > 0 else "var(--red)") + '''"></span>
+        f'''<div class="tile">
+        <span class="pip" style="background:{
+            "var(--green)" if row["pnl"] > 0 else "var(--red)"}"></span>
         <b>{_e(model)}</b><div class="grow">
         <p>{row["pnl"]:+,.0f} over {row["trades"]:,} trade(s)</p>
         <p>{(row.get("win_rate") or 0) * 100:.0f}% of them in profit,
@@ -1024,9 +1023,35 @@ def _idea_is_dead(o: dict) -> bool:
     because inventing a date is the one thing this system must never do.
     """
     text = f"{o.get('kind', '')} {o.get('summary', '')}".lower()
-    return ("dates unknown" in text
-            or "gives no dates" in text
-            or "closed" in o.get("kind", "").lower())
+    if ("dates unknown" in text or "gives no dates" in text
+            or "closed" in o.get("kind", "").lower()):
+        return True
+
+    # A dated card whose window has passed. "Last day — closes today, 11 Sep"
+    # was still on the page on 20 September: the undated filter could not see
+    # it because it HAD a date, and the write-path age-out only runs when the
+    # scan re-runs. Read the date on the page and judge it here.
+    import re
+    from datetime import datetime, timezone
+
+    months = {m: i for i, m in enumerate(
+        ("jan", "feb", "mar", "apr", "may", "jun",
+         "jul", "aug", "sep", "oct", "nov", "dec"), start=1)}
+    today = datetime.now(timezone.utc).date()
+    for day, mon in re.findall(r"(\d{1,2})\s+([A-Za-z]{3})", text):
+        month = months.get(mon[:3].lower())
+        if not month:
+            continue
+        try:
+            when = today.replace(month=month, day=int(day))
+        except ValueError:
+            continue
+        # A date more than two days past is a window that has shut. Future
+        # dates and today are live; a stale card is never rescued by guessing
+        # that it meant next year.
+        if (today - when).days > 2:
+            return True
+    return False
 
 
 def _live_ideas(data: dict) -> list[dict]:
@@ -1160,3 +1185,22 @@ def _shortcomings(failures: dict, wrong: int) -> str:
             "\u201cright but too small\u201d means the signal works and the "
             "horizon is too short to pay for itself; a run of "
             "\u201cwent the other way\u201d means it does not work.</p>")
+
+
+def _null_note(model: dict) -> str:
+    """Say what chance scores, without contradicting itself.
+
+    The sentence used to read "chance scores 50% ... so that is the bar to
+    beat, not 50%" whenever the fallback null was in use, which is nonsense on
+    the page and undermines the one point it is making.
+    """
+    null = model.get("null_rate")
+    if not null:
+        return ("Chance has not been measured for this model yet, so the bar "
+                "is assumed to be a straight coin flip.")
+    if abs(null - 0.50) < 0.005:
+        return ("Chance scores about 50% on this model's measure, so a coin "
+                "flip is the bar.")
+    return (f"Chance scores {null * 100:.0f}% on this model's measure, "
+            "because a call only counts when the move also clears trading "
+            "costs. That is the bar to beat, not 50%.")
