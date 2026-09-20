@@ -61,18 +61,12 @@ if [ -z "${SKIP_REMOTE:-}" ]; then
   # same data. The remote's copy wins; ours is regenerated seconds later.
   # Generated files are gitignored now, so nothing to discard — but an older
   # checkout may still have them tracked. Untrack rather than fight them.
-  # Untrack files that should never have been tracked. git rm --cached removes
-  # them from the index without touching the working copy, so the file stays on
-  # disk for the build step that follows. This also prevents autostash from
-  # including them, which is what caused the stash-conflict loop.
-  for gen in app/data.json app/public/index.html app/public/ \
-             app/sigbot-report.html outbox.log; do
-    git rm --cached -rf "$gen" 2>/dev/null || true
+  # Discard local edits to generated files so autostash has nothing to carry
+  # across the pull. They are rebuilt in the next step regardless.
+  for gen in app/data.json app/public/index.html app/sigbot-report.html \
+             outbox.log; do
+    git checkout -- "$gen" 2>/dev/null || true
   done
-  # Belt-and-braces: discard any working-tree copy of generated files that git
-  # somehow still sees. The build step below recreates whatever is needed.
-  git checkout HEAD -- .gitignore 2>/dev/null || true
-  git clean -fdq -- app/data.json app/sigbot-report.html outbox.log 2>/dev/null || true
   git pull --rebase --autostash origin "$BRANCH" \
     || die "pull failed — resolve by hand, then rerun."
 fi
@@ -85,6 +79,15 @@ printf '     wrote app/public/index.html (%s KB)\n' \
 
 # ---------------------------------------------------------------- 3. sync
 say "5/6  Commit"
+# Untrack generated artifacts HERE, after the pull. Doing it before the pull
+# achieved nothing — the pull restored them from the remote index, because
+# .gitignore only governs files git does not already track. Removing them now
+# means the deletion lands in this commit and reaches the remote, which is the
+# only thing that actually ends the conflict loop.
+for gen in app/data.json app/public/index.html app/sigbot-report.html \
+           outbox.log .wrangler; do
+  git rm --cached -rf --ignore-unmatch "$gen" >/dev/null 2>&1 || true
+done
 for f in shadow.db patterns.db watchlist.db opportunities.json universe.json \
          paper.json themes.json app/public/index.html; do
   git add -f "$f" 2>/dev/null || true
