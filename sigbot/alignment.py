@@ -207,6 +207,46 @@ def review_setups(trades: Sequence[dict]) -> list[SetupReview]:
     return out
 
 
+def monthly_returns(db_path: str) -> list[tuple[str, float]]:
+    """(YYYY-MM, return) for each month of the stocks paper book, oldest first.
+
+    Each month's return is its P&L over the equity it started with, so a
+    month after a drawdown is not flattered by a smaller base.
+    """
+    from .paper import replay
+
+    book = replay(db_path, models={"stocks"})
+    if not book.trades:
+        return []
+    by_month: dict[str, float] = {}
+    for t in book.trades:
+        key = str(t.opened_at)[:7]
+        by_month[key] = by_month.get(key, 0.0) + t.pnl
+    out, equity = [], float(book.starting_cash)
+    for key in sorted(by_month):
+        out.append((key, by_month[key] / equity if equity else 0.0))
+        equity += by_month[key]
+    return out
+
+
+def check_growth(months: Sequence[tuple[str, float]]) -> Check:
+    """Live monthly growth against the benchmark measured on history."""
+    from .benchmarks import EXPECTED, HOLD_INDEX, judge_month, judge_run
+
+    expect = (f"About {EXPECTED.net_avg * 100:+.2f}% a month net of costs, "
+              f"against {HOLD_INDEX.avg_month * 100:+.2f}% for holding the index")
+    if not months:
+        return Check("Grow in line with history", expect, "no months yet", EARLY)
+    last_key, last = months[-1]
+    month_verdict, month_note = judge_month(last)
+    run_verdict, run_note = judge_run([r for _k, r in months])
+    verdict = (DRIFT if run_verdict == "BEHIND THE INDEX"
+               else EARLY if run_verdict == "TOO EARLY" else PASS)
+    return Check("Grow in line with history", expect,
+                 f"{last_key}: {month_verdict}; over {len(months)} month(s): {run_verdict}",
+                 verdict, f"{month_note} {run_note}")
+
+
 def run_review(db_path: str, considered: int, recorded: int,
                pause_after: int) -> tuple[list[Check], list[SetupReview]]:
     trades = _stocks_trades(db_path)
@@ -216,6 +256,7 @@ def run_review(db_path: str, considered: int, recorded: int,
         check_selectivity(considered, recorded),
         check_streak_discipline(trades, pause_after),
         check_both_schools(trades),
+        check_growth(monthly_returns(db_path)),
     ]
     return checks, review_setups(trades)
 

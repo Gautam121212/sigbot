@@ -692,8 +692,8 @@ def build_report(data: dict) -> str:
 
         def bar(label, pct, shade):
             if round(pct) <= 0:
-                return (f'<div class="dualbar"><span>{label}</span>'
-                        f'<i></i><span>--</span></div>')
+                return (f'<div class="dualbar dualbar-empty"><span>{label}</span>'
+                        f'<span>not yet</span></div>')
             return (f'<div class="dualbar"><span>{label}</span>'
                     f'<i><b style="width:{pct:.0f}%;background:{shade}"></b></i>'
                     f'<span>{pct:.0f}%</span></div>')
@@ -812,15 +812,8 @@ def build_report(data: dict) -> str:
     are not.</p></div>
 </div></div>""" for i, o in enumerate(opps))
 
-    dead = b.get("graveyard", [])
-    grave = ("" if not dead else
-             '<h2>Dropped</h2><p class="note" style="padding-top:0">Kept with their '
-             'numbers. Dropping the weak and keeping the strong is how survivorship '
-             'bias gets built on purpose, so nothing disappears quietly.</p>' +
-             "".join(f"""
-  <div class="tile"><span class="pip" style="background:#8b8b9a"></span>
-    <b>{_e(g['symbol'])}</b><div class="grow"><p>{_e(g['reason'])}</p></div></div>"""
-                     for g in dead))
+    # The board's dropped-names list was rendered here for the board page,
+    # which is now backend-only. The graveyard itself is still kept.
     stamp = data.get("generated_at", "")[:16].replace("T", " ")
     # A page built from sample data must say so. Otherwise it looks exactly like
     # your own results, and the numbers on it are somebody else's.
@@ -876,19 +869,10 @@ def build_report(data: dict) -> str:
 </div></div>
 {"".join(_model_page(m) for m in data["models"])}
 
-<div class="page" id="board"><div class="wrap">
-  <div class="top"><span class="brand">The board</span>
-    <span class="stamp">{b.get("size", 0)} assets</span></div>
-  <p class="lead" style="margin-bottom:10px">{_e(b.get("note", ""))}</p>
-  <div class="board-status">
-    <span><i class="pip" style="background:var(--green)"></i>{b.get("counts", dict()).get("GREEN", 0)} ready</span>
-    <span><i class="pip" style="background:var(--amber)"></i>{b.get("counts", dict()).get("AMBER", 0)} risky</span>
-    <span><i class="pip" style="background:var(--red)"></i>{b.get("counts", dict()).get("RED", 0)} avoid</span>
-    <span><i class="pip" style="background:var(--faint)"></i>{b.get("counts", dict()).get("TESTING", 0)} testing</span>
-  </div>
-  {tiles or empty}
-  {grave}
-</div></div>
+<!-- The board is backend-only. It still rotates the watchlist and keeps its
+     graveyard; it no longer has a page. With the 100-name ceiling gone it was
+     a list of hundreds of "Building — 0 of 25 checks" rows that told a
+     visitor nothing, and every model page already shows what matters. -->
 
 <div class="page" id="charts"><div class="wrap">
   <div class="top"><span class="brand">Charts</span>
@@ -984,7 +968,6 @@ def build_report(data: dict) -> str:
 
 <nav class="nav">
   <a class="n-home" href="#home"><b>&#8962;</b><span>Home</span></a>
-  <a class="n-board" href="#board"><b>&#9636;</b><span>Board</span></a>
   <a class="n-ideas" href="#ideas"><b>&#10022;</b><span>Ideas</span></a>
   <a class="n-learn" href="#learned"><b>&#8599;</b><span>Top picks</span></a>
   <a class="n-paper" href="#paper"><b>&#8942;</b><span>Paper</span></a>
@@ -1575,8 +1558,11 @@ def _bar(label: str, pct: float, colour: str) -> str:
     # Guard the ROUNDED value: 0.4 is greater than zero but formats as "0%",
     # which is exactly the stub this is meant to prevent.
     if round(pct) <= 0:
-        return (f'<div class="dualbar"><span>{label}</span>'
-                f'<i></i><span>--</span></div>')
+        # No track at all when there is nothing to measure. An empty track
+        # still reads as a full grey bar on a phone, which is the opposite of
+        # "nothing yet".
+        return (f'<div class="dualbar dualbar-empty"><span>{label}</span>'
+                f'<span>not yet</span></div>')
     return (f'<div class="dualbar"><span>{label}</span>'
             f'<i><b style="width:{pct:.0f}%;background:{colour}"></b></i>'
             f'<span>{pct:.0f}%</span></div>')
@@ -1590,8 +1576,15 @@ def _meter(pct: float, colour: str) -> str:
     """
     pct = max(0.0, min(float(pct or 0), 100.0))
     # Rounded, as in _bar: 0.4 is above zero but renders as "0%".
+    #
+    # NO <i> AT ALL when empty. In a meter the <i> IS the coloured fill, styled
+    # display:block, so an <i> with no width stretches to 100% — an empty meter
+    # drew as a FULL teal bar directly above "Nothing checked yet". The earlier
+    # guard test only checked that no bar said width:0%, which removing the
+    # width satisfied while making the bar full: it tested a proxy, not what a
+    # person sees.
     if round(pct) <= 0:
-        return '<div class="meter"><i></i></div>'
+        return '<div class="meter"></div>'
     return f'<div class="meter"><i style="width:{pct:.0f}%;background:{colour}"></i></div>'
 
 

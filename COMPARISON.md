@@ -286,6 +286,21 @@ Dip-buying stays blocked on crypto (−3.64% over five days after a 15% weekly
 drop). The first guard blocked crypto entirely, which also blocked momentum —
 the style the playbook says suits it. It now blocks only dip-buying.
 
+### Monthly growth benchmark — measured, gross and net
+
+Sigbot now runs both schools, so its live months are held against **Both
+schools together**: about **+0.99% a month net of costs**, a typical month of
++1.44% net, a bad month (one in ten) of −5.29%, and 61% of months up. Holding
+the index earned +1.00% on average with a −16.61% worst month.
+
+Costs were estimated from the measured median trade — a 9.7% stop, a position
+of 10.3% of capital, $107M of daily trading, 3.23% daily volatility — through
+the same model the paper book uses: about 0.20% of the account a month.
+
+The monthly review (`runner review`) now includes this: each month is judged
+against the historical range, and after six months the running average is
+checked against the index. **Evidence: TESTED** on 129 months.
+
 ### The site: five models
 
 Daily outlook was folded into **Stocks & funds**, and Tested setups into the

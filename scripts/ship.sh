@@ -93,7 +93,7 @@ done
 # same run, and the file went straight back to the remote. That single word was
 # the whole conflict loop.
 for f in shadow.db patterns.db watchlist.db opportunities.json universe.json \
-         paper.json themes.json; do
+         paper.json themes.json dead_symbols.json alignment_history.json; do
   git add -f "$f" 2>/dev/null || true
 done
 git add -A

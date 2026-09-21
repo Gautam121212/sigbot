@@ -353,7 +353,34 @@ before trusting these links again.
 
 ---
 
-## Part IV — Where professionals disagree
+## Part IV — What a month should look like
+
+Professionals judge a method over many months, because single months are
+mostly noise. These figures come from trading the two stock schools on liquid
+US large caps from 2016 to now — 129 months — with a small, fixed risk per
+trade (1% of capital), stops scaled to volatility, ten-day holds and about
+twelve trades a month. "Net" subtracts realistic trading costs.
+
+| Approach | Average month | Net of costs | Typical month | 1 month in 10 | Worst month | Months up |
+|---|---|---|---|---|---|---|
+| Both schools together | +1.19% | **+0.99%** | +1.64% | −5.29% | −11.69% | 61% |
+| Momentum school alone | +0.94% | +0.74% | +1.03% | −6.07% | −12.00% | 57% |
+| Mean-reversion school alone | +0.63% | +0.46% | +0.73% | −4.35% | −11.53% | 59% |
+| Buy and hold the index | +1.00% | +1.00% | +1.21% | −5.02% | −16.61% | 67% |
+
+**How to read it.** Run together, the two schools earned about what holding
+the index earned on average, did better in the typical month, and fell a good
+deal less in their worst month. Either school alone trailed the index after
+costs. The value of combining them is not a higher return — it is similar
+returns with shallower falls, because the two schools fail in different years.
+
+**What to expect from one month.** Roughly four months in ten lose money even
+for the best combination. A loss is only unusual when it is worse than about
+−5% — worse than nine historical months in ten.
+
+---
+
+## Part V — Where professionals disagree
 
 | Question | One view | The other view |
 |---|---|---|

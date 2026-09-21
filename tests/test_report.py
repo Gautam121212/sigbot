@@ -321,13 +321,6 @@ def test_board_is_a_hundred_assets(board):
     assert sum(b["counts"].values()) == 100
 
 
-def test_board_tab_exists_and_links(board):
-    h = board[0]
-    assert 'href="#board"' in h and 'id="board"' in h
-    for tab in ("home", "board", "learned", "missed"):
-        assert f'href="#{tab}"' in h
-
-
 def test_every_asset_has_a_colour_and_a_reason(board):
     for a in _all_board(board[1]):
         assert a["flag"] in ("GREEN", "AMBER", "RED", "TESTING")
@@ -463,58 +456,10 @@ def test_real_data_carries_no_banner(tmp_path):
     assert "SAMPLE DATA" not in build_report(data)
 
 
-def test_the_board_separates_stocks_from_crypto(board):
-    """Different hours, different costs, different volatility. One undivided
-    wall of a hundred names read as noise; two sections read as two answers."""
-    html = board[0]
-    assert "Stocks (" in html
-    assert "Crypto (" in html
-
-
 def test_learned_is_titled_top_suggestions(board):
     html = board[0]
     assert "Top suggestions" in html
     assert "What it learned" not in html
-
-
-def test_the_board_is_sorted_by_colour(board):
-    """A hundred rows in arbitrary order meant scrolling to find the two that
-    qualified. Strongest first, within each section."""
-    import re
-
-    html = board[0]
-    rank = {"#00e676": 0, "#ffd93d": 1, "#ff6b6b": 2, "#8b8b9a": 3}
-    # Bound to the board page. An unbounded slice runs into Ideas, Top picks
-    # and Paper, whose pips have nothing to do with this ordering — which is
-    # what made the first version of this test fail a correct implementation.
-    page_start = html.index('id="board"')
-    next_page = html.find('<div class="page"', page_start + 1)
-    page = html[page_start:next_page if next_page != -1 else len(html)]
-    # Each section sorts independently, so a slice that spans both restarts
-    # the order halfway through and would fail a correct implementation.
-    sections = []
-    if "Stocks (" in page:
-        start = page.index("Stocks (")
-        end = page.index("Crypto (") if "Crypto (" in page else len(page)
-        sections.append(page[start:end])
-    if "Crypto (" in page:
-        sections.append(page[page.index("Crypto ("):])
-
-    assert sections, "the board must render at least one section"
-    for section in sections:
-        colours = re.findall(
-            r'class="pip" style="background:(#[0-9a-f]{6})', section)
-        values = [rank.get(c, 9) for c in colours]
-        assert values == sorted(values), (
-            f"rows must be ordered by colour, got {values[:12]}")
-
-
-def test_each_board_row_shows_both_distances(board):
-    """A colour says what an asset is now, not whether it is about to qualify
-    or about to be dropped — which is what decides where to look."""
-    html = board[0]
-    assert html.count('class="dualbar"') >= 2
-    assert ">ready<" in html and ">drop<" in html
 
 
 def test_board_progress_never_leaves_its_track():
@@ -687,16 +632,6 @@ def test_no_raw_template_placeholders_reach_the_page(report):
     real = [s for s in suspects
             if any(t in s for t in ("_e(", ".get(", '["', "['", ":,.", ":+,"))]
     assert not real, f"unrendered placeholders on the page: {real[:5]}"
-
-
-def test_the_board_shows_its_status_counts_once(report):
-    """Two legends printed the same counts twice, the second one unstyled."""
-    import re
-
-    html = report[0]
-    board = html[html.index('id="board"'):]
-    board = board[:board.index('<div class="page"')]
-    assert len(re.findall(r"\d+ ready</span>", board)) == 1
 
 
 def test_the_null_sentence_never_contradicts_itself():
@@ -882,3 +817,43 @@ def test_no_bar_ever_renders_a_zero_width_fill(report):
 
     html = report[0]
     assert not re.findall(r"width:0%", html), "a zero bar must draw nothing"
+
+
+
+def test_no_bar_ever_draws_full_when_there_is_nothing(report):
+    """The property a person sees, not a proxy for it.
+
+    The earlier guard asserted that no bar said width:0%. Removing the width
+    satisfied it — and a meter's <i> is display:block, so without a width it
+    stretched to 100%: a FULL teal bar above "Nothing checked yet". Every
+    coloured fill must state its width, and empty ones must not exist."""
+    import re
+
+    html = report[0]
+    body = html[html.index("</style>"):]
+    for fill in re.findall(r'<div class="meter">(.*?)</div>', body):
+        if fill:
+            assert "width:" in fill, f"a meter fill without a width draws full: {fill!r}"
+    assert "<i></i>" not in body, "an empty <i> draws as a full bar or track"
+    for b in re.findall(r"<b style=\"([^\"]*)\"></b>", body):
+        assert "width:" in b
+
+
+def test_an_empty_bar_says_so_in_words():
+    from sigbot.report import _bar, _meter
+
+    assert "not yet" in _bar("ready", 0, "var(--green)")
+    assert "<i" not in _bar("ready", 0, "var(--green)")
+    assert _meter(0, "var(--teal)") == '<div class="meter"></div>'
+    assert "width:40%" in _meter(40, "var(--teal)")
+
+
+
+def test_the_board_is_backend_only(report):
+    """The board still rotates the watchlist and keeps its graveyard, but it
+    has no page. With the 100-name ceiling gone it had become hundreds of
+    "Building — 0 of 25 checks" rows that told a visitor nothing."""
+    html = report[0]
+    assert 'id="board"' not in html
+    assert 'href="#board"' not in html
+    assert ">Board</span>" not in html

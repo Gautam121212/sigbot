@@ -77,14 +77,62 @@ def board_assets(settings=SETTINGS) -> list:
     unreadable universe file degrades to the old coverage instead of to none.
     """
     seen: dict[str, object] = {}
+    # Names that returned no price history at all in the last 30 days are
+    # skipped. The universe widened from 100 names to 675 and includes
+    # delisted ones; fetching them every day spent time and returned nothing.
+    dead = _dead_symbols()
     loaded, note = _load_universe()
     if note:
         record_skip("universe", UNIVERSE_FILE, RuntimeError(note))
     for asset in list(loaded or []) + list(POOL):
         sym = getattr(asset, "symbol", None)
-        if sym and sym not in seen:
+        if sym and sym not in seen and not _is_dead(sym, dead):
             seen[sym] = asset
     return list(seen.values()) or list(UNIVERSE)
+
+
+DEAD_FILE = "dead_symbols.json"
+DEAD_RETRY_DAYS = 30
+
+
+def _dead_symbols(path: str = DEAD_FILE) -> dict[str, str]:
+    """symbol -> ISO date it last returned no price history at all."""
+    import json
+    try:
+        return json.loads(Path(path).read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}
+
+
+def _mark_dead(symbol: str, path: str = DEAD_FILE) -> None:
+    """Remember a name that returned NO history, so it is not fetched daily.
+
+    Only an empty history counts. A short one is a new listing, not a dead
+    one, and treating it as dead would hide exactly the names a wide scan
+    exists to find.
+    """
+    import json
+    dead = _dead_symbols(path)
+    dead[symbol] = datetime.now(timezone.utc).date().isoformat()
+    try:
+        Path(path).write_text(json.dumps(dead, indent=1, sort_keys=True),
+                              encoding="utf-8")
+    except OSError as exc:
+        record_skip("dead_symbols", symbol, exc)
+
+
+def _is_dead(symbol: str, dead: dict[str, str]) -> bool:
+    """Dead if it returned nothing within the last 30 days. After that it is
+    tried again, because a suspended stock can resume trading."""
+    seen = dead.get(symbol)
+    if not seen:
+        return False
+    try:
+        age = (datetime.now(timezone.utc).date()
+               - datetime.fromisoformat(seen).date()).days
+    except ValueError:
+        return False
+    return age < DEAD_RETRY_DAYS
 
 
 def display_assets(settings=SETTINGS) -> list:
@@ -1749,6 +1797,10 @@ def run_stocks(settings=SETTINGS) -> None:
     for asset in universe:
         try:
             bars = market.history(asset.symbol, settings.history_start, end)
+            if len(bars) == 0:
+                _mark_dead(asset.symbol)
+                skipped += 1
+                continue
             if len(bars) < 200:
                 skipped += 1
                 continue
