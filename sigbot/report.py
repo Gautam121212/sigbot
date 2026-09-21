@@ -814,7 +814,30 @@ def build_report(data: dict) -> str:
 
     # The board's dropped-names list was rendered here for the board page,
     # which is now backend-only. The graveyard itself is still kept.
-    stamp = data.get("generated_at", "")[:16].replace("T", " ")
+    from datetime import datetime, timezone
+
+    raw_gen = data.get("generated_at", "")
+    stamp = raw_gen[:16].replace("T", " ")
+    # "updated Nh ago" and an overdue flag, computed here so the page needs no
+    # JavaScript (a long-standing design rule these reports keep). A run is due
+    # every 3 hours; past 4 the data is late and the dot is coloured to show it.
+    fresh_label, overdue = f"{stamp} UTC", False
+    if raw_gen:
+        try:
+            gen = datetime.fromisoformat(raw_gen)
+            if gen.tzinfo is None:
+                gen = gen.replace(tzinfo=timezone.utc)
+            mins = max(0, int((datetime.now(timezone.utc) - gen).total_seconds() // 60))
+            if mins < 60:
+                fresh_label = f"updated {mins} min ago"
+            elif mins < 1440:
+                fresh_label = f"updated {round(mins / 60)}h ago"
+            else:
+                fresh_label = f"updated {round(mins / 1440)}d ago"
+            overdue = mins > 240
+        except ValueError:
+            pass
+    dot_style = ' style="background:#e5484d"' if overdue else ""
     # A page built from sample data must say so. Otherwise it looks exactly like
     # your own results, and the numbers on it are somebody else's.
     demo_banner = ("" if not data.get("is_sample") else
@@ -838,7 +861,7 @@ def build_report(data: dict) -> str:
 <title>Sigbot</title><style>{CSS}</style></head><body>
 
 <div id="home"><div class="wrap">
-  <div class="top"><span class="brand">Sig<em>bot</em></span><span class="stamp"><i class="dot"></i>{_e(stamp)} UTC</span></div>
+  <div class="top"><span class="brand">Sig<em>bot</em></span><span class="stamp" title="{_e(stamp)} UTC"><i class="dot"{dot_style}></i>{_e(fresh_label)}</span></div>
   {demo_banner}
   <div class="hero">
     <div class="card call">

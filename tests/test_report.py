@@ -857,3 +857,13 @@ def test_the_board_is_backend_only(report):
     assert 'id="board"' not in html
     assert 'href="#board"' not in html
     assert ">Board</span>" not in html
+
+
+def test_the_page_shows_how_fresh_it_is(report):
+    """"Up to date" must be visible at a glance: the header says "updated N ago"
+    (computed at build time so the page stays JavaScript-free) and keeps the
+    exact UTC time in a tooltip."""
+    html = report[0]
+    assert "<script" not in html, "the page must stay JavaScript-free"
+    assert "updated " in html or "UTC" in html
+    assert 'title="' in html and "UTC" in html
