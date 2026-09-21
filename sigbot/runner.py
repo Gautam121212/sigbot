@@ -1961,10 +1961,14 @@ def run_priority(settings=SETTINGS, budget_minutes: float = 20.0,
     from .priority import describe, plan
 
     verdicts = _job_verdicts(settings)
-    # Only fast-decaying work. Stocks and follow-on moves read DAILY bars, so
-    # running them every three hours would repeat identical work eight times
-    # a day on 675 names — the likeliest cause of a workflow timeout. They run
-    # once a day on the weekday tick instead.
+    # resolve runs first EVERY tick so that past-due forecasts are scored
+    # before new ones arrive. Without it forecasts pile up indefinitely — the
+    # bug that left 1,494 rows unscored despite daily GitHub runs: resolve was
+    # in the registry but not in the queue, so priority-run never called it.
+    #
+    # Stocks, contagion and profiles read daily bars: running them every three
+    # hours repeats the same work eight times a day on 675 names. They stay on
+    # the weekday daily tick in the workflow (step 4 of WORKFLOW_CHANGE.md).
     jobs = ["resolve", "news", "opportunity", "crypto15m"]
     queue = plan(jobs, verdicts, budget_seconds=budget_minutes * 60)
     print(describe(queue))

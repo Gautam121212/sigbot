@@ -76,3 +76,21 @@ def test_the_scheduler_cannot_schedule_itself():
 
     assert "priority" not in _job_registry()
     assert all(fn is not run_priority for fn in _job_registry().values())
+
+
+def test_resolve_is_always_the_first_job_in_the_tick():
+    """resolve was in the registry but not the queue — so priority-run never
+    called it. 1,494 forecasts went unscored across weeks of daily GitHub
+    runs. The queue now always starts with resolve."""
+    import inspect
+    from sigbot.runner import run_priority
+    src = inspect.getsource(run_priority)
+    assert '"resolve"' in src, "resolve must be in the jobs list inside run_priority"
+
+
+def test_resolve_appears_before_news_in_priority_queue():
+    """It has the shortest half-life — a forecast past its window cannot
+    be scored at all."""
+    from sigbot.priority import HALF_LIFE_HOURS
+    assert "resolve" in HALF_LIFE_HOURS
+    assert HALF_LIFE_HOURS["resolve"] < HALF_LIFE_HOURS["news"]

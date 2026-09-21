@@ -36,6 +36,11 @@ from dataclasses import dataclass
 # How long, in hours, before an opportunity this job finds loses half its
 # value. Shortest runs first.
 HALF_LIFE_HOURS: dict[str, float] = {
+    # resolve: smallest half-life of all — a forecast that passes its due
+    # window can no longer be scored.  Not in the 3-hour queue above because
+    # it is called unconditionally at the top of every tick; listed here so
+    # the queue knows its priority when selecting jobs in budget.
+    "resolve": 1.0,
     "news": 4.0,            # a headline is priced within hours
     "contagion": 24.0,      # follow-on moves play out over a session or two
     "opportunity": 48.0,    # listings and event windows run for days
