@@ -206,12 +206,12 @@ MODEL_VERDICTS: dict[str, tuple[str, str]] = {
                   "gave x95 with -80%. New: holding except while STOCKS are in a "
                   "volatile decline gave x155, cutting 2022 from -76% to -28% — "
                   "promising, resting on few bear markets. Advises, never trades."),
-    "news": ("NO (AT THIS SPEED)",
-             "58,000 earnings reports: the whole reaction happens on the day "
-             "(+2.0% for big beats, -3.2% for big misses, beyond the index) and "
-             "the following 19 days show no reliable drift. A system reading "
-             "news hours later trades after the move. Kept for learning and "
-             "context; GDELT now arrives through its bulk files."),
+    "news": ("ONE EDGE FOUND",
+             "On average earnings news is priced on the day (58,000 reports). "
+             "But a big beat CONFIRMED by a 2%+ rise beyond the index kept "
+             "outperforming for 19 days in all three periods (+1.20% / +0.44% / "
+             "+1.26%) — and it triggers after the reaction, so slowness does not "
+             "matter. Live news also beats its history (z +2.7), a gap still open."),
     "opportunity": ("NOT A TRADING MODEL",
                     "One-off situations cannot be backtested as a series. A "
                     "research feed, judged by the intake gate."),

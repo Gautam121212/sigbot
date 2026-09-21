@@ -143,13 +143,35 @@ LOOP_STATUS = {
     "follow-on": "Exhausted: following loses, the rebound is beta. No edge in any tested form.",
     "crypto": "Hold-except-stock-panics promising (x155 vs x110). Next needs "
               "on-chain or futures-funding history, not reachable here.",
-    "news": "Priced on the day (58,000 earnings). Live news beats that history "
-            "(z +2.7) — the GDELT archive now building is what can explain it.",
+    "news": "Priced on the day on average — but a big beat CONFIRMED by the "
+            "day's move drifts +0.44% to +1.26% over 19 days in every period "
+            "(indicators.confirmed_surprise). Live wiring needs live surprises.",
     "ideas/opportunities": "One-off situations: no history to test against.",
 }
 
+# Round 6 — the final run: one or two of sigbot's own indicators per model.
+ROUND_6_BATCH = 4
+ROUND_6 = (
+    # News, reaction divergence: a big beat CONFIRMED by a 2%+ rise beyond the
+    # index keeps outperforming for 19 days in every period. Adopted.
+    Result("Confirmed surprise: big beat + 2% rise on the day", 5.2, 3.0, 6.0, (1.20, 0.44, 1.26)),
+    Result("Divergent: big beat but fell on the day", 1.6, -2.8, 0.8, (0.47, -0.63, 0.20)),
+    Result("Divergent: big miss but rose on the day", 1.7, -4.6, 1.1, (0.92, -1.83, 0.59)),
+    # Stocks, panic breadth (share of liquid stocks oversold the same day):
+    # capitulation is positive in broad panics (+0.89 / +0.98 / +1.63%) but
+    # beats isolated weakness in only two periods of three — confirms the
+    # setup without improving the regime rule. Not added.
+    Result("Panic breadth: broad minus isolated, capitulation", -2.4, 5.1, 4.9, (-0.59, 0.70, 0.71)),
+)
+# Crypto: panic breadth ranked Bitcoin's next 20 days best in 2021+ and worst
+# in 2016-20 — inconsistent, not added. Follow-on: exhausted. Ideas and
+# opportunities: no history to test. The loop stops there rather than push.
+
 # Written down BEFORE testing, so their results cannot shape their wording.
 PENDING = (
+    "Wire the confirmed-surprise indicator into the live news model once "
+    "earnings surprises are available live; judge it against the +0.44% to "
+    "+1.26% it earned in all three periods",
     "Gross profitability (Novy-Marx) within the regime split, beta-adjusted, "
     "from Shibui fundamentals, all three periods",
     "News: does the live edge come from non-earnings news? Score live news "
@@ -214,6 +236,10 @@ def summary() -> str:
         e = ", ".join(f"{x:+.2f}%" for x in r.excess_pct)
         lines.append(f"  {verdict:<9} {r.hypothesis:<48} {e}")
     lines += [f"    held back: {k} — {v}" for k, v in NOT_ADOPTED.items()]
+    lines += ["", f"Round 6 - final run, sigbot's own indicators (batch of {ROUND_6_BATCH}):"]
+    for r in ROUND_6:
+        lines.append(f"  {label(r, ROUND_6_BATCH):<9} {r.hypothesis:<50} "
+                     + ", ".join(f"{x:+.2f}%" for x in r.excess_pct))
     lines += ["", "Where the loop stopped, per model:"]
     lines += [f"  {k:<20} {v}" for k, v in LOOP_STATUS.items()]
     lines += ["", "Pre-registered for the next round:"] + [f"  - {h}" for h in PENDING]

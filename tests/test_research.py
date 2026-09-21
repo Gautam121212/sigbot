@@ -111,3 +111,22 @@ def test_follow_on_is_expected_to_have_no_edge():
 
     assert EXPECTED["contagion"][0] == 0.0
     assert MODEL_VERDICTS["contagion"][0] == "NO"
+
+
+def test_round_6_adopts_the_confirmed_surprise_and_nothing_else():
+    from sigbot.research import ROUND_6, ROUND_6_BATCH, label
+
+    labels = {r.hypothesis: label(r, ROUND_6_BATCH) for r in ROUND_6}
+    assert labels["Confirmed surprise: big beat + 2% rise on the day"] == "ADOPT"
+    assert all(v != "ADOPT" for k, v in labels.items()
+               if not k.startswith("Confirmed surprise"))
+
+
+def test_confirmed_surprise_needs_both_the_beat_and_the_market_agreeing():
+    from sigbot.indicators import confirmed_surprise
+
+    assert confirmed_surprise(15.0, 0.03)
+    assert not confirmed_surprise(15.0, -0.03), "the market disagreed"
+    assert not confirmed_surprise(5.0, 0.03), "not a big beat"
+    assert not confirmed_surprise(-15.0, 0.03), "misses are not used"
+    assert not confirmed_surprise(None, 0.03) and not confirmed_surprise(15.0, None)
