@@ -28,7 +28,10 @@ EXPECTED: dict[str, tuple[float, str]] = {
     "crypto15m": (0.0, "no short-term edge in either direction (CoinGecko, GBTC)"),
     "daily": (0.0, "no edge over 141,123 replayed decisions"),
     "news": (0.0, "priced on the day across 58,000 earnings reports"),
-    "contagion": (0.03, "sympathy rebound positive in all three periods"),
+    # The rebound looked positive in all three periods, but after removing
+    # each stock's own beta it was -0.14% / +0.11% / +0.11% — below costs and
+    # flipping sign. Expecting an edge would teach the loop to credit luck.
+    "contagion": (0.0, "rebound was beta to the market, not an edge"),
     "stocks": (0.02, "capitulation and calm-uptrend momentum beat the index"),
 }
 

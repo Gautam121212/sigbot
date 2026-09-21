@@ -90,3 +90,24 @@ def test_round_4_momentum_survives_only_in_a_calm_uptrend():
     verdicts = {r.hypothesis: survives(r, ROUND_4_BATCH) for r in ROUND_4}
     assert verdicts["Momentum | calm uptrend"] is True
     assert not any(v for h, v in verdicts.items() if h != "Momentum | calm uptrend")
+
+
+def test_a_consistent_loser_is_labelled_avoid_never_adopt():
+    """The protocol checks consistency; direction must be checked too, or a
+    strategy that lost in every period is printed as a survivor."""
+    from sigbot.research import ROUND_5, ROUND_5_BATCH, label
+
+    labels = {r.hypothesis: label(r, ROUND_5_BATCH) for r in ROUND_5}
+    assert labels["Low-volatility anomaly (bottom 10% vol)"] == "AVOID"
+    assert labels["Capitulation, beta-adjusted"] == "ADOPT"
+    assert labels["Far below 52w high | volatile decline, beta-adj"] == "HELD BACK"
+    assert labels["Follow-on rebound, beta-adjusted (5 days)"] == "fails"
+
+
+def test_follow_on_is_expected_to_have_no_edge():
+    """Its rebound was beta. Expecting an edge would teach the loop to credit luck."""
+    from sigbot.calibration import EXPECTED
+    from sigbot.promotion import MODEL_VERDICTS
+
+    assert EXPECTED["contagion"][0] == 0.0
+    assert MODEL_VERDICTS["contagion"][0] == "NO"

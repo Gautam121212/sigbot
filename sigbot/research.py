@@ -114,8 +114,44 @@ ROUND_4 = (
     Result("RSI<20 washout | volatile uptrend", -3.4, 3.5, 3.1, (-2.37, 2.03, 1.67)),
 )
 
+# Round 5 — public strategies from published research, each tested as
+# published and with sigbot's regime split; then a BETA CHECK on everything in
+# volatile declines, where high-beta stocks rebound with the market for free.
+# 20 days, beyond the index (2016-20, 2021+, 2009-15).
+ROUND_5_BATCH = 6
+ROUND_5 = (
+    # Low-volatility anomaly (Black; Haugen; Frazzini-Pedersen): its edge is
+    # risk-adjusted; in plain return calm stocks lagged the index throughout.
+    Result("Low-volatility anomaly (bottom 10% vol)", -7.4, -16.1, -2.4, (-0.28, -0.55, -0.08)),
+    # 52-week-high anchor (George and Hwang): flips between periods.
+    Result("Near 52-week high (George-Hwang)", -1.7, -8.4, 4.6, (-0.08, -0.56, 0.16)),
+    # Positive even after beta, but these are stocks down 40%+ — the group
+    # most inflated by bankruptcies missing from the data. Not adopted.
+    Result("Far below 52w high | volatile decline, beta-adj", 39.4, 2.9, 25.7, (4.51, 0.98, 2.22)),
+    # The check that matters: capitulation SURVIVES removing beta.
+    Result("Capitulation, beta-adjusted", 7.0, 9.2, 5.3, (0.68, 0.62, 0.39)),
+    # And the follow-on rebound does NOT: it was the market's rebound.
+    Result("Follow-on rebound, beta-adjusted (5 days)", -1.9, 2.1, 1.8, (-0.14, 0.11, 0.11)),
+)
+
+# Where the loop stopped for each model, and why it could not go further
+# with the data reachable here:
+LOOP_STATUS = {
+    "stocks": "Regime-switching satellite confirmed; capitulation survives beta. "
+              "Next needs delisting data (to test deep-value names honestly) or "
+              "fundamentals (gross profitability, issuance — in Shibui, next round).",
+    "follow-on": "Exhausted: following loses, the rebound is beta. No edge in any tested form.",
+    "crypto": "Hold-except-stock-panics promising (x155 vs x110). Next needs "
+              "on-chain or futures-funding history, not reachable here.",
+    "news": "Priced on the day (58,000 earnings). Live news beats that history "
+            "(z +2.7) — the GDELT archive now building is what can explain it.",
+    "ideas/opportunities": "One-off situations: no history to test against.",
+}
+
 # Written down BEFORE testing, so their results cannot shape their wording.
 PENDING = (
+    "Gross profitability (Novy-Marx) within the regime split, beta-adjusted, "
+    "from Shibui fundamentals, all three periods",
     "News: does the live edge come from non-earnings news? Score live news "
     "by event class once 300 checks exist, all three periods where testable",
     "Capitulation only when the stock's whole sector also fell (market-wide "
@@ -123,6 +159,31 @@ PENDING = (
     "Capitulation position size scaled by how volatile the decline is -> "
     "return per unit of risk, all three periods",
 )
+
+
+# Survivors deliberately NOT adopted, with the reason. Surviving the protocol
+# is necessary, not sufficient.
+NOT_ADOPTED = {
+    "Far below 52w high | volatile decline, beta-adj":
+        "stocks down 40%+ are the group most inflated by bankruptcies missing from the data",
+}
+
+
+def label(r: Result, batch_size: int) -> str:
+    """What the loop may DO with a result — never just "survives".
+
+    The first version printed SURVIVES for the low-volatility anomaly, which
+    LOST in all three periods: consistency was checked, direction was not. For
+    a buy-only system a consistent loser is something to AVOID, and printing
+    it as a survivor invites the loop to buy it.
+    """
+    if not survives(r, batch_size):
+        return "fails"
+    if r.discovery_t < 0:
+        return "AVOID"
+    if r.hypothesis in NOT_ADOPTED:
+        return "HELD BACK"
+    return "ADOPT"
 
 
 def summary() -> str:
@@ -147,5 +208,13 @@ def summary() -> str:
         verdict = "SURVIVES" if survives(r, ROUND_4_BATCH) else "fails"
         e = ", ".join(f"{x:+.2f}%" for x in r.excess_pct)
         lines.append(f"  {verdict:<9} {r.hypothesis:<40} {e}")
+    lines += ["", f"Round 5 - public strategies and the beta check (batch of {ROUND_5_BATCH}):"]
+    for r in ROUND_5:
+        verdict = label(r, ROUND_5_BATCH)
+        e = ", ".join(f"{x:+.2f}%" for x in r.excess_pct)
+        lines.append(f"  {verdict:<9} {r.hypothesis:<48} {e}")
+    lines += [f"    held back: {k} — {v}" for k, v in NOT_ADOPTED.items()]
+    lines += ["", "Where the loop stopped, per model:"]
+    lines += [f"  {k:<20} {v}" for k, v in LOOP_STATUS.items()]
     lines += ["", "Pre-registered for the next round:"] + [f"  - {h}" for h in PENDING]
     return "\n".join(lines)

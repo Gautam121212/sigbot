@@ -193,11 +193,12 @@ MODEL_VERDICTS: dict[str, tuple[str, str]] = {
                "that haircut, below the bar. Capitulation (oversold in a volatile "
                "decline, held 20 days) beat the index in all three periods. "
                "Momentum's gains were the market's, so it is never given capital."),
-    "contagion": ("PROMISING — WATCH FOR DECAY",
-                  "The rebound after a leader falls earned +0.52% over five days "
-                  "since 2016 and +1.61% on 2009-15. Year by year it was positive in "
-                  "13 of 18 years but NEGATIVE every year 2022-2025 — possibly an "
-                  "edge fading as it becomes known. Its paper record decides it."),
+    "contagion": ("NO",
+                  "Following the leader lost on 745,570 cases. The rebound looked "
+                  "positive (13 of 18 years), but its stocks had betas of 1.2-1.7: "
+                  "after removing beta it was -0.14% / +0.11% / +0.11% — the market's "
+                  "rebound, not skill. No edge in any tested form. Recorded on "
+                  "paper for learning; expected edge set to zero."),
     "crypto15m": ("NO",
                   "No short-term edge either way (breakouts -4.45% over 20 days, "
                   "dips -3.64% over 5, past year). Over the long run Bitcoin grew "

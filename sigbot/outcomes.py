@@ -61,7 +61,8 @@ def describe() -> str:
     lines.append(f"  Follow-on: old {years_positive(FOLLOW_OLD)}/18 years positive, "
                  f"{mean(FOLLOW_OLD):+.2f}% | new {years_positive(FOLLOW_NEW)}/18, "
                  f"{mean(FOLLOW_NEW):+.2f}%"
-                 + ("  — DECAY: negative 2022-2025" if trailing_decay(FOLLOW_NEW) else ""))
+                 + ("  — DECAY: negative 2022-2025" if trailing_decay(FOLLOW_NEW) else "")
+                 + "; after removing beta: no edge")
     lines.append(f"  Crypto:    hold x{growth(CRYPTO_HOLD):.0f} | avoid stock panics "
                  f"x{growth(CRYPTO_AVOID_PANIC):.0f} | risk-on only "
                  f"x{growth(CRYPTO_RISK_ON_ONLY):.0f}")
