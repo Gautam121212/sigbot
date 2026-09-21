@@ -64,9 +64,9 @@ jobs:
           # One workflow, three schedules. The cron string that fired tells us
           # which duty this run carries; manual runs do the full tick.
           case "${{ github.event.schedule }}" in
-            "0 5 * * 1-5")  echo "jobs=daily contagion resolve paper publish" >> "$GITHUB_OUTPUT" ;;
+            "0 5 * * 1-5")  echo "jobs=stocks contagion resolve paper publish" >> "$GITHUB_OUTPUT" ;;
             "30 2 * * 0")   echo "jobs=cycle resolve publish"           >> "$GITHUB_OUTPUT" ;;
-            *)              echo "jobs=resolve crypto15m news opportunities paper publish" >> "$GITHUB_OUTPUT" ;;
+            *)              echo "jobs=priority-run paper publish" >> "$GITHUB_OUTPUT" ;;
           esac
 
       - name: Run the jobs
