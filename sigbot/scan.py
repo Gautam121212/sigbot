@@ -127,6 +127,21 @@ def _momentum_breakout(row: dict) -> bool:
     return close >= hi52 and close > sma50 > sma200 and vol > 1.5 * vol_ma
 
 
+def _capitulation(row: dict) -> bool:
+    """Extreme selling in a stock while the whole market is falling AND volatile.
+
+    Found by the pre-registered protocol (see research.py): of 38 indicator
+    conditions only Williams %R below -90 survived discovery plus two
+    confirmation periods, and split by market regime it was consistent in all
+    three only during volatile declines — +0.15% / +0.61% / +0.56% beyond the
+    index over ten days (2016-20 / 2021+ / 2009-15). In calm rising markets
+    the same signal LOST (-0.16% since 2021): there, one stock's weakness is
+    usually information. In a panic, selling is indiscriminate.
+    """
+    w = row.get("willr_14")
+    return w is not None and w < -90 and row.get("index_regime") == "down/volatile"
+
+
 def _stretched_below_trend(row: dict) -> bool:
     """25% or more below the 200-day average — 49.2% on 204,051 sessions."""
     close, sma = row.get("close"), row.get("sma_200")
@@ -160,6 +175,19 @@ CANDIDATES: tuple[Candidate, ...] = (
         # Demoted. Accurate across three eras and still worse than holding:
         # +0.599% a trade against +0.659%, payoff 1.08 against 1.66.
         beats_holding=False, payoff_ratio=1.08),
+    Candidate(
+        name="capitulation", side="BUY",
+        plain=("A stock at the bottom of its recent range while the whole "
+               "market is falling hard and swinging widely — the panic selling "
+               "that has tended to reverse. In calm markets the same signal "
+               "does not work, so it only fires in a volatile decline."),
+        condition=_capitulation,
+        # Positive beyond the index in all three periods within its regime.
+        # Not called proven: the regime split was tested after the first
+        # sweep, and panic days bunch together, so independent evidence is
+        # closer to the number of such days than to the number of trades.
+        pooled_edge_pp=0.44, pooled_n=81870, eras_positive=3,
+        beats_holding=True, payoff_ratio=1.1, style="reversion", hold_days=10),
     Candidate(
         name="momentum-breakout", side="BUY",
         plain=("A leading stock breaking out to a new one-year high, in an "

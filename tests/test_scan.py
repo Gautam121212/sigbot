@@ -45,7 +45,11 @@ def test_nothing_currently_ships_as_proven():
     from sigbot.scan import CANDIDATES
 
     assert all(tier_of(c) == RISKY for c in CANDIDATES)
-    assert not any(c.beats_holding for c in CANDIDATES)
+    # Capitulation beats the index within its regime in all three periods,
+    # measured beyond the index over the same days — the first candidate to.
+    # It stays RISKY: a second-round finding whose evidence clusters on panic
+    # days. Nothing else beats holding.
+    assert [c.name for c in CANDIDATES if c.beats_holding] == ["capitulation"]
 
 
 def test_conviction_is_mostly_era_consistency():

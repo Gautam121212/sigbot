@@ -211,6 +211,19 @@ def _open_book(ledger) -> tuple[int, dict[str, int]]:
     return n, sectors
 
 
+def market_regime(closes) -> str | None:
+    """"up" or "down" (index vs its 200-day average) / "calm" or "volatile"
+    (20-day volatility vs its own long-run median) — the split under which
+    oversold signals stopped flipping sign between periods."""
+    if len(closes) < 260:
+        return None
+    rets = closes.pct_change().dropna()
+    vol20 = rets.rolling(20).std().dropna()
+    trend = "up" if closes.iloc[-1] > closes.tail(200).mean() else "down"
+    mood = "volatile" if vol20.iloc[-1] > vol20.median() else "calm"
+    return f"{trend}/{mood}"
+
+
 # Core-and-satellite. Idle capital is held in the index; the satellite takes
 # only setups that ADD return beyond it over the same days. Measured: the
 # dip-buying school added +0.56% a trade since 2016 (t 4.0) and +0.44% on
@@ -2101,6 +2114,12 @@ def run_promotion(settings=SETTINGS) -> None:
     print(describe_models())
 
 
+def run_research(settings=SETTINGS) -> None:
+    """The research log: what was tested, how, and what survived."""
+    from .research import summary
+    print(summary())
+
+
 def run_events(settings=SETTINGS) -> None:
     """Print what each recorded class of event actually did to each asset."""
     from .events import describe
@@ -2137,11 +2156,13 @@ def run_stocks(settings=SETTINGS) -> None:
     # Whether the index itself is trending up. Momentum only buys while it is;
     # if the index cannot be read, momentum does not fire at all.
     index_up = None
+    index_regime = None
     try:
         spy = market.history("SPY", settings.history_start, end)["close"]
         if len(spy) >= 200:
             index_up = bool(spy.iloc[-1] > spy.tail(200).mean())
-    except Exception as exc:  # noqa: BLE001  # handled: recorded; momentum fails closed
+            index_regime = market_regime(spy)
+    except Exception as exc:  # noqa: BLE001  # handled: recorded; regime-gated setups fail closed
         record_skip("stocks", "index-trend", exc)
 
     universe = [a for a in board_assets(settings)
@@ -2185,6 +2206,7 @@ def run_stocks(settings=SETTINGS) -> None:
                 "sma_200": float(bars["close"].tail(200).mean()),
                 "sma_50": float(bars["close"].tail(50).mean()),
                 "index_up": index_up,
+                "index_regime": index_regime,
                 # The high of the PREVIOUS year, excluding today, so a close
                 # at a new high can register as one.
                 "hi52": (float(bars["high"].iloc[-253:-1].max())
@@ -2213,7 +2235,7 @@ def run_stocks(settings=SETTINGS) -> None:
         # setup, and throwing it away would make the risk rules invisible in
         # the record they distort.
         atr = row.get("atr_14")
-        plan = exit_plan(close, atr) if atr else None
+        plan = exit_plan(close, float(atr)) if isinstance(atr, (int, float)) and atr else None
         sector = _sector_of(asset.symbol)
 
         if plan is None:
@@ -2640,6 +2662,7 @@ def main(argv: list[str]) -> int:
         "events": run_events,
         "review": run_review,
         "promotion": run_promotion,
+        "research": run_research,
         "reset": run_reset,
         "reset-all": lambda: run_reset(full=True),
     }

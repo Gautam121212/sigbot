@@ -1,0 +1,68 @@
+"""The research protocol, and the capitulation setup it produced."""
+from __future__ import annotations
+
+import numpy as np
+import pandas as pd
+
+from sigbot.research import (
+    REGIME_ROUND, SWEEP_1, SWEEP_1_BATCH, Result, bonferroni_t, survives,
+)
+from sigbot.runner import market_regime
+from sigbot.scan import CANDIDATES, scan_row
+
+
+def test_the_bar_rises_with_the_number_of_tests():
+    """Test more, and chance produces more false winners — so the bar rises."""
+    assert 1.9 < bonferroni_t(1) < 2.0
+    assert bonferroni_t(38) > 3.1
+    assert bonferroni_t(500) > bonferroni_t(38)
+
+
+def test_only_one_of_the_first_sweep_survives():
+    survivors = [r.hypothesis for r in SWEEP_1 if survives(r, SWEEP_1_BATCH)]
+    assert survivors == ["Williams %R below -90"]
+
+
+def test_a_signal_that_flips_sign_never_survives_however_strong():
+    """MACD crossovers: t 8.5 in discovery, then -5.6. Strength in one period
+    is not evidence; consistency across periods is."""
+    flip = Result("x", 8.5, -5.6, 1.5, (0.33, -0.24, 0.04))
+    assert not survives(flip, SWEEP_1_BATCH)
+
+
+def test_a_weak_discovery_does_not_survive_on_strong_confirmations():
+    assert not survives(Result("x", 2.0, 11.9, 10.0, (0.1, 0.6, 0.5)), SWEEP_1_BATCH)
+
+
+def test_oversold_is_consistent_only_in_a_volatile_decline():
+    consistent = {r.hypothesis for r in REGIME_ROUND if all(x > 0 for x in r.excess_pct)}
+    assert all("volatile decline" in h for h in consistent)
+    assert not any("calm rise" in h for h in consistent)
+
+
+def test_market_regime_reads_calm_rises_and_crashes():
+    rng = np.random.default_rng(1)
+    calm = pd.Series(100 * np.cumprod(1 + 0.0005 + rng.normal(0, 0.005, 400)))
+    crash = pd.Series(list(calm) + list(calm.iloc[-1] * np.cumprod(
+        1 - 0.01 + rng.normal(0, 0.03, 60))))
+    assert market_regime(calm) == "up/calm"
+    assert market_regime(crash) == "down/volatile"
+    assert market_regime(calm.head(100)) is None, "too little history fails closed"
+
+
+def test_capitulation_fires_only_in_a_volatile_decline():
+    row = {"willr_14": -95.0, "volume_ma_20": 2_000_000, "close": 50.0}
+    hit = scan_row("X", {**row, "index_regime": "down/volatile"})
+    assert hit and hit.candidate.name == "capitulation"
+    for regime in ("up/calm", "up/volatile", "down/calm", None):
+        h = scan_row("X", {**row, "index_regime": regime})
+        assert not h or h.candidate.name != "capitulation", regime
+
+
+def test_capitulation_is_a_satellite_setup_but_not_called_proven():
+    from sigbot.runner import SATELLITE_STYLES
+    from sigbot.scan import PROVEN, tier_of
+
+    cap = next(c for c in CANDIDATES if c.name == "capitulation")
+    assert cap.style in SATELLITE_STYLES and cap.hold_days == 10
+    assert tier_of(cap) != PROVEN, "second-round finding with clustered evidence"
