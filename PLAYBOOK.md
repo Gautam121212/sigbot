@@ -394,7 +394,58 @@ historical months in ten.
 
 ---
 
-## Part V — Where professionals disagree
+## Part V — From paper to real money
+
+Trading firms do not move a strategy straight from paper to full size. The
+common practice is a ladder:
+
+1. **Paper.** Signals recorded and replayed, with realistic costs. The aim is
+   to see whether the process makes money before any is at risk.
+2. **Incubation.** Real orders at a small fraction of normal size. This
+   measures what paper cannot: real fills, real slippage, and the trader's own
+   behaviour when money is actually moving.
+3. **Limited size**, and only then **full size**, each held for months before
+   the next.
+
+**What earns each step.** Enough trades that the result is not luck — a
+strategy with a small edge needs far more trades to prove itself than most
+people expect; a record that beats simply holding an index fund after costs;
+a result that also held on data the strategy was never tuned on; and a
+drawdown the trader can actually live with.
+
+**What forces a step back.** Professionals cut size the moment live results
+leave the historical range — a month far worse than any in the record, or
+several bad months in a row — before understanding why, not after. The
+discipline is that the ladder runs down as easily as it runs up.
+
+**The uncomfortable part.** Most strategies never leave paper, and that is the
+ladder working. An edge too small to prove is, for practical purposes, an
+edge not worth risking money on.
+
+---
+
+## Part VI — Triage: what deserves attention at all
+
+An experienced trader's feed is mostly noise, and the first skill is
+discarding it quickly. Three piles:
+
+- **Act** — new, material information about something liquid enough to
+  trade: results, guidance, deals, regulatory decisions, supply shocks to a
+  commodity. Macro and geopolitical shocks are traded through the instruments
+  that carry them — a threat to an oil chokepoint through oil, not through
+  whichever company happens to be named.
+- **Learn** — material events with nothing to trade directly, or from a
+  source with a poor record. Worth noting, because studying how markets react
+  to such events is how a trader builds judgement for the next one.
+- **Ignore** — recaps of moves already made, lists of "stocks to watch",
+  opinion. By the time a move is being explained, it is in the price.
+
+Sources earn trust through their record. A source that has been reliably
+wrong is demoted, however authoritative it sounds.
+
+---
+
+## Part VII — Where professionals disagree
 
 | Question | One view | The other view |
 |---|---|---|

@@ -688,5 +688,163 @@
     "recommendation": "Keep watching \u2014 0 live trade(s), needs 30."
    }
   ]
+ },
+ {
+  "at": "2026-09-21T12:14:10+00:00",
+  "checks": [
+   {
+    "principle": "Cut losers fast",
+    "expectation": "Losing trades close near -1 R: the stop, not a hope",
+    "measured": "0 losing trades",
+    "verdict": "TOO EARLY",
+    "note": ""
+   },
+   {
+    "principle": "Let winners run",
+    "expectation": "Average win at least as large as average loss",
+    "measured": "0 wins, 0 losses",
+    "verdict": "TOO EARLY",
+    "note": ""
+   },
+   {
+    "principle": "Be selective",
+    "expectation": "Records a small share of what it looks at",
+    "measured": "0 looked at",
+    "verdict": "TOO EARLY",
+    "note": ""
+   },
+   {
+    "principle": "Stand aside on a losing streak",
+    "expectation": "No new positions taken after 4 straight losses",
+    "measured": "0 closed trades",
+    "verdict": "TOO EARLY",
+    "note": ""
+   },
+   {
+    "principle": "Run both schools",
+    "expectation": "Both momentum and dip-buying setups are firing",
+    "measured": "0 trades",
+    "verdict": "TOO EARLY",
+    "note": ""
+   },
+   {
+    "principle": "Grow in line with history",
+    "expectation": "About +0.54% a month net of costs, against +1.00% for holding the index",
+    "measured": "no months yet",
+    "verdict": "TOO EARLY",
+    "note": ""
+   }
+  ],
+  "setups": [
+   {
+    "setup": "oversold-money-holding",
+    "trades": 0,
+    "live_r": null,
+    "recommendation": "Keep watching \u2014 0 live trade(s), needs 30."
+   },
+   {
+    "setup": "momentum-breakout",
+    "trades": 0,
+    "live_r": null,
+    "recommendation": "Keep watching \u2014 0 live trade(s), needs 30."
+   },
+   {
+    "setup": "hard-down-day",
+    "trades": 0,
+    "live_r": null,
+    "recommendation": "Keep watching \u2014 0 live trade(s), needs 30."
+   },
+   {
+    "setup": "stretched-below-trend",
+    "trades": 0,
+    "live_r": null,
+    "recommendation": "Keep watching \u2014 0 live trade(s), needs 30."
+   },
+   {
+    "setup": "extreme-williams",
+    "trades": 0,
+    "live_r": null,
+    "recommendation": "Keep watching \u2014 0 live trade(s), needs 30."
+   }
+  ]
+ },
+ {
+  "at": "2026-09-21T12:14:10+00:00",
+  "checks": [
+   {
+    "principle": "Cut losers fast",
+    "expectation": "Losing trades close near -1 R: the stop, not a hope",
+    "measured": "0 losing trades",
+    "verdict": "TOO EARLY",
+    "note": ""
+   },
+   {
+    "principle": "Let winners run",
+    "expectation": "Average win at least as large as average loss",
+    "measured": "0 wins, 0 losses",
+    "verdict": "TOO EARLY",
+    "note": ""
+   },
+   {
+    "principle": "Be selective",
+    "expectation": "Records a small share of what it looks at",
+    "measured": "0 looked at",
+    "verdict": "TOO EARLY",
+    "note": ""
+   },
+   {
+    "principle": "Stand aside on a losing streak",
+    "expectation": "No new positions taken after 4 straight losses",
+    "measured": "0 closed trades",
+    "verdict": "TOO EARLY",
+    "note": ""
+   },
+   {
+    "principle": "Run both schools",
+    "expectation": "Both momentum and dip-buying setups are firing",
+    "measured": "0 trades",
+    "verdict": "TOO EARLY",
+    "note": ""
+   },
+   {
+    "principle": "Grow in line with history",
+    "expectation": "About +0.54% a month net of costs, against +1.00% for holding the index",
+    "measured": "no months yet",
+    "verdict": "TOO EARLY",
+    "note": ""
+   }
+  ],
+  "setups": [
+   {
+    "setup": "oversold-money-holding",
+    "trades": 0,
+    "live_r": null,
+    "recommendation": "Keep watching \u2014 0 live trade(s), needs 30."
+   },
+   {
+    "setup": "momentum-breakout",
+    "trades": 0,
+    "live_r": null,
+    "recommendation": "Keep watching \u2014 0 live trade(s), needs 30."
+   },
+   {
+    "setup": "hard-down-day",
+    "trades": 0,
+    "live_r": null,
+    "recommendation": "Keep watching \u2014 0 live trade(s), needs 30."
+   },
+   {
+    "setup": "stretched-below-trend",
+    "trades": 0,
+    "live_r": null,
+    "recommendation": "Keep watching \u2014 0 live trade(s), needs 30."
+   },
+   {
+    "setup": "extreme-williams",
+    "trades": 0,
+    "live_r": null,
+    "recommendation": "Keep watching \u2014 0 live trade(s), needs 30."
+   }
+  ]
  }
 ]

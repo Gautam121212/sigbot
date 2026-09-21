@@ -369,7 +369,10 @@ def test_news_forecasts_carry_an_entry_price():
 
     src = (Path(__file__).resolve().parents[1] / "sigbot" / "runner.py").read_text()
     start = src.index("def run_news(")
-    block = src[start:start + 4000]
+    # The whole function, not a fixed 4,000 characters: a longer comment
+    # pushed the record call past the slice and failed a correct function.
+    end = src.find("\ndef ", start + 1)
+    block = src[start:end if end != -1 else None]
     assert 'ledger.record("news"' in block
     assert "None, None, 24)" not in block, "entry price must not be None"
     assert "could ever come due" in block

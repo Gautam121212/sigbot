@@ -16,6 +16,9 @@ never a signal computed from partial data.
 """
 from __future__ import annotations
 
+import re
+import sqlite3
+
 import functools
 import os
 import sys
@@ -84,7 +87,11 @@ def board_assets(settings=SETTINGS) -> list:
     loaded, note = _load_universe()
     if note:
         record_skip("universe", UNIVERSE_FILE, RuntimeError(note))
-    for asset in list(loaded or []) + list(POOL):
+    # The curated list FIRST. It carries short names and aliases ("reliance",
+    # "ril"); the scanned universe carries legal names. Loading the universe
+    # first let its entries replace the curated ones for every name on both
+    # lists — and the news matcher lost the names headlines actually use.
+    for asset in list(POOL) + list(loaded or []):
         sym = getattr(asset, "symbol", None)
         if sym and sym not in seen and not _is_dead(sym, dead):
             seen[sym] = asset
@@ -282,10 +289,89 @@ def run_daily(messenger=None, market=None, settings=SETTINGS) -> None:
     messenger.send("\n\n".join(header + body))
 
 
+LEARN_LOG = "learning_log.jsonl"
+LEARN_LOG_MAX = 3000
+
+
+def _news_provider():
+    """The RSS feeds plus GDELT. Either can fail without stopping the other."""
+    from .providers.gdelt import CombinedNewsProvider, GDELTProvider
+
+    return CombinedNewsProvider([RSSProvider(), GDELTProvider()])
+
+
+def _source_records(ledger) -> dict[str, tuple[int, float, float]]:
+    """source -> (checks, hit rate, chance rate) for news, from the payload.
+
+    News predictions recorded no source until the intake gate, so this starts
+    empty and fills as scored predictions accumulate. A source is judged only
+    once it has enough checks (see intake.SOURCE_MIN_CHECKS).
+    """
+    import json as _json
+    from collections import defaultdict
+
+    with closing(sqlite3.connect(ledger.path)) as con:
+        rows = con.execute("SELECT payload, hit FROM predictions WHERE model='news' "
+                           "AND hit IS NOT NULL AND payload != ''").fetchall()
+    tally: dict[str, list[int]] = defaultdict(lambda: [0, 0])
+    for payload, hit in rows:
+        try:
+            src = (_json.loads(payload) or {}).get("source")
+        except (TypeError, ValueError):
+            src = None
+        if src:
+            tally[src][0] += 1
+            tally[src][1] += int(bool(hit))
+    n_all = sum(v[0] for v in tally.values())
+    chance = (sum(v[1] for v in tally.values()) / n_all) if n_all else 0.5
+    return {k: (v[0], v[1] / v[0], chance) for k, v in tally.items() if v[0]}
+
+
+def _gate_articles(articles, assets, ledger, job: str):
+    """ACT, LEARN and DROP, as the intake gate decides.
+
+    Returns (act, learn). LEARN items are appended to the learning log with
+    their event class and instruments, so their market reaction can be
+    studied later; they are never traded on. DROP items are only counted.
+    """
+    import json as _json
+    from collections import Counter
+
+    from .intake import ACT, LEARN, judge, matches_tradable
+
+    records = _source_records(ledger)
+    act: list = []
+    learn: list = []
+    tally: Counter[str] = Counter()
+    for a in articles:
+        d = judge(a.title, a.summary, tradable=matches_tradable(a.title, assets),
+                  source_record=records.get(a.source))
+        tally[d.verdict] += 1
+        if d.verdict == ACT:
+            act.append(a)
+        elif d.verdict == LEARN:
+            learn.append((a, d))
+    if learn:
+        try:
+            path = Path(LEARN_LOG)
+            lines = path.read_text(encoding="utf-8").splitlines() if path.exists() else []
+            lines += [_json.dumps({
+                "at": a.published_at.isoformat(), "job": job, "title": a.title,
+                "url": a.url, "source": a.source, "class": d.event_class,
+                "instruments": list(d.instruments), "why": d.reason})
+                for a, d in learn]
+            path.write_text("\n".join(lines[-LEARN_LOG_MAX:]) + "\n", encoding="utf-8")
+        except OSError as exc:
+            record_skip(job, "learning_log", exc)
+    print(f"intake: {tally.get(ACT, 0)} act, {tally.get(LEARN, 0)} learn, "
+          f"{tally.get('DROP', 0)} dropped of {len(articles)}")
+    return act, [a for a, _d in learn]
+
+
 def run_news(messenger=None, settings=SETTINGS, hours: int = 12) -> None:
     messenger = messenger or default_messenger()
     ledger = ShadowLedger(settings.shadow_db)
-    provider = RSSProvider()
+    provider = _news_provider()
     # The board plus everything the scanner found. Matching only against the
     # board meant a story about a company you do not hold was read, scored, and
     # thrown away — most of what thirty-nine feeds carry, discarded before it
@@ -317,10 +403,15 @@ def run_news(messenger=None, settings=SETTINGS, hours: int = 12) -> None:
                       settings.news_score_threshold)
 
     since = datetime.now(timezone.utc) - timedelta(hours=hours)
-    articles = provider.fetch(since)
+    fetched = provider.fetch(since)
+    # Only material, new, tradable stories reach the model. Recaps of moves
+    # already made are in the price by definition, and scoring them taught the
+    # model from noise; material events with nothing to trade go to the
+    # learning log instead.
+    articles, _learn = _gate_articles(fetched, universe, ledger, "news")
     signals = model.scan(articles, stats=ledger.stats("news"))
 
-    ledger.log_run("news", considered=len(articles), signals=len(signals),
+    ledger.log_run("news", considered=len(fetched), signals=len(signals),
                    note=f"{len(model.universe) if hasattr(model, 'universe') else 0} matchable names")
     if not signals:
         messenger.send(f"News sweep {datetime.now(timezone.utc):%H:%M UTC}: "
@@ -349,7 +440,13 @@ def run_news(messenger=None, settings=SETTINGS, hours: int = 12) -> None:
         entry = prices[symbol]
         if entry != entry:                      # NaN: no price, so no forecast
             continue
-        ledger.record("news", symbol, s.side, s.raw_score, None, entry, 24)
+        # The source travels with the forecast, so each source builds a
+        # record and the intake gate can stop trusting the ones that are
+        # reliably wrong.
+        import json as _json
+        src = s.articles[0].source if s.articles else ""
+        ledger.record("news", symbol, s.side, s.raw_score, None, entry, 24,
+                      payload=_json.dumps({"source": src}))
     messenger.send("\n\n".join(format_news(s) for s in signals))
 
 
@@ -560,7 +657,12 @@ def _write_opportunity_store(cards, candidates, listings=None,
 def run_opportunities(messenger=None, settings=SETTINGS, hours: int = 24) -> None:
     """Model D plus the venture scanner: unscored thesis cards AND business candidates."""
     messenger = messenger or default_messenger()
-    articles = RSSProvider().fetch(datetime.now(timezone.utc) - timedelta(hours=hours))
+    fetched = _news_provider().fetch(datetime.now(timezone.utc) - timedelta(hours=hours))
+    # Opportunities keep ACT and LEARN — both are worth a person's attention —
+    # and lose only the recaps and noise.
+    act, learn = _gate_articles(fetched, list(board_assets(settings)),
+                                ShadowLedger(settings.shadow_db), "opportunities")
+    articles = act + learn
 
     cards = OpportunityModel().scan(articles)
     candidates = VentureNewsScanner(min_source_quality=0.5).scan(articles)
@@ -744,6 +846,39 @@ UNIVERSE_FILE = "universe.json"
 UNIVERSE_MAX_AGE_DAYS = 30
 
 
+# Legal suffixes stripped to find the name a headline actually uses.
+_LEGAL = re.compile(
+    r"\b(common stock|ordinary shares?|american depositary shares?|adr|"
+    r"class [a-c]|series [a-c]|inc\.?|incorporated|corporation|corp\.?|"
+    r"company|co\.?|ltd\.?|limited|plc|holdings?|group|n\.?v\.?|s\.?a\.?|"
+    r"ag|se|l\.?p\.?|llc|the)\b", re.IGNORECASE)
+
+# One-word names that are also ordinary words. "Target" would match every
+# "price target"; these rely on their ticker instead.
+_AMBIGUOUS = frozenset({
+    "target", "gap", "block", "square", "match", "general", "american",
+    "first", "united", "national", "global", "international", "energy",
+    "capital", "financial", "digital", "health", "power", "best", "live",
+    "news", "fox", "chart", "trade", "market", "street", "royal", "state",
+    "union", "pacific", "southern", "northern", "western", "eastern",
+})
+
+
+def _common_names(legal: str) -> tuple[str, ...]:
+    """The name headlines use, from a legal name.
+
+    "Apple Inc. Common Stock" -> ("apple",). Universe rows carry legal names,
+    and a headline never says "Apple Inc. Common Stock" — so without this the
+    news matcher could not recognise any of the 600 widened names by name.
+    """
+    cleaned = _LEGAL.sub(" ", legal or "")
+    cleaned = re.sub(r"[^A-Za-z0-9&' -]", " ", cleaned)
+    cleaned = re.sub(r"\s+", " ", cleaned).strip().lower()
+    if len(cleaned) < 4 or cleaned in _AMBIGUOUS:
+        return ()
+    return (cleaned,)
+
+
 def _load_universe(path: str = UNIVERSE_FILE):
     """The scanned pool, if one exists and is not stale.
 
@@ -784,7 +919,8 @@ def _load_universe(path: str = UNIVERSE_FILE):
     # conversion lived in one caller rather than here at the source.
     del SimpleNamespace
     return [Asset(symbol=r["symbol"], name=r.get("name") or r["symbol"],
-                  kind=r.get("kind", "equity"))
+                  kind=r.get("kind", "equity"),
+                  aliases=_common_names(r.get("name") or ""))
             for r in rows if r.get("symbol")], note
 
 
@@ -1741,6 +1877,43 @@ def run_review(settings=SETTINGS) -> None:
         record_skip("review", "history", exc)
 
 
+def gather_promotion_evidence(settings=SETTINGS):
+    """Everything the promotion ladder judges, from the real records."""
+    from .alignment import DRIFT, _stocks_trades, monthly_returns
+    from .alignment import run_review as _review
+    from .benchmarks import EXPECTED, HOLD_INDEX, OUT_OF_SAMPLE
+    from .paper import replay
+    from .promotion import Evidence
+    from .risk import LOSS_STREAK_PAUSE
+
+    ledger = ShadowLedger(settings.shadow_db)
+    considered, recorded, _alerted = ledger.selectivity("stocks")
+    checks, _setups = _review(settings.shadow_db, considered, recorded,
+                              LOSS_STREAK_PAUSE)
+    r_values = [t["r"] for t in _stocks_trades(settings.shadow_db)
+                if t["r"] is not None]
+    months = [r for _k, r in monthly_returns(settings.shadow_db)]
+    book = replay(settings.shadow_db, models={"stocks"})
+    return Evidence(
+        hist_net_month=EXPECTED.net_avg,
+        index_month=HOLD_INDEX.avg_month,
+        oos_net_month=OUT_OF_SAMPLE.net_avg,
+        paper_r=r_values,
+        paper_months=months,
+        paper_drawdown=float(getattr(book, "max_drawdown", 0.0) or 0.0),
+        review_drifts=sum(c.verdict == DRIFT for c in checks),
+    )
+
+
+def run_promotion(settings=SETTINGS) -> None:
+    """Which stage the evidence supports, and what blocks the next one."""
+    from .benchmarks import EXPECTED
+    from .promotion import describe, evaluate
+
+    print(describe(evaluate(gather_promotion_evidence(settings),
+                            worst_hist_month=EXPECTED.worst_month)))
+
+
 def run_events(settings=SETTINGS) -> None:
     """Print what each recorded class of event actually did to each asset."""
     from .events import describe
@@ -2245,6 +2418,7 @@ def main(argv: list[str]) -> int:
         "priority-run": lambda: run_priority(execute=True),
         "events": run_events,
         "review": run_review,
+        "promotion": run_promotion,
         "reset": run_reset,
         "reset-all": lambda: run_reset(full=True),
     }

@@ -139,6 +139,13 @@ FEED_REGISTRY: list[tuple[str, str, str]] = [
     # --------------------------------------------------------------- crypto
     ("https://cointelegraph.com/rss", "crypto", "CoinTelegraph"),
     ("https://www.coindesk.com/arc/outboundfeeds/rss/", "crypto", "CoinDesk"),
+    # ------------------------------------------------ disasters and seismic
+    # Two of the keyless sources OSIRIS draws on. Significant earthquakes
+    # only, not every tremor. Most land in LEARN; those touching a commodity
+    # or a producing region reach ACT through the intake gate's theme map.
+    ("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/significant_week.atom",
+     "shock", "USGS significant earthquakes"),
+    ("https://www.gdacs.org/xml/rss.xml", "shock", "GDACS global disaster alerts"),
 ]
 
 DEFAULT_FEEDS = [url for url, _cat, _note in FEED_REGISTRY]

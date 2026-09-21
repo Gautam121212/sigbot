@@ -286,6 +286,35 @@ Dip-buying stays blocked on crypto (−3.64% over five days after a 15% weekly
 drop). The first guard blocked crypto entirely, which also blocked momentum —
 the style the playbook says suits it. It now blocks only dip-buying.
 
+### Promotion ladder — where sigbot stands
+
+`runner promotion` evaluates the ladder from the real records. Today: **PAPER,
+2 of 7 criteria met.** Blocking: fair history trails the index (+0.54% vs
++1.00% a month net), the unseen years earned nothing after costs, and there
+are no closed paper trades yet.
+
+**The arithmetic that matters most:** at the historical edge of about +0.04 R
+a trade, reaching the evidence bar (t ≥ 2) needs roughly 2,500 trades — about
+17 years at twelve a month. Waiting will not promote this edge. Only a larger
+one can clear the bar in reasonable time.
+
+Live execution is a constant set to off, and no broker code exists. The
+ladder reports eligibility; it cannot place an order.
+
+### Intake gate and new sources
+
+Every news item and opportunity is judged ACT, LEARN or DROP before entering
+the loop. Tested on real items: 4 act, 18 learn, 10 dropped of 32. Sources:
+the RSS feeds plus **GDELT** (the keyless global news source OSIRIS draws on,
+with a searchable three-month window) and the **USGS** significant-earthquake
+and **GDACS** disaster feeds. News forecasts now record their source, so each
+source builds the record the gate judges it by.
+
+Found while building it: universe names were legal names ("Apple Inc. Common
+Stock") that no headline contains, and they had replaced the curated names
+with aliases — so the news scanner could not recognise the widened names by
+name. And "45 km SW of Tokyo" matched the ticker SW. Both fixed.
+
 ### Monthly growth benchmark — corrected
 
 **The first benchmark was wrong.** It chose stocks by their size today, which
