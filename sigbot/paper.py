@@ -140,7 +140,13 @@ def _resolved_rows(db_path: str, limit: int | None = None) -> list[dict]:
     Oldest first matters: the equity curve compounds, so replaying out of
     order would produce a different and meaningless answer.
     """
-    q = ("SELECT id,model,symbol,side,entry_price,exit_price,created_at "
+    # `score` and `expected_move` are selected because sizing reads them. They
+    # were missing for as long as sizing depended on them, so every
+    # `row.get("expected_move")` returned None and silently fell to a
+    # default: risk sizing looked implemented, was tested in isolation, and
+    # never once ran on a real row.
+    q = ("SELECT id,model,symbol,side,entry_price,exit_price,created_at,"
+         "score,expected_move "
          "FROM predictions "
          "WHERE hit IS NOT NULL AND entry_price IS NOT NULL "
          "AND exit_price IS NOT NULL "
@@ -148,7 +154,7 @@ def _resolved_rows(db_path: str, limit: int | None = None) -> list[dict]:
     if limit:
         q += f" LIMIT {int(limit)}"
     cols = ("id", "model", "symbol", "side", "entry_price", "exit_price",
-            "created_at")
+            "created_at", "score", "expected_move")
     with closing(sqlite3.connect(db_path)) as con:
         return [dict(zip(cols, r)) for r in con.execute(q)]
 
@@ -180,6 +186,12 @@ def gated_models(db_path: str) -> set[str]:
         if tier is not Tier.SILENT:
             out.add(model)
     return out
+
+
+# Models whose recorded `expected_move` is the distance to a real stop rather
+# than a forecast. Adding a model here without making it write a stop would
+# reproduce the 5x sizing error described in replay().
+STOP_SIZED_MODELS = frozenset({"stocks"})
 
 
 def replay(db_path: str, starting_cash: float = STARTING_CASH,
@@ -230,12 +242,32 @@ def replay(db_path: str, starting_cash: float = STARTING_CASH,
         # So risk is held constant and SIZE varies with the stop distance. A
         # volatile name needs a wide stop and therefore gets a small position;
         # a quiet one gets a larger position at identical risk.
-        from .risk import RISK_PER_TRADE
+        # ONLY models that record a real stop are sized from it.
+        #
+        # `expected_move` means two different things. The stocks scan writes
+        # the distance to its ATR stop there. Every other model writes its
+        # FORECAST move, which for daily and crypto averages 0.0003-0.0006.
+        # The first risk-sized version read every forecast as a stop, and a
+        # near-zero "stop" implies an enormous position: every trade hit the
+        # 5x cap. A replay of the full history showed paper returns jump from
+        # +2.11% to +9.64% and the worst drawdown from 0.1% to 10.5% — not the
+        # models improving, just positions five times larger than intended.
+        #
+        # Everything without a stop keeps flat sizing, which is the honest
+        # choice: a trade with no defined invalidation has no defined risk,
+        # and pretending otherwise invents one.
+        if row["model"] in STOP_SIZED_MODELS:
+            from .risk import RISK_PER_TRADE
 
-        stop_distance = abs(row.get("expected_move") or 0.0) or 0.05
-        stop_distance = max(0.01, min(stop_distance, 0.25))
-        size = min(book.equity * RISK_PER_TRADE / stop_distance,
-                   book.equity * position_pct * 5.0)
+            stop_distance = abs(row.get("expected_move") or 0.0)
+            if stop_distance >= 0.005:
+                stop_distance = min(stop_distance, 0.25)
+                size = min(book.equity * RISK_PER_TRADE / stop_distance,
+                           book.equity * 0.25)
+            else:
+                size = book.equity * position_pct
+        else:
+            size = book.equity * position_pct
 
         cost = size * cost_pct_per_side * 2      # entry and exit
         pnl = size * gross - cost

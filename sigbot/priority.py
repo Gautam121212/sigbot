@@ -44,8 +44,10 @@ HALF_LIFE_HOURS: dict[str, float] = {
     "crypto15m": 3.0,       # fast-decaying — but see the evidence weighting
     "daily": 24.0,
     "profiles": 24.0 * 30,  # how a name behaves changes over months
-    "thematic": 24.0 * 14,  # themes develop over weeks
 }
+# `thematic` was listed here with no runner behind it, so the queue would
+# have scheduled work that could never execute. Add it back only alongside
+# its job.
 
 # Bookkeeping that must always run and is never deferred, whatever the budget.
 # Resolving closes out open forecasts, which every other measurement depends
@@ -61,7 +63,6 @@ DEFAULT_BUDGET_SECONDS = 20 * 60
 TYPICAL_SECONDS: dict[str, float] = {
     "news": 90, "contagion": 240, "opportunity": 120, "stocks": 600,
     "setups": 300, "crypto15m": 180, "daily": 300, "profiles": 600,
-    "thematic": 240,
 }
 
 

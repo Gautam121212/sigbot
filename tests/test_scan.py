@@ -70,7 +70,8 @@ def test_risky_rows_are_sized_down_not_hidden():
 def test_a_proven_reason_beats_a_risky_one_on_the_same_name():
     """A name is never labelled risky when there is a proven reason to hold
     it — that would understate the evidence and mis-size the position."""
-    both = {"rsi_14": 18.0, "mfi_14": 30.0, "close": 70.0, "sma_200": 100.0}
+    both = {"rsi_14": 18.0, "mfi_14": 30.0, "close": 70.0, "sma_200": 100.0,
+            "volume_ma_20": 2_000_000}
     hit = scan_row("AAPL", both)
     assert hit is not None
     # Highest conviction wins when no candidate is proven, which is the
@@ -81,13 +82,19 @@ def test_a_proven_reason_beats_a_risky_one_on_the_same_name():
 def test_only_two_colours_ever():
     """Green or grey. A third state would reintroduce the amber problem: a
     colour that sorts high while meaning "not yet"."""
+    liquid = {"volume_ma_20": 2_000_000}
     rows = [
-        {"rsi_14": 18.0, "mfi_14": 30.0},          # proven
-        {"close": 70.0, "sma_200": 100.0},          # risky
-        {"willr_14": -99.0},                        # risky
-        {"close": 90.0, "prev_close": 100.0},       # risky
+        {"rsi_14": 18.0, "mfi_14": 30.0, **liquid},
+        {"close": 70.0, "sma_200": 100.0, **liquid},
+        {"willr_14": -99.0, **liquid},
+        {"close": 90.0, "prev_close": 100.0, **liquid},
     ]
-    seen = {hit.colour for hit in (scan_row("S", r) for r in rows) if hit}
+    hits = [h for h in (scan_row("S", r) for r in rows) if h]
+    # Non-empty on purpose. With the liquidity filter added, rows lacking
+    # volume returned nothing and `seen <= {...}` passed on an EMPTY set — a
+    # test asserting nothing while reporting green.
+    assert hits, "these rows must fire, or the colour check tests nothing"
+    seen = {h.colour for h in hits}
     assert seen <= {"var(--green)", "var(--faint)"}, seen
     # And the palette itself only ever offers those two.
     assert Hit("S", _c(3, 5.0), PROVEN, 100.0, 1.0, "r").colour == "var(--green)"
@@ -136,3 +143,28 @@ def test_holding_is_the_benchmark_not_zero():
     assert compare_to_holding(setup, strong_market).edge_pct < 0
     assert compare_to_holding(setup, []).edge_pct > 0, (
         "the same setup looks good against a zero benchmark")
+
+
+
+def test_thin_names_are_never_traded():
+    """Names averaging under 500k shares a day returned +1.136% against
+    +1.514% for liquid ones on the same entries. Thin names gap harder through
+    stops and cost more to fill, so their paper results overstate reality."""
+    row = {"rsi_14": 18.0, "mfi_14": 30.0, "volume_ma_20": 100_000}
+    assert scan_row("THIN", row) is None
+    assert scan_row("THICK", {**row, "volume_ma_20": 2_000_000}) is not None
+
+
+def test_unreadable_liquidity_fails_closed():
+    """The filter exists for names where fills are the problem, so a name
+    whose liquidity cannot be read is not given the benefit of the doubt."""
+    assert scan_row("UNKNOWN", {"rsi_14": 18.0, "mfi_14": 30.0}) is None
+
+
+def test_the_regime_filter_stays_off_for_this_setup():
+    """The textbook rule is for trend-following. On washout-buying it
+    INVERTED: the setup did better with the index below its 200-day average,
+    consistently at 180, 200 and 220 days."""
+    from sigbot.scan import REGIME_FILTER
+
+    assert REGIME_FILTER is False

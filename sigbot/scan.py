@@ -190,13 +190,55 @@ def tier_of(candidate: Candidate) -> str:
     return RISKY
 
 
+# Minimum average daily volume, in shares, for a name to be traded at all.
+#
+# A standard practitioner rule, and one that held up when tested: across the
+# same 9,246 deep-oversold entries with the ATR exit, names averaging at least
+# 500,000 shares a day returned +1.514% a trade against +1.136% for thinner
+# ones. Thin names gap harder through stops and cost more to get in and out of,
+# so the paper result overstates what a real fill would earn.
+MIN_AVG_VOLUME = 500_000
+
+
+def liquid_enough(row: dict) -> bool:
+    """True when the name trades enough to be entered and exited cleanly.
+
+    Missing volume fails CLOSED. A name whose liquidity cannot be read is a
+    name whose fill cannot be estimated, and the filter exists precisely for
+    the names where fills are the problem.
+    """
+    vol = row.get("volume_ma_20")
+    return vol is not None and vol >= MIN_AVG_VOLUME
+
+
+# The market-regime filter is deliberately NOT applied, and the reason is a
+# measurement. "Only go long when the index is above its 200-day average" is
+# among the most widely repeated professional rules, and for trend-following
+# it is sound. This setup is the opposite kind — it buys washouts — and on the
+# same 9,246 entries it did BETTER with the index below its 200-day average:
+#
+#     index above 180 / 200 / 220-day    +1.167 / +1.280 / +1.312%
+#     index below 180 / 200 / 220-day    +1.686 / +1.575 / +1.551%
+#
+# Consistent at all three thresholds, which is the practitioners' own test for
+# whether a finding is real or tuned. Washouts pay best when fear is widest,
+# so the textbook filter would strip out the best trades. A rule borrowed from
+# one kind of strategy has to be tested against the mechanism of the other
+# before it is trusted.
+REGIME_FILTER = False
+
+
 def scan_row(symbol: str, row: dict) -> Hit | None:
     """The strongest condition firing on this name, or None.
 
     Proven candidates are preferred over risky ones when both fire, so a name
-    is never labelled risky if there is a proven reason to hold it.
+    is never labelled risky if there is a proven reason to hold it. Names too
+    thin to trade cleanly are skipped before anything else is evaluated.
     """
     from .setups import context_multiplier
+
+    if not liquid_enough(row):
+        return None
 
     firing = [c for c in CANDIDATES if c.condition(row)]
     if not firing:

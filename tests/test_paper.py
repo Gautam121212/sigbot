@@ -238,3 +238,68 @@ def test_a_days_percentage_is_against_its_own_opening(tmp_path):
 
     day = paper.by_day(paper.replay(path))[0]
     assert day["pct"] == pytest.approx(day["pnl"] / day["opening"] * 100.0)
+
+
+def test_a_forecast_is_never_mistaken_for_a_stop(tmp_path):
+    """`expected_move` means a stop distance for the stocks scan and a FORECAST
+    for every other model. Reading forecasts as stops sized every trade at the
+    5x cap: a full-history replay showed returns jump +2.11% -> +9.64% and the
+    worst drawdown 0.1% -> 10.5%, with no change in the models at all."""
+    from sigbot import paper
+    from sigbot.shadow import ShadowLedger
+
+    path = str(tmp_path / "s.db")
+    ledger = ShadowLedger(path)
+    # A tiny forecast, as daily and crypto actually record.
+    pid = ledger.record("daily", "AAPL", "BUY", 0.6, 0.0004, 100.0)
+    ledger.resolve(pid, 101.0)
+
+    trade = paper.replay(path).trades[0]
+    assert trade.size <= 100_000 * 0.05, (
+        "a forecast of 0.04% must not size a position as if it were a stop")
+
+
+def test_the_stocks_scan_is_sized_from_its_stop(tmp_path):
+    """Its recorded expected_move IS the distance to an ATR stop, so risk
+    sizing applies: a wider stop means a smaller position."""
+    from sigbot import paper
+    from sigbot.shadow import ShadowLedger
+
+    sizes = []
+    for stop in (0.03, 0.12):
+        path = str(tmp_path / f"s{stop}.db")
+        ledger = ShadowLedger(path)
+        pid = ledger.record("stocks", "AAPL", "BUY", 0.7, stop, 100.0)
+        ledger.resolve(pid, 103.0)
+        sizes.append(paper.replay(path).trades[0].size)
+    assert sizes[0] > sizes[1], "tighter stop, larger position, same risk"
+
+
+def test_only_models_that_write_stops_are_stop_sized():
+    from sigbot.paper import STOP_SIZED_MODELS
+
+    assert STOP_SIZED_MODELS == {"stocks"}, (
+        "adding a model here without making it record a stop reproduces "
+        "the 5x sizing error")
+
+
+def test_every_field_sizing_reads_is_actually_selected():
+    """Risk sizing read `expected_move` from each row, and the loader never
+    selected that column. Every lookup returned None and fell silently to a
+    default, so the feature looked implemented, passed tests written against
+    hand-built rows, and never once ran on real data."""
+    import re
+    from pathlib import Path
+
+    src = (Path(__file__).resolve().parents[1] / "sigbot" / "paper.py").read_text()
+    start = src.index("    cols = (")
+    selected = set(re.findall(r'"(\w+)"', src[start:src.index(")", start)]))
+
+    start_replay = src.index("def replay(")
+    end_replay = src.find("\ndef ", start_replay + 1)
+    body = src[start_replay:end_replay if end_replay != -1 else None]
+    read = (set(re.findall(r'row\.get\("(\w+)"', body))
+            | set(re.findall(r'row\["(\w+)"\]', body)))
+    missing = read - selected
+    assert not missing, (
+        f"replay reads columns the loader never selects: {sorted(missing)}")

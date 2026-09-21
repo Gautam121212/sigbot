@@ -1476,7 +1476,7 @@ def run_priority(settings=SETTINGS, budget_minutes: float = 20.0,
 
     verdicts = _job_verdicts(settings)
     jobs = ["resolve", "news", "contagion", "opportunity", "stocks",
-            "crypto15m", "daily", "profiles", "thematic"]
+            "crypto15m", "daily", "profiles"]
     queue = plan(jobs, verdicts, budget_seconds=budget_minutes * 60)
     print(describe(queue))
 
@@ -1485,6 +1485,11 @@ def run_priority(settings=SETTINGS, budget_minutes: float = 20.0,
         return
 
     registry = _job_registry()
+    missing = [q.job for q in queue if q.runs and q.job not in registry]
+    if missing:
+        # Loud, not skipped: silently passing over a planned job is how the
+        # first version reported running news while never running it.
+        print(f"\n  NOT RUN — no runner registered for: {', '.join(missing)}")
     for slot in queue:
         if not slot.runs:
             continue
@@ -1537,14 +1542,36 @@ def _job_verdicts(settings=SETTINGS) -> dict[str, str]:
 
 
 def _job_registry() -> dict:
-    """Job name to callable, for the jobs the priority queue may run."""
-    return {
+    """Every job the priority queue can run, keyed by the name it plans with.
+
+    The first version held three entries, so execute mode silently skipped
+    news — the most urgent job on the queue. A planner whose top priority
+    cannot run is worse than no planner, because it reports the right thing
+    happening.
+
+    It also briefly contained `priority` ITSELF: an edit adding priority to
+    the main job table matched an identical line in here too, and execute
+    mode would have called the queue recursively. The registry is now built
+    explicitly and a test forbids any entry that runs the scheduler.
+
+    Keys are the PLANNING names. The model is `opportunity` and its job is
+    `opportunities`, and that kind of mismatch fails silently in a dict.
+    """
+    registry = {
         "resolve": lambda: run_resolve(YahooProvider(), SETTINGS),
+        "news": run_news,
+        "contagion": run_contagion,
+        "opportunity": run_opportunities,
         "stocks": run_stocks,
-        "priority": run_priority,
-        "events": run_events,
+        "crypto15m": run_crypto15m,
+        "daily": run_daily,
         "profiles": run_profiles,
+        "setups": run_setups,
     }
+    thematic = globals().get("run_thematic")
+    if thematic is not None:
+        registry["thematic"] = thematic
+    return registry
 
 
 def run_events(settings=SETTINGS) -> None:
@@ -1964,6 +1991,7 @@ def main(argv: list[str]) -> int:
         "profiles": run_profiles,
         "stocks": run_stocks,
         "priority": run_priority,
+        "priority-run": lambda: run_priority(execute=True),
         "events": run_events,
         "reset": run_reset,
         "reset-all": lambda: run_reset(full=True),

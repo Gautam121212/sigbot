@@ -57,3 +57,22 @@ def test_evidence_scales_urgency_in_the_right_direction():
 def test_nothing_is_dropped_only_deferred():
     slots = plan(JOBS, budget_seconds=60)
     assert {s.job for s in slots} == set(JOBS), "every job keeps its place"
+
+
+def test_every_planned_job_has_a_runner():
+    """The first registry held three entries, so execute mode silently skipped
+    news — the most urgent job on the queue."""
+    from sigbot.priority import HALF_LIFE_HOURS
+    from sigbot.runner import _job_registry
+
+    missing = (set(HALF_LIFE_HOURS) | {"resolve"}) - set(_job_registry())
+    assert not missing, f"planned but unrunnable: {sorted(missing)}"
+
+
+def test_the_scheduler_cannot_schedule_itself():
+    """An edit adding `priority` to the main job table matched an identical
+    line inside the registry, so execute mode would have recursed."""
+    from sigbot.runner import _job_registry, run_priority
+
+    assert "priority" not in _job_registry()
+    assert all(fn is not run_priority for fn in _job_registry().values())
