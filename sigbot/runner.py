@@ -1462,6 +1462,97 @@ def run_setups(settings=SETTINGS) -> None:
         print(f"{skipped} skipped (no price data).")
 
 
+def run_priority(settings=SETTINGS, budget_minutes: float = 20.0,
+                 execute: bool = False) -> None:
+    """Run jobs in order of urgency, weighted by what each has proved.
+
+    Shows the queue by default and runs it only with `execute=True`, so the
+    plan can be inspected before it spends any time. Verdicts come from the
+    same logic as `diagnose`, which means a job's priority falls on its own
+    once its record shows it finds nothing — nobody has to remember to demote
+    it.
+    """
+    from .priority import describe, plan
+
+    verdicts = _job_verdicts(settings)
+    jobs = ["resolve", "news", "contagion", "opportunity", "stocks",
+            "crypto15m", "daily", "profiles", "thematic"]
+    queue = plan(jobs, verdicts, budget_seconds=budget_minutes * 60)
+    print(describe(queue))
+
+    if not execute:
+        print("\n  Showing the plan only. Run with execute to act on it.")
+        return
+
+    registry = _job_registry()
+    for slot in queue:
+        if not slot.runs:
+            continue
+        fn = registry.get(slot.job)
+        if fn is None:
+            continue
+        try:
+            fn()
+        except Exception as exc:  # noqa: BLE001  # handled: recorded and the queue carries on
+            record_skip("priority", slot.job, exc)
+            print(f"  {slot.job} failed ({type(exc).__name__}); moving on.")
+
+
+def _job_verdicts(settings=SETTINGS) -> dict[str, str]:
+    """Each model's one-word verdict, as `diagnose` would give it.
+
+    Duplicates diagnose's classification rather than parsing its printed
+    output, because a priority decision that depends on the wording of a
+    report would break the first time the report is rephrased.
+    """
+    import sqlite3
+    from contextlib import closing
+
+    from .export_app import TARGET_CHECKS
+    from .shadow import ShadowLedger
+    from .stats import wilson_interval
+
+    ledger = ShadowLedger(settings.shadow_db)
+    out: dict[str, str] = {}
+    try:
+        with closing(sqlite3.connect(settings.shadow_db)) as con:
+            for model in TARGET_CHECKS:
+                resolved, hits = con.execute(
+                    "SELECT COUNT(*), COALESCE(SUM(hit),0) FROM predictions "
+                    "WHERE model=? AND hit IS NOT NULL", (model,)).fetchone()
+                recorded = con.execute(
+                    "SELECT COUNT(*) FROM predictions WHERE model=?",
+                    (model,)).fetchone()[0]
+                if not recorded:
+                    out[model] = "NO DATA"
+                elif resolved < TARGET_CHECKS[model] * 0.5:
+                    out[model] = "TOO EARLY"
+                else:
+                    lower, _ = wilson_interval(hits, resolved, 0.90)
+                    out[model] = ("NO EDGE" if lower <= ledger.empirical_null(model)
+                                  else "WORKING")
+    except Exception as exc:  # noqa: BLE001  # handled: unknown verdicts default to full priority
+        record_skip("priority", "verdicts", exc)
+    return out
+
+
+def _job_registry() -> dict:
+    """Job name to callable, for the jobs the priority queue may run."""
+    return {
+        "resolve": lambda: run_resolve(YahooProvider(), SETTINGS),
+        "stocks": run_stocks,
+        "priority": run_priority,
+        "events": run_events,
+        "profiles": run_profiles,
+    }
+
+
+def run_events(settings=SETTINGS) -> None:
+    """Print what each recorded class of event actually did to each asset."""
+    from .events import describe
+    print(describe())
+
+
 def run_stocks(settings=SETTINGS) -> None:
     """Scan the WHOLE universe, record only what fired.
 
@@ -1872,6 +1963,8 @@ def main(argv: list[str]) -> int:
         "setups": run_setups,
         "profiles": run_profiles,
         "stocks": run_stocks,
+        "priority": run_priority,
+        "events": run_events,
         "reset": run_reset,
         "reset-all": lambda: run_reset(full=True),
     }
