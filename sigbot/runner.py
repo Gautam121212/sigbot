@@ -956,6 +956,7 @@ def run_resolve(market=None, settings=SETTINGS) -> None:
     that never happened, and every hit rate computed from it is fiction.
     """
     from .crypto15m import MODEL_NAME as CRYPTO15M
+    _resolve_reasons: dict[str, str] = {}
 
     ledger = ShadowLedger(settings.shadow_db)
     end = (datetime.now(timezone.utc) + timedelta(days=1)).strftime("%Y-%m-%d")
@@ -1034,8 +1035,18 @@ def run_resolve(market=None, settings=SETTINGS) -> None:
                 resolved += 1
             except Exception as exc:  # noqa: BLE001
                 record_skip("resolve", symbol, exc)
+                # First failure of each kind is printed, so a live GitHub run
+                # names WHY prices could not be fetched (Binance 451 from a US
+                # host, Yahoo rate-limit, delisting) instead of only counting.
+                key = f"{'crypto' if model_name else 'daily'}:{type(exc).__name__}"
+                if key not in _resolve_reasons:
+                    _resolve_reasons[key] = str(exc)[:120]
     due_total = resolved + report("resolve", 0).skipped
     print(f"resolved {resolved} predictions")
+    if _resolve_reasons:
+        print("  price fetch failures (first of each kind):")
+        for key, msg in _resolve_reasons.items():
+            print(f"    {key}: {msg}")
     stale = report("resolve", due_total)
     if stale.skipped:
         # Unresolved predictions stay unresolved and keep skewing nothing — but
