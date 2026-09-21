@@ -89,7 +89,8 @@ def test_crypto_gets_momentum_but_never_dip_buying():
     washout = {"rsi_14": 15.0, "mfi_14": 30.0, "volume_ma_20": 5_000_000,
                "close": 50.0}
     breakout = {"close": 110.0, "hi52": 108.0, "sma_50": 100.0,
-                "sma_200": 90.0, "volume": 3_000_000, "volume_ma_20": 1_000_000}
+                "sma_200": 90.0, "volume": 3_000_000, "volume_ma_20": 1_000_000,
+                "index_up": True}
     for sym in ("BTC-USD", "ETH-USD", "SOLUSDT"):
         assert scan_row(sym, washout) is None, sym
         hit = scan_row(sym, breakout)

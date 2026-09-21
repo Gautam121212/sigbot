@@ -179,6 +179,44 @@ def evaluate(ev: Evidence, worst_hist_month: float = -0.12) -> Verdict:
     return Verdict(ev.stage, nxt, all(c.passed for c in criteria), criteria)
 
 
+# Can each model ever reach live trading? Measured on fair historical data
+# (stocks chosen by liquidity at the time, costs included), with 2009-15 as
+# years never used to choose anything.
+MODEL_VERDICTS: dict[str, tuple[str, str]] = {
+    "stocks": ("NOT YET",
+               "Improved: momentum held 60 days with the index trending up earns "
+               "+0.258 R a trade since 2016 and +0.092 R on 2009-15 (was +0.043 R "
+               "and about zero). But six positions at 1% risk open only about two "
+               "trades a month, so the account earns about +0.50% a month net "
+               "against +1.00% for the index. Per trade it works; as a whole "
+               "account it still trails."),
+    "contagion": ("PROMISING",
+                  "Rebuilt: buying same-sector names that fell with a leader earned "
+                  "+0.52% over five days since 2016 and +1.61% on 2009-15 — stronger "
+                  "on unseen years. Fires only on days a leader falls 4%, so it is "
+                  "small in the account; its live paper record decides it."),
+    "crypto15m": ("NO",
+                  "No edge found in either direction: dip-buying lost (-3.64% over "
+                  "5 days) and breakouts lost more (-4.45% over 20 days) in the one "
+                  "year of data available. Stays on paper."),
+    "news": ("CANNOT JUDGE",
+             "No historical test possible: GDELT refused every request this "
+             "session. Its own record is 80 checks — too few. GDELT is now saved "
+             "as it arrives, so a testable archive builds."),
+    "opportunity": ("NOT A TRADING MODEL",
+                    "One-off situations cannot be backtested as a series. It is a "
+                    "research feed, judged by the intake gate, not the ladder."),
+}
+
+
+def describe_models() -> str:
+    lines = ["Can each model reach live trading?", ""]
+    for model, (verdict, why) in MODEL_VERDICTS.items():
+        lines.append(f"  {model:<12} {verdict}")
+        lines.append(f"      {why}")
+    return "\n".join(lines)
+
+
 def describe(v: Verdict) -> str:
     lines = [f"Promotion ladder — current stage: {v.stage}", ""]
     if v.demote:

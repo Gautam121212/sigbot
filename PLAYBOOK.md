@@ -210,10 +210,16 @@ money at risk stays constant even as prices swing harder.
 
 **How professionals see crypto.** A market of its own, not a faster version
 of stocks. It trades around the clock, moves in powerful regimes, and swings
-several times harder than equities. Most professional approaches treat it as
-predominantly a *momentum* market: strength tends to continue, weakness tends
-to continue, and catching falling prices is punished more severely than in
-equities.
+several times harder than equities. Many professional approaches treat it as
+a *momentum* market, where strength tends to continue and catching falling
+prices is punished more severely than in equities.
+
+**A caution the evidence demands.** In a falling year, neither school worked:
+on eight major coins over the past year, buying breakouts to 20-day highs
+lost about 4.5% over the following 20 days, worse than doing nothing, and
+buying sharp drops lost too. The trend rule's real value in such a year is
+that it keeps a trader mostly *out*. "Crypto is a momentum market" is a
+tendency across cycles, not a rule that pays in every year.
 
 **What they act on.**
 - The trend: price relative to medium- and long-term averages. Many

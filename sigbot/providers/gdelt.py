@@ -92,9 +92,14 @@ class GDELTProvider:
                                              headers={"User-Agent": "sigbot/1.0"})
                 with urllib.request.urlopen(req, timeout=TIMEOUT) as resp:
                     payload = json.loads(resp.read().decode("utf-8", "replace") or "{}")
-            except Exception as exc:  # noqa: BLE001  # handled: one failed query must not stop the others or the RSS feeds
+            except Exception as exc:  # noqa: BLE001  # handled: recorded; the RSS feeds still run
+                # Stop at the FIRST refusal. GDELT throttles far harder than
+                # its documented one-request-per-five-seconds — measured
+                # refusing even widely spaced requests from ordinary
+                # connections — so after one 429 the rest of the run's queries
+                # would be refused too, spending minutes for nothing.
                 record_skip("gdelt", q[:40], exc)
-                continue
+                break
             for art in parse(payload, since):
                 if art.url not in seen:
                     seen.add(art.url)

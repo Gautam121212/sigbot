@@ -68,6 +68,13 @@ class Candidate:
     # the two belong to different markets: crypto punishes buying weakness,
     # and a guard that blocks both styles blocks the one that suits it.
     style: str = "reversion"
+    # Trading days a position is held before the backstop exit. Dip-buying is
+    # a short snap-back (10 days). Momentum is a trend, and trend-followers
+    # hold for weeks to months: measured with the index trending up, momentum
+    # earned +0.117 / +0.193 / +0.258 R at 20 / 40 / 60 days since 2016, and
+    # -0.003 / +0.053 / +0.092 R on 2009-15 — rising with the hold in BOTH
+    # periods, not tuned to one. At the old 10 days it was cut off early.
+    hold_days: int = 10
 
     @property
     def conviction_pct(self) -> float:
@@ -111,6 +118,12 @@ def _momentum_breakout(row: dict) -> bool:
     if not all(raw):
         return False
     close, hi52, sma50, sma200, vol, vol_ma = (float(v) for v in raw)  # type: ignore[arg-type]
+    # Only while the index itself is trending up — the rule trend-followers
+    # use. It was rejected for dip-buying, where it inverted; for momentum it
+    # fits: with the index down, breakouts were few and earned about nothing.
+    # Missing index data fails closed.
+    if row.get("index_up") is not True:
+        return False
     return close >= hi52 and close > sma50 > sma200 and vol > 1.5 * vol_ma
 
 
@@ -160,7 +173,7 @@ CANDIDATES: tuple[Candidate, ...] = (
         # in 2020-22 and ahead only since 2023, so it does not clear the money
         # test that demoted the washout setup. Same bar, same verdict.
         pooled_edge_pp=2.5, pooled_n=15175, eras_positive=3,
-        beats_holding=False, payoff_ratio=1.25, style="momentum"),
+        beats_holding=False, payoff_ratio=1.25, style="momentum", hold_days=60),
     Candidate(
         name="hard-down-day", side="BUY",
         plain=("Down more than 8% in one session. Often overdone — but the "

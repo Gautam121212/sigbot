@@ -142,6 +142,127 @@ def _is_dead(symbol: str, dead: dict[str, str]) -> bool:
     return age < DEAD_RETRY_DAYS
 
 
+SECTORS_FILE = "sectors.json"
+# At most this many new sector look-ups a run: each is a network call, and a
+# crash day can fire on hundreds of names.
+SECTOR_LOOKUPS_PER_RUN = 40
+_sector_lookups = {"n": 0}
+
+
+def _sector_of(symbol: str, lookup=None) -> str:
+    """The stock's sector, looked up once and remembered.
+
+    Assets carried no sector at all, so every name fell into "unknown" and the
+    rule "at most two positions per sector" was really "at most two trades a
+    day". Sectors are fetched only for names about to be traded, cached in a
+    committed file so the GitHub runs share it, and "unknown" stays a single
+    shared bucket — the cautious direction when a correlation cannot be seen.
+    """
+    import json as _json
+    path = Path(SECTORS_FILE)
+    try:
+        cache = _json.loads(path.read_text(encoding="utf-8")) if path.exists() else {}
+    except (OSError, ValueError):
+        cache = {}
+    if symbol in cache:
+        return cache[symbol] or "unknown"
+    if _sector_lookups["n"] >= SECTOR_LOOKUPS_PER_RUN:
+        return "unknown"
+    _sector_lookups["n"] += 1
+    sector = ""
+    try:
+        if lookup is not None:
+            sector = lookup(symbol) or ""
+        else:
+            import yfinance as yf
+            sector = (yf.Ticker(symbol).info or {}).get("sector") or ""
+    except Exception as exc:  # noqa: BLE001  # handled: recorded; the name stays "unknown", the cautious bucket
+        record_skip("sectors", symbol, exc)
+    cache[symbol] = sector
+    try:
+        path.write_text(_json.dumps(cache, indent=1, sort_keys=True), encoding="utf-8")
+    except OSError as exc:
+        record_skip("sectors", "cache", exc)
+    return sector or "unknown"
+
+
+def _open_book(ledger) -> tuple[int, dict[str, int]]:
+    """Stocks positions still open: taken, not yet resolved — with sectors.
+
+    Each daily run started from an empty book, so the six-position and
+    two-per-sector limits applied only within one day's trades. With holds of
+    ten and sixty days, positions from earlier runs must count.
+    """
+    import json as _json
+    with closing(sqlite3.connect(ledger.path)) as con:
+        rows = con.execute("SELECT payload FROM predictions WHERE model='stocks' "
+                           "AND hit IS NULL").fetchall()
+    n = 0
+    sectors: dict[str, int] = {}
+    for (payload,) in rows:
+        try:
+            info = _json.loads(payload) if payload else {}
+        except (TypeError, ValueError):
+            info = {}
+        if info.get("taken"):
+            n += 1
+            sec = info.get("sector") or "unknown"
+            sectors[sec] = sectors.get(sec, 0) + 1
+    return n, sectors
+
+
+# The leaders' sectors, in Yahoo's naming. Fixed and well known, so written
+# down rather than looked up.
+LEADER_SECTORS = {
+    "AAPL": "Technology", "MSFT": "Technology", "NVDA": "Technology",
+    "AVGO": "Technology", "AMD": "Technology", "ORCL": "Technology",
+    "CRM": "Technology", "INTC": "Technology", "QCOM": "Technology",
+    "AMZN": "Consumer Cyclical", "TSLA": "Consumer Cyclical",
+    "GOOGL": "Communication Services", "META": "Communication Services",
+    "NFLX": "Communication Services", "JPM": "Financial Services",
+    "GS": "Financial Services", "V": "Financial Services", "XOM": "Energy",
+    "UNH": "Healthcare", "LLY": "Healthcare", "WMT": "Consumer Defensive",
+    "COST": "Consumer Defensive", "BA": "Industrials", "CAT": "Industrials",
+}
+
+LEADER_DROP = -0.04        # a leader falling this much in a day...
+FOLLOWER_DROP = -0.03      # ...and a same-sector name falling this much too
+REBOUND_HOLD_DAYS = 5
+
+# The old follow-on bet — follow the leader's direction — lost on 745,570
+# cases: the sector slightly REVERSED the next day (-0.21%), hard in the 2020
+# crash (-1.11%). It is switched off; the rebound below replaces it.
+LEGACY_FOLLOW = False
+
+
+def sympathy_rebounds(today: dict[str, float], sector_of=None) -> list[tuple[str, str]]:
+    """(follower, leader) pairs to buy for the rebound after a leader falls.
+
+    today: symbol -> today's simple return.
+
+    Measured on liquid US stocks: after a leader fell 4%+, same-sector names
+    that also fell 3%+ returned +0.52% over five days since 2016 and +1.61%
+    on 2009-15 — a period never used to choose it, and stronger there, the
+    opposite of an overfitted rule. Quick sympathy moves tend to fade; this
+    buys the fade. Caveat: many names fire on the same few days, so the
+    independent evidence is closer to the number of such days than to the
+    number of trades.
+    """
+    sector_of = sector_of or _sector_of
+    hit_sectors = {LEADER_SECTORS[L]: L for L, r in today.items()
+                   if L in LEADER_SECTORS and r <= LEADER_DROP}
+    if not hit_sectors:
+        return []
+    out = []
+    for sym, r in sorted(today.items(), key=lambda kv: kv[1]):
+        if sym in LEADER_SECTORS or r > FOLLOWER_DROP:
+            continue
+        sec = sector_of(sym)
+        if sec in hit_sectors:
+            out.append((sym, hit_sectors[sec]))
+    return out
+
+
 def display_assets(settings=SETTINGS) -> list:
     """The names the SITE draws — the highlighted board, not the whole pool.
 
@@ -292,6 +413,13 @@ def run_daily(messenger=None, market=None, settings=SETTINGS) -> None:
 LEARN_LOG = "learning_log.jsonl"
 LEARN_LOG_MAX = 3000
 
+# Every headline fetched, with its timestamp and the gate's verdict. This is
+# the news archive the model has never had: a record of what was known and
+# when, to be matched later against what prices did. Bounded so the file
+# cannot grow without limit in the repository.
+NEWS_ARCHIVE = "news_archive.jsonl"
+NEWS_ARCHIVE_MAX = 20000
+
 
 def _news_provider():
     """The RSS feeds plus GDELT. Either can fail without stopping the other."""
@@ -340,6 +468,7 @@ def _gate_articles(articles, assets, ledger, job: str):
     from .intake import ACT, LEARN, judge, matches_tradable
 
     records = _source_records(ledger)
+    verdicts: list[str] = []
     act: list = []
     learn: list = []
     tally: Counter[str] = Counter()
@@ -347,10 +476,30 @@ def _gate_articles(articles, assets, ledger, job: str):
         d = judge(a.title, a.summary, tradable=matches_tradable(a.title, assets),
                   source_record=records.get(a.source))
         tally[d.verdict] += 1
+        verdicts.append(d.verdict)
         if d.verdict == ACT:
             act.append(a)
         elif d.verdict == LEARN:
             learn.append((a, d))
+    try:
+        arch = Path(NEWS_ARCHIVE)
+        seen_urls: set[str] = set()
+        old_lines = arch.read_text(encoding="utf-8").splitlines() if arch.exists() else []
+        for line in old_lines[-NEWS_ARCHIVE_MAX:]:
+            try:
+                seen_urls.add(_json.loads(line).get("url", ""))
+            except ValueError:
+                continue
+        verdict_of = {id(a): v for a, v in zip(articles, verdicts)}
+        new_lines = [_json.dumps({
+            "at": a.published_at.isoformat(), "title": a.title, "url": a.url,
+            "source": a.source, "verdict": verdict_of.get(id(a))})
+            for a in articles if a.url and a.url not in seen_urls]
+        if new_lines:
+            arch.write_text("\n".join((old_lines + new_lines)[-NEWS_ARCHIVE_MAX:]) + "\n",
+                            encoding="utf-8")
+    except OSError as exc:
+        record_skip(job, "news_archive", exc)
     if learn:
         try:
             path = Path(LEARN_LOG)
@@ -479,6 +628,30 @@ def run_contagion(messenger=None, market=None, settings=SETTINGS,
 
     anchors = [a for a in anchors if a in returns]
     candidates = [c for c in followers if c in returns and c not in anchors]
+
+    # The rebound: recorded as the follow-on model's forecasts, held five
+    # trading days, before the old lead-lag logic (now off) is reached.
+    import json as _json
+    today = {sym: float(np.expm1(r.iloc[-1])) for sym, r in returns.items()
+             if len(r)}
+    rebound = sympathy_rebounds(today)
+    for sym, leader in rebound:
+        try:
+            rebound_price = float(market.history(sym, settings.history_start, end)["close"].iloc[-1])
+        except Exception as exc:  # noqa: BLE001  # handled: recorded; no price, no forecast
+            record_skip("contagion", sym, exc)
+            continue
+        ledger.record("contagion", sym, "BUY", 0.6, abs(today[sym]), rebound_price,
+                      REBOUND_HOLD_DAYS * 24 * 7 // 5,
+                      payload=_json.dumps({"setup": "sympathy-rebound",
+                                           "leader": leader}))
+    if rebound:
+        messenger.send(f"Follow-on rebound {datetime.now(timezone.utc):%Y-%m-%d}: "
+                       + ", ".join(f"{s} after {lead}" for s, lead in rebound[:12]))
+    if not LEGACY_FOLLOW:
+        ledger.log_run("contagion", considered=len(candidates),
+                       signals=len(rebound), note="sympathy rebound")
+        return
     links = build_network(returns, anchors, candidates, alpha=alpha)
     survivors = [lk for lk in links if lk.tradeable]
     # A run that finds nothing must still be visible as a run. Three of five
@@ -1908,10 +2081,12 @@ def gather_promotion_evidence(settings=SETTINGS):
 def run_promotion(settings=SETTINGS) -> None:
     """Which stage the evidence supports, and what blocks the next one."""
     from .benchmarks import EXPECTED
-    from .promotion import describe, evaluate
+    from .promotion import describe, describe_models, evaluate
 
     print(describe(evaluate(gather_promotion_evidence(settings),
                             worst_hist_month=EXPECTED.worst_month)))
+    print()
+    print(describe_models())
 
 
 def run_events(settings=SETTINGS) -> None:
@@ -1947,6 +2122,16 @@ def run_stocks(settings=SETTINGS) -> None:
 
     # The whole pool. This iterated UNIVERSE — 55 names — which made the
     # "wide" scan narrower than the 100-name board it was built to replace.
+    # Whether the index itself is trending up. Momentum only buys while it is;
+    # if the index cannot be read, momentum does not fire at all.
+    index_up = None
+    try:
+        spy = market.history("SPY", settings.history_start, end)["close"]
+        if len(spy) >= 200:
+            index_up = bool(spy.iloc[-1] > spy.tail(200).mean())
+    except Exception as exc:  # noqa: BLE001  # handled: recorded; momentum fails closed
+        record_skip("stocks", "index-trend", exc)
+
     universe = [a for a in board_assets(settings)
                 if "-USD" not in a.symbol and getattr(a, "kind", "") != "crypto"]
     hits, looked, skipped = [], 0, 0
@@ -1965,7 +2150,9 @@ def run_stocks(settings=SETTINGS) -> None:
     # a pause that cannot fire was the single most expensive gap in the
     # system.
     state = _seed_risk_state(ledger, settings)
-    sector_count: dict[str, int] = {}
+    # Sectors of positions still open from earlier runs, so the per-sector
+    # limit counts the real book rather than one day's trades.
+    sector_count: dict[str, int] = dict(_open_book(ledger)[1])
 
     for asset in universe:
         try:
@@ -1985,6 +2172,7 @@ def run_stocks(settings=SETTINGS) -> None:
                 "mfi_14": float(_mfi(bars).iloc[-1]),
                 "sma_200": float(bars["close"].tail(200).mean()),
                 "sma_50": float(bars["close"].tail(50).mean()),
+                "index_up": index_up,
                 # The high of the PREVIOUS year, excluding today, so a close
                 # at a new high can register as one.
                 "hi52": (float(bars["high"].iloc[-253:-1].max())
@@ -2014,7 +2202,7 @@ def run_stocks(settings=SETTINGS) -> None:
         # the record they distort.
         atr = row.get("atr_14")
         plan = exit_plan(close, atr) if atr else None
-        sector = getattr(asset, "sector", "") or "unknown"
+        sector = _sector_of(asset.symbol)
 
         if plan is None:
             refused.append(f"{asset.symbol}: no volatility reading, so no "
@@ -2053,10 +2241,17 @@ def run_stocks(settings=SETTINGS) -> None:
             "style": hit.candidate.style,
             "tier": hit.tier,
             "taken": bool(decision and decision.allowed),
+            "sector": sector,
+            "hold_days": hit.candidate.hold_days,
         })
         ledger.record("stocks", asset.symbol, hit.candidate.side,
                       hit.conviction_pct / 100.0,
-                      plan.stop_distance_pct if plan else 0.0, close, 24,
+                      plan.stop_distance_pct if plan else 0.0, close,
+                      # Scored at the strategy's real holding period. It was
+                      # 24 hours, so the live record measured one-day trades
+                      # while every historical test measured ten-day ones.
+                      # Trading days to calendar hours: x 7/5 x 24.
+                      hit.candidate.hold_days * 24 * 7 // 5,
                       payload=liquidity)
 
         if decision and decision.allowed:
@@ -2119,11 +2314,15 @@ def _seed_risk_state(ledger, settings=SETTINGS):
         today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
         day_pnl = sum(t.pnl for t in book.trades
                       if str(t.opened_at)[:10] == today)
+        from .risk import RISK_PER_TRADE
+        open_n, _sectors = _open_book(ledger)
         return RiskState(
             equity=equity,
             peak_equity=max(peak, equity),
             day_pnl_pct=(day_pnl / equity) if equity else 0.0,
             loss_streak=ledger.current_loss_streak("stocks"),
+            open_positions=open_n,
+            open_risk=open_n * RISK_PER_TRADE,
         )
     except Exception as exc:  # noqa: BLE001  # handled: recorded, and a fresh book is used
         record_skip("stocks", "risk-state", exc)

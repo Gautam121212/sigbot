@@ -99,3 +99,25 @@ def test_learn_items_are_logged_and_act_items_returned(tmp_path, monkeypatch):
     assert len(learn) == 1
     logged = [json.loads(x) for x in (tmp_path / runner.LEARN_LOG).read_text().splitlines()]
     assert logged[0]["class"] == "shock"
+
+
+def test_every_fetched_headline_is_archived_once(tmp_path, monkeypatch):
+    """The news model never had an archive of what was known when. Every
+    headline is kept with its verdict, once, so it can be matched to what
+    prices did afterwards."""
+    from datetime import datetime, timezone
+
+    import sigbot.runner as runner
+    from sigbot.shadow import ShadowLedger
+    from sigbot.types import Article
+
+    monkeypatch.chdir(tmp_path)
+    now = datetime.now(timezone.utc)
+    arts = [Article("a", "Apple beats Q3 estimates", "", "https://x/1", "w", now, now),
+            Article("b", "Top 10 stocks to watch", "", "https://x/2", "w", now, now)]
+    led = ShadowLedger(str(tmp_path / "s.db"))
+    runner._gate_articles(arts, ASSETS, led, "news")
+    runner._gate_articles(arts, ASSETS, led, "news")
+    rows = [json.loads(x) for x in (tmp_path / runner.NEWS_ARCHIVE).read_text().splitlines()]
+    assert len(rows) == 2, "each headline once, however many runs see it"
+    assert {r["verdict"] for r in rows} == {"ACT", "DROP"}

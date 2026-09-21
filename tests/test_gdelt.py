@@ -26,7 +26,7 @@ def test_an_empty_or_odd_response_is_not_an_error():
     assert parse({}, since) == [] and parse({"articles": None}, since) == []
 
 
-def test_a_failed_query_is_recorded_and_the_rest_continue(monkeypatch):
+def test_the_first_refusal_stops_gdelt_for_the_run(monkeypatch):
     import urllib.request
 
     calls = []
@@ -38,7 +38,9 @@ def test_a_failed_query_is_recorded_and_the_rest_continue(monkeypatch):
     monkeypatch.setattr(urllib.request, "urlopen", boom)
     out = GDELTProvider(queries=("a", "b"), pause=0).fetch(
         datetime.now(timezone.utc) - timedelta(hours=2))
-    assert out == [] and len(calls) == 2, "every query is tried"
+    # One refusal ends the run's GDELT queries: after a 429 the rest would be
+    # refused too, and the RSS feeds carry on regardless.
+    assert out == [] and len(calls) == 1
 
 
 def test_gdelt_failing_never_stops_the_rss_feeds():

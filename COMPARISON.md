@@ -286,6 +286,25 @@ Dip-buying stays blocked on crypto (−3.64% over five days after a 15% weekly
 drop). The first guard blocked crypto entirely, which also blocked momentum —
 the style the playbook says suits it. It now blocks only dip-buying.
 
+### Can each model reach live trading? — this round
+
+| Model | Verdict | Evidence |
+|---|---|---|
+| Stocks & funds | **NOT YET** | Momentum held 60 days with the index trending up: +0.258 R a trade since 2016, +0.092 R on 2009-15 (was +0.043 R and about zero). About two new trades a month fit the risk limits, so the account earns about +0.50% a month net against +1.00% for the index. |
+| Follow-on moves | **PROMISING** | Rebuilt as a rebound: same-sector names that fell 3%+ with a leader returned +0.52% over five days since 2016 and **+1.61% on 2009-15**. Fires only on leader-down days. |
+| Crypto | **NO** | Dip-buying and breakouts both lost over the one year available. |
+| News | **CANNOT JUDGE** | GDELT refused every request; every headline is now archived as it arrives. |
+| Opportunities | **NOT A TRADING MODEL** | One-off situations; judged by the intake gate. |
+
+**Why the stocks model still trails, structurally.** A long-only system with
+six positions at 1% risk sits largely in cash, while the index is fully
+invested through one of the strongest bull markets on record. Per trade the
+strategy now clearly works; as a whole account it cannot keep up unless idle
+capital earns something. Professionals often solve this with a core-and-
+satellite structure — idle capital held in the index, strategy trades as the
+satellite — and judge the strategy on what it adds over that. That is a
+decision about the design, not a tuning change, and has not been made.
+
 ### Promotion ladder — where sigbot stands
 
 `runner promotion` evaluates the ladder from the real records. Today: **PAPER,
@@ -293,10 +312,11 @@ the style the playbook says suits it. It now blocks only dip-buying.
 +1.00% a month net), the unseen years earned nothing after costs, and there
 are no closed paper trades yet.
 
-**The arithmetic that matters most:** at the historical edge of about +0.04 R
-a trade, reaching the evidence bar (t ≥ 2) needs roughly 2,500 trades — about
-17 years at twelve a month. Waiting will not promote this edge. Only a larger
-one can clear the bar in reasonable time.
+**Corrected arithmetic.** Last round this said proving the edge would take
+17 years. That assumed paper trades are capped like real positions at twelve
+a month; they are not — sigbot records every signal on paper, over a hundred
+a month for momentum. At +0.26 R the paper record can reach the evidence bar
+in months. At the old +0.04 R it needed about 2,500 signals.
 
 Live execution is a constant set to off, and no broker code exists. The
 ladder reports eligibility; it cannot place an order.

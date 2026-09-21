@@ -89,19 +89,22 @@ def test_the_real_evidence_runs_end_to_end():
 
 
 
-def test_a_small_edge_cannot_be_proven_in_any_reasonable_time():
-    """Sigbot's historical edge is about +0.04 R a trade with a spread near
-    1 R. Reaching the t >= 2 bar needs roughly (2 / 0.04)^2 = 2,500 trades —
-    about 17 years at twelve a month. Waiting will not promote an edge that
-    small; only a larger one can clear the bar in reasonable time. This test
-    records that arithmetic so it is never mistaken for a matter of patience."""
+def test_how_long_proof_takes_depends_on_the_edge_not_on_patience():
+    """At +0.04 R with a spread near 1 R, t >= 2 needs about 2,500 signals.
+    An earlier version of this test converted that to "17 years at twelve a
+    month" — wrong, because sigbot records EVERY signal on paper, not only
+    the dozen a month the risk limits would take as positions. Momentum held
+    60 days (+0.26 R, spread about 2 R) needs about 240 signals, and it fires
+    over a hundred a month: months, not years."""
     from sigbot.promotion import MIN_T_STAT
 
-    edge, spread = 0.04, 1.0
-    trades_needed = (MIN_T_STAT * spread / edge) ** 2
-    assert trades_needed > 2000
-    assert trades_needed / 12 / 12 > 15, "years at twelve trades a month"
+    old_edge = (MIN_T_STAT * 1.0 / 0.04) ** 2
+    momentum = (MIN_T_STAT * 2.0 / 0.26) ** 2
+    assert old_edge > 2000
+    assert momentum < 300
+    assert momentum / 100 < 3, "months at about a hundred signals a month"
 
     # A realistic +0.08 R record of 150 trades is still not proof.
     modest = evaluate(_ev(paper_r=[0.3, -1.0, 0.8, 0.5, -0.2] * 30))
     assert not modest.eligible
+
