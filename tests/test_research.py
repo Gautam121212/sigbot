@@ -5,7 +5,8 @@ import numpy as np
 import pandas as pd
 
 from sigbot.research import (
-    REGIME_ROUND, SWEEP_1, SWEEP_1_BATCH, Result, bonferroni_t, survives,
+    PENDING, REGIME_ROUND, ROUND_3, ROUND_3_BATCH, SWEEP_1, SWEEP_1_BATCH, Result,
+    bonferroni_t, survives,
 )
 from sigbot.runner import market_regime
 from sigbot.scan import CANDIDATES, scan_row
@@ -64,5 +65,21 @@ def test_capitulation_is_a_satellite_setup_but_not_called_proven():
     from sigbot.scan import PROVEN, tier_of
 
     cap = next(c for c in CANDIDATES if c.name == "capitulation")
-    assert cap.style in SATELLITE_STYLES and cap.hold_days == 10
+    assert cap.style in SATELLITE_STYLES and cap.hold_days == 20
     assert tier_of(cap) != PROVEN, "second-round finding with clustered evidence"
+
+
+
+def test_round_3_adopts_only_what_survived():
+    """The three hypotheses written down in advance: one survives."""
+    verdicts = {r.hypothesis: survives(r, ROUND_3_BATCH) for r in ROUND_3}
+    assert verdicts == {
+        "Capitulation held 20 days (vs 5 and 10)": True,
+        "Insider cluster buying, liquid stocks, 20 days": False,
+        "Earnings big miss in a volatile decline, 20 days": False,
+    }
+
+
+def test_the_next_round_is_written_down_before_it_is_run():
+    assert len(PENDING) >= 2
+    assert all("all three periods" in h for h in PENDING)

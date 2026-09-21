@@ -190,8 +190,9 @@ MODEL_VERDICTS: dict[str, tuple[str, str]] = {
                "2016 (t 4.0) and +0.44% on 2009-15 (t 2.5); the account beats "
                "the index (+1.21% vs +1.00% a month) after costs and a "
                "survivorship haircut. Unseen years add only +0.06% a month after "
-               "that haircut, below the bar. Momentum's gains were the market's "
-               "(-0.05% and -0.83% beyond the index), so it is never given capital."),
+               "that haircut, below the bar. Capitulation (oversold in a volatile "
+               "decline, held 20 days) beat the index in all three periods. "
+               "Momentum's gains were the market's, so it is never given capital."),
     "contagion": ("PROMISING",
                   "The rebound after a leader falls earned +0.52% over five days "
                   "since 2016 and +1.61% on 2009-15 — about +0.3% and +1.4% beyond "

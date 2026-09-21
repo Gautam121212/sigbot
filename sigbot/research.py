@@ -87,12 +87,27 @@ REGIME_ROUND = (
     Result("Williams %R < -90 | calm rise", 3.9, -4.5, 0.4, (0.12, -0.16, 0.01)),
 )
 
+# Round 3: the three hypotheses written down before round 2's results were
+# known. Tested as a batch of 3 (discovery bar |t| >= 2.39).
+ROUND_3_BATCH = 3
+ROUND_3 = (
+    # Adopted: capitulation now holds 20 days.
+    Result("Capitulation held 20 days (vs 5 and 10)", 10.3, 9.0, 13.9, (1.04, 0.62, 1.09)),
+    # Failed: in liquid stocks insider cluster buying added nothing in any
+    # period. In smaller stocks it did (+1.84% / +0.22% / +1.37%) but faded
+    # after 2020 and the median trade lost — the leftover edge of a widely
+    # watched signal sits where large funds cannot trade.
+    Result("Insider cluster buying, liquid stocks, 20 days", 0.1, 0.3, 1.0, (0.06, 0.17, 0.65)),
+    # Failed: the sign flips between periods, and 2021+ is a few outliers.
+    Result("Earnings big miss in a volatile decline, 20 days", 3.1, 1.0, -2.1, (2.72, 11.28, -1.97)),
+)
+
 # Written down BEFORE testing, so their results cannot shape their wording.
 PENDING = (
-    "Insider cluster buying (several insiders buying within a week) -> "
-    "20-day excess return, all three periods",
-    "Oversold during a volatile decline, held 5 vs 10 vs 20 days",
-    "Earnings big miss followed by a volatile decline -> 20-day excess",
+    "Capitulation only when the stock's whole sector also fell (market-wide "
+    "panic, not company news) -> 20-day excess, all three periods",
+    "Capitulation position size scaled by how volatile the decline is -> "
+    "return per unit of risk, all three periods",
 )
 
 
@@ -108,5 +123,10 @@ def summary() -> str:
         consistent = all(x > 0 for x in r.excess_pct) or all(x < 0 for x in r.excess_pct)
         e = ", ".join(f"{x:+.2f}%" for x in r.excess_pct)
         lines.append(f"  {'CONSISTENT' if consistent else 'flips':<10} {r.hypothesis:<40} {e}")
-    lines += ["", "Pre-registered, not yet tested:"] + [f"  - {h}" for h in PENDING]
+    lines += ["", f"Round 3 — the pre-registered hypotheses (batch of {ROUND_3_BATCH}):"]
+    for r in ROUND_3:
+        verdict = "SURVIVES" if survives(r, ROUND_3_BATCH) else "fails"
+        e = ", ".join(f"{x:+.2f}%" for x in r.excess_pct)
+        lines.append(f"  {verdict:<9} {r.hypothesis:<50} {e}")
+    lines += ["", "Pre-registered for the next round:"] + [f"  - {h}" for h in PENDING]
     return "\n".join(lines)

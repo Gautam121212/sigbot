@@ -187,7 +187,12 @@ CANDIDATES: tuple[Candidate, ...] = (
         # sweep, and panic days bunch together, so independent evidence is
         # closer to the number of such days than to the number of trades.
         pooled_edge_pp=0.44, pooled_n=81870, eras_positive=3,
-        beats_holding=True, payoff_ratio=1.1, style="reversion", hold_days=10),
+        # Held 20 days, from a pre-registered test of 5 / 10 / 20: beyond the
+        # index at 20 days it was +1.04% / +0.62% / +1.09% (2016-20 / 2021+ /
+        # 2009-15), strong in every period. At 10 days 2016-20 earned only
+        # +0.15%, about nothing after costs; at 5 days it lost. Panic
+        # rebounds take weeks.
+        beats_holding=True, payoff_ratio=1.1, style="reversion", hold_days=20),
     Candidate(
         name="momentum-breakout", side="BUY",
         plain=("A leading stock breaking out to a new one-year high, in an "
