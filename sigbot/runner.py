@@ -2123,6 +2123,60 @@ def run_promotion(settings=SETTINGS) -> None:
     print(describe_models())
 
 
+SURPRISE_LOOKUPS_PER_RUN = 40
+
+
+def _earnings_surprise(symbol: str, lookup=None) -> float | None:
+    """Surprise (%) of an earnings report in the last three days, or None.
+
+    Only called for stocks that already rose 2%+ beyond the index today —
+    a handful a day — so the per-stock look-up stays cheap.
+    """
+    try:
+        if lookup is not None:
+            return lookup(symbol)
+        import yfinance as yf
+        df = yf.Ticker(symbol).get_earnings_dates(limit=4)
+        if df is None or df.empty or "Surprise(%)" not in df:
+            return None
+        now = pd.Timestamp.now(tz="UTC")
+        for when, row in df.iterrows():
+            ts = pd.Timestamp(when)
+            ts = ts.tz_localize("UTC") if ts.tzinfo is None else ts.tz_convert("UTC")
+            if pd.Timedelta(0) <= now - ts <= pd.Timedelta(days=3):
+                val = row.get("Surprise(%)")
+                return float(val) if val == val and val is not None else None
+    except Exception as exc:  # noqa: BLE001  # handled: recorded; no surprise, no signal
+        record_skip("surprise", symbol, exc)
+    return None
+
+
+def record_confirmed_surprises(ledger, candidates, lookup=None) -> int:
+    """Paper-record every big beat the market confirmed today.
+
+    candidates: (symbol, close, reaction excess) for stocks up 2%+ beyond the
+    index today. Recorded on PAPER ONLY (taken=False) with the 19-day horizon
+    the history measured, so the learning loop tracks the edge — +1.20% /
+    +0.44% / +1.26% in the three periods — before any capital follows it.
+    """
+    import json as _json
+
+    from .indicators import DRIFT_DAYS, confirmed_surprise
+
+    n = 0
+    for sym, close, reaction in candidates[:SURPRISE_LOOKUPS_PER_RUN]:
+        surprise = _earnings_surprise(sym, lookup)
+        if not confirmed_surprise(surprise, reaction):
+            continue
+        ledger.record("stocks", sym, "BUY", 0.6, 0.0, close,
+                      DRIFT_DAYS * 24 * 7 // 5,
+                      payload=_json.dumps({"setup": "confirmed-surprise",
+                                           "taken": False, "surprise": surprise,
+                                           "reaction": round(reaction, 4)}))
+        n += 1
+    return n
+
+
 def crypto_exposure(index_regime: str | None) -> str:
     """Bitcoin exposure from the STOCK market's regime — the liquidity idea.
 
@@ -2184,11 +2238,14 @@ def run_stocks(settings=SETTINGS) -> None:
     # if the index cannot be read, momentum does not fire at all.
     index_up = None
     index_regime = None
+    spy_day: float | None = None
+    surprise_candidates: list[tuple[str, float, float]] = []
     try:
         spy = market.history("SPY", settings.history_start, end)["close"]
         if len(spy) >= 200:
             index_up = bool(spy.iloc[-1] > spy.tail(200).mean())
             index_regime = market_regime(spy)
+            spy_day = float(spy.iloc[-1] / spy.iloc[-2] - 1)
     except Exception as exc:  # noqa: BLE001  # handled: recorded; regime-gated setups fail closed
         record_skip("stocks", "index-trend", exc)
 
@@ -2250,6 +2307,11 @@ def run_stocks(settings=SETTINGS) -> None:
             continue
 
         looked += 1
+        # Candidates for the confirmed-surprise check: up 2%+ beyond the index.
+        if spy_day is not None and len(bars) > 1:
+            reaction = close / float(bars["close"].iloc[-2]) - 1 - spy_day
+            if reaction >= 0.02:
+                surprise_candidates.append((asset.symbol, close, reaction))
         hit = scan_row(asset.symbol, row)
         if hit is None:
             continue
@@ -2340,6 +2402,10 @@ def run_stocks(settings=SETTINGS) -> None:
     # `recorded` counts every signal written down; `signals` counts what risk
     # actually allowed. The gap between them is the risk rules doing their job
     # and must stay visible.
+    surprises = record_confirmed_surprises(
+        ledger, sorted(surprise_candidates, key=lambda c: -c[2]))
+    if surprises:
+        print(f"confirmed surprises recorded on paper: {surprises}")
     ledger.log_run("stocks", looked, len(hits), "",
                    recorded=len(hits) + len(refused))
     print(summarise(hits, looked))

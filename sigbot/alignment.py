@@ -75,7 +75,7 @@ def _stocks_trades(db_path: str) -> list[dict]:
         if str(side).upper() == "SELL":
             move = -move
         r = move / stop if stop and stop > 0 else None
-        out.append({"r": r, "hit": bool(hit), "setup": info.get("setup"),
+        out.append({"r": r, "ret": move, "hit": bool(hit), "setup": info.get("setup"),
                     "taken": info.get("taken", True)})
     return out
 
@@ -187,8 +187,12 @@ def review_setups(trades: Sequence[dict]) -> list[SetupReview]:
 
     by_setup: dict[str, list[float]] = {}
     for t in trades:
-        if t.get("setup") and t["r"] is not None:
-            by_setup.setdefault(t["setup"], []).append(t["r"])
+        # R when the trade had a stop; plain return for paper-only setups
+        # that were measured without one (confirmed-surprise). Each setup's
+        # list stays in a single unit.
+        value = t["r"] if t["r"] is not None else t.get("ret")
+        if t.get("setup") and value is not None:
+            by_setup.setdefault(t["setup"], []).append(value)
 
     out = []
     for c in CANDIDATES:
@@ -207,6 +211,16 @@ def review_setups(trades: Sequence[dict]) -> list[SetupReview]:
             rec = "On track."
         out.append(SetupReview(c.name, n, round(live, 3) if live is not None
                                else None, rec))
+    # Paper-only setups that are not scan candidates (confirmed-surprise).
+    known = {c.name for c in CANDIDATES}
+    for name in sorted(set(by_setup) - known):
+        rs = by_setup[name]
+        live = sum(rs) / len(rs) if rs else None
+        rec = (f"Keep watching — {len(rs)} live trade(s), needs {MIN_TRADES}."
+               if len(rs) < MIN_TRADES else
+               "DECAY — negative live result." if live is not None and live < 0
+               else "On track (paper only).")
+        out.append(SetupReview(name, len(rs), round(live, 3) if live is not None else None, rec))
     return out
 
 
@@ -234,9 +248,11 @@ def monthly_returns(db_path: str) -> list[tuple[str, float]]:
 
 def check_growth(months: Sequence[tuple[str, float]]) -> Check:
     """Live monthly growth against the benchmark measured on history."""
-    from .benchmarks import EXPECTED, HOLD_INDEX, judge_month, judge_run
+    from .benchmarks import ACCOUNT_NET_MONTH, HOLD_INDEX, judge_month, judge_run
 
-    expect = (f"About {EXPECTED.net_avg * 100:+.2f}% a month net of costs, "
+    # The core-and-satellite account, not the retired both-schools figure
+    # (+0.54%) that this line quoted until the structure changed.
+    expect = (f"About {ACCOUNT_NET_MONTH * 100:+.2f}% a month net of costs, "
               f"against {HOLD_INDEX.avg_month * 100:+.2f}% for holding the index")
     if not months:
         return Check("Grow in line with history", expect, "no months yet", EARLY)
