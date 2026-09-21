@@ -102,8 +102,22 @@ ROUND_3 = (
     Result("Earnings big miss in a volatile decline, 20 days", 3.1, 1.0, -2.1, (2.72, 11.28, -1.97)),
 )
 
+# Round 4 - sigbot's own idea, not a textbook rule: signals flip with the
+# regime, so test each school WITHIN regimes, 20 days beyond the index. Batch
+# of 8 (two schools x four regimes), bar |t| >= 2.73.
+ROUND_4_BATCH = 8
+ROUND_4 = (
+    Result("Momentum | calm uptrend", 3.2, 2.4, 2.3, (0.61, 0.63, 0.24)),
+    Result("Momentum | volatile decline", -2.1, -2.0, -3.6, (-2.45, -1.27, -2.49)),
+    Result("Momentum | volatile uptrend", 4.7, -4.8, -1.8, (2.36, -1.58, -0.33)),
+    Result("RSI<20 washout | volatile decline", 5.8, -1.8, -0.3, (2.87, -0.79, -0.13)),
+    Result("RSI<20 washout | volatile uptrend", -3.4, 3.5, 3.1, (-2.37, 2.03, 1.67)),
+)
+
 # Written down BEFORE testing, so their results cannot shape their wording.
 PENDING = (
+    "News: does the live edge come from non-earnings news? Score live news "
+    "by event class once 300 checks exist, all three periods where testable",
     "Capitulation only when the stock's whole sector also fell (market-wide "
     "panic, not company news) -> 20-day excess, all three periods",
     "Capitulation position size scaled by how volatile the decline is -> "
@@ -128,5 +142,10 @@ def summary() -> str:
         verdict = "SURVIVES" if survives(r, ROUND_3_BATCH) else "fails"
         e = ", ".join(f"{x:+.2f}%" for x in r.excess_pct)
         lines.append(f"  {verdict:<9} {r.hypothesis:<50} {e}")
+    lines += ["", f"Round 4 - regime-switching, sigbot's own idea (batch of {ROUND_4_BATCH}):"]
+    for r in ROUND_4:
+        verdict = "SURVIVES" if survives(r, ROUND_4_BATCH) else "fails"
+        e = ", ".join(f"{x:+.2f}%" for x in r.excess_pct)
+        lines.append(f"  {verdict:<9} {r.hypothesis:<40} {e}")
     lines += ["", "Pre-registered for the next round:"] + [f"  - {h}" for h in PENDING]
     return "\n".join(lines)

@@ -122,7 +122,11 @@ def _momentum_breakout(row: dict) -> bool:
     # use. It was rejected for dip-buying, where it inverted; for momentum it
     # fits: with the index down, breakouts were few and earned about nothing.
     # Missing index data fails closed.
-    if row.get("index_up") is not True:
+    # Only in a CALM uptrend. By regime, momentum added +0.61% / +0.63% /
+    # +0.24% beyond the index over 20 days (2016-20 / 2021+ / 2009-15) in calm
+    # uptrends, and LOST in volatile declines (-2.45% / -1.27% / -2.49%) —
+    # the mirror image of capitulation. Unknown regime fails closed.
+    if row.get("index_regime") != "up/calm":
         return False
     return close >= hi52 and close > sma50 > sma200 and vol > 1.5 * vol_ma
 
@@ -206,7 +210,7 @@ CANDIDATES: tuple[Candidate, ...] = (
         # in 2020-22 and ahead only since 2023, so it does not clear the money
         # test that demoted the washout setup. Same bar, same verdict.
         pooled_edge_pp=2.5, pooled_n=15175, eras_positive=3,
-        beats_holding=False, payoff_ratio=1.25, style="momentum", hold_days=60),
+        beats_holding=False, payoff_ratio=1.25, style="momentum", hold_days=20),
     Candidate(
         name="hard-down-day", side="BUY",
         plain=("Down more than 8% in one session. Often overdone — but the "

@@ -228,7 +228,12 @@ def market_regime(closes) -> str | None:
 # only setups that ADD return beyond it over the same days. Measured: the
 # dip-buying school added +0.56% a trade since 2016 (t 4.0) and +0.44% on
 # 2009-15 (t 2.5); momentum added nothing.
-SATELLITE_STYLES = frozenset({"reversion"})
+#
+# REGIME-SWITCHING (round 4): momentum is admitted too, because its setup now
+# fires only in calm uptrends, where it added return beyond the index in all
+# three periods. Each school trades only in the regime where it was positive
+# every time: momentum in calm rises, capitulation in volatile declines.
+SATELLITE_STYLES = frozenset({"reversion", "momentum"})
 
 # The leaders' sectors, in Yahoo's naming. Fixed and well known, so written
 # down rather than looked up.
@@ -2067,6 +2072,10 @@ def run_review(settings=SETTINGS) -> None:
     checks, setups = _review(settings.shadow_db, considered, recorded,
                              LOSS_STREAK_PAUSE)
     print(describe(checks, setups))
+    from .calibration import check as _gaps
+    from .calibration import describe as _describe_gaps
+    print()
+    print(_describe_gaps(_gaps(settings.shadow_db)))
     try:
         record_history(checks, setups)
     except Exception as exc:  # noqa: BLE001  # handled: the review still printed; only the history write is lost
@@ -2112,6 +2121,24 @@ def run_promotion(settings=SETTINGS) -> None:
                             worst_hist_month=EXPECTED.worst_month)))
     print()
     print(describe_models())
+
+
+def crypto_exposure(index_regime: str | None) -> str:
+    """Bitcoin exposure from the STOCK market's regime — the liquidity idea.
+
+    Holding Bitcoin except while stocks are in a volatile decline compounded
+    to about x155 over 2016-2026 against x110 for holding, mainly by cutting
+    2022 from -76% to -28%. It is not better every year (it missed most of
+    2023) and rests on few bear markets, so it advises; it does not trade.
+    Unknown regime returns "HOLD" — the default is not to act on no data.
+    """
+    return "STAND ASIDE" if index_regime == "down/volatile" else "HOLD"
+
+
+def run_outcomes(settings=SETTINGS) -> None:
+    """Old strategy against new, year by year, for every model."""
+    from .outcomes import describe
+    print(describe())
 
 
 def run_research(settings=SETTINGS) -> None:
@@ -2663,6 +2690,7 @@ def main(argv: list[str]) -> int:
         "review": run_review,
         "promotion": run_promotion,
         "research": run_research,
+        "outcomes": run_outcomes,
         "reset": run_reset,
         "reset-all": lambda: run_reset(full=True),
     }

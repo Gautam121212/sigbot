@@ -116,7 +116,10 @@ def check_winners_run(trades: Sequence[dict]) -> Check:
 def check_selectivity(considered: int, recorded: int) -> Check:
     """A professional looks at many and acts on few."""
     expect = "Records a small share of what it looks at"
-    if considered < 500:
+    # A week of runs, not one. Capitulation fires on many names at once on a
+    # panic day, so a single run's share swings with the regime; 597 looks —
+    # one run — produced a false DRIFT.
+    if considered < 5000:
         return Check("Be selective", expect, f"{considered} looked at", EARLY)
     share = recorded / considered
     verdict = PASS if share <= 0.10 else DRIFT

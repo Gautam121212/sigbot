@@ -12,7 +12,9 @@ from sigbot.benchmarks import (
 def test_only_setups_that_add_return_beyond_the_index_get_capital():
     """Momentum's gains were the market's: -0.05% beyond the index since 2016,
     -0.83% on 2009-15. Under core and satellite it duplicates the core."""
-    assert runner.SATELLITE_STYLES == {"reversion"}
+    # Regime-switching: momentum fires only in calm uptrends, where it beat
+    # the index in all three periods.
+    assert runner.SATELLITE_STYLES == {"reversion", "momentum"}
     src = inspect.getsource(runner.run_stocks)
     assert "hit.candidate.style not in SATELLITE_STYLES" in src
     assert "recorded, not taken" in src

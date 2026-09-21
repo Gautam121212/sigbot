@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 
 from sigbot.research import (
-    PENDING, REGIME_ROUND, ROUND_3, ROUND_3_BATCH, SWEEP_1, SWEEP_1_BATCH, Result,
+    PENDING, REGIME_ROUND, ROUND_3, ROUND_3_BATCH, ROUND_4, ROUND_4_BATCH, SWEEP_1, SWEEP_1_BATCH, Result,
     bonferroni_t, survives,
 )
 from sigbot.runner import market_regime
@@ -83,3 +83,10 @@ def test_round_3_adopts_only_what_survived():
 def test_the_next_round_is_written_down_before_it_is_run():
     assert len(PENDING) >= 2
     assert all("all three periods" in h for h in PENDING)
+
+
+
+def test_round_4_momentum_survives_only_in_a_calm_uptrend():
+    verdicts = {r.hypothesis: survives(r, ROUND_4_BATCH) for r in ROUND_4}
+    assert verdicts["Momentum | calm uptrend"] is True
+    assert not any(v for h, v in verdicts.items() if h != "Momentum | calm uptrend")

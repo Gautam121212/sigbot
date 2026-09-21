@@ -12,15 +12,16 @@ BREAKOUT = {"close": 110.0, "hi52": 108.0, "sma_50": 100.0, "sma_200": 90.0,
             "volume": 3_000_000, "volume_ma_20": 1_000_000}
 
 
-def test_momentum_only_buys_while_the_index_trends_up():
-    assert scan_row("NVDA", {**BREAKOUT, "index_up": True}) is not None
-    assert scan_row("NVDA", {**BREAKOUT, "index_up": False}) is None
-    assert scan_row("NVDA", BREAKOUT) is None, "unknown index trend fails closed"
+def test_momentum_only_buys_in_a_calm_uptrend():
+    assert scan_row("NVDA", {**BREAKOUT, "index_regime": "up/calm"}) is not None
+    for regime in ("down/volatile", "up/volatile", "down/calm"):
+        assert scan_row("NVDA", {**BREAKOUT, "index_regime": regime}) is None, regime
+    assert scan_row("NVDA", BREAKOUT) is None, "unknown regime fails closed"
 
 
 def test_each_school_holds_for_its_own_period():
     holds = {c.name: c.hold_days for c in CANDIDATES}
-    assert holds["momentum-breakout"] == 60
+    assert holds["momentum-breakout"] == 20
     # Capitulation holds 20 days: a pre-registered test of 5 / 10 / 20 found
     # panic rebounds take weeks (+1.04% / +0.62% / +1.09% at 20 days).
     assert holds["capitulation"] == 20
