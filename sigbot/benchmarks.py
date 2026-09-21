@@ -150,3 +150,75 @@ def table() -> str:
                      f"{b.median_month * 100:>+7.2f}%{b.bad_month_p10 * 100:>+8.2f}%"
                      f"{b.worst_month * 100:>+8.2f}%{b.months_up * 100:>5.0f}%")
     return "\n".join(lines)
+
+
+# ---------------------------------------------------------------------------
+# CORE-AND-SATELLITE — the structure sigbot now uses for stocks.
+#
+# Idle capital is held in the index (the core); strategy trades are the
+# satellite. A trade is therefore judged by what it earns BEYOND the index
+# over the same days on the same money — the test professional allocators
+# apply. Measured on fair data (liquid at the time, $20M+ a day):
+#
+#   excess per trade        2016+            2009-15 (unseen)
+#   dip-buying, 10 days     +0.559% (t 4.0)  +0.435% (t 2.5)
+#   momentum, 60 days       -0.046% (t -0.2) -0.834% (t -5.8)
+#
+# Momentum's gains were the market's, so under this structure it duplicates
+# the core and is never given capital. Dip-buying adds return in both periods.
+#
+# SURVIVORSHIP HAIRCUT. The database omits companies that later went bust,
+# and dip-buying is the strategy most flattered by that: it buys stocks after
+# they fall. A missing bankrupt stock would almost certainly have hit its
+# stop, so if even a few percent of these trades are missing the edge shrinks
+# by roughly 0.2% a trade. The ladder uses the edge AFTER that haircut.
+SURVIVORSHIP_HAIRCUT = 0.002
+
+POSITION_OF_CAPITAL = 0.103     # 1% risk / ~9.7% median stop
+COST_PER_TRADE = 0.00017        # of capital, from the square-root cost model
+
+
+@dataclass(frozen=True)
+class Satellite:
+    name: str
+    excess_per_trade: float     # beyond the index, same days, before costs
+    t_stat: float
+    trades_per_month: float
+
+    def monthly_alpha(self, haircut: float = SURVIVORSHIP_HAIRCUT) -> float:
+        """What the satellite adds to the whole account each month, net."""
+        edge = self.excess_per_trade - haircut
+        return (self.trades_per_month * POSITION_OF_CAPITAL * edge
+                - self.trades_per_month * COST_PER_TRADE)
+
+
+SATELLITE_IN = Satellite("Dip-buying satellite, 2016+", 0.00559, 4.0, 10.5)
+SATELLITE_OOS = Satellite("Dip-buying satellite, 2009-15 (unseen)", 0.00435, 2.5, 9.0)
+
+# The account: the index plus what the satellite adds, after costs and the
+# survivorship haircut.
+ACCOUNT_NET_MONTH = HOLD_INDEX.avg_month + SATELLITE_IN.monthly_alpha()
+
+
+# ---------------------------------------------------------------------------
+# CRYPTO — Bitcoin through GBTC, the longest history reachable (2016 to now,
+# 128 months). GBTC traded at times well above and below the value of its
+# Bitcoin, so it is a close but imperfect stand-in.
+CRYPTO_HOLD = {"avg_month": 0.075, "median_month": 0.0306, "worst_month": -0.413,
+               "growth_x": 109.9, "max_drawdown": -0.899}
+CRYPTO_TREND_200 = {"avg_month": 0.0654, "median_month": 0.0, "worst_month": -0.414,
+                    "growth_x": 95.3, "max_drawdown": -0.801}
+# Short-horizon direction, the past year on eight major coins: breakouts to
+# 20-day highs -4.45% over 20 days (28% won); 15%+ weekly drops -3.64% over
+# 5 days (34% won). No short-term edge in either direction.
+
+
+# ---------------------------------------------------------------------------
+# NEWS — 58,000 earnings reports on liquid US stocks, 2009 to now, measured
+# against the index. The reaction is immediate; there is no reliable drift.
+NEWS_EARNINGS = {
+    # surprise: (reaction day 2016+, 2009-15, next 19 days 2016+, 2009-15)
+    "big beat": (0.0201, 0.0202, -0.0019, -0.0003),
+    "in line": (-0.0118, -0.0088, -0.0020, -0.0003),
+    "big miss": (-0.0324, -0.0294, 0.0100, -0.0065),
+}

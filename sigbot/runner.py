@@ -211,6 +211,12 @@ def _open_book(ledger) -> tuple[int, dict[str, int]]:
     return n, sectors
 
 
+# Core-and-satellite. Idle capital is held in the index; the satellite takes
+# only setups that ADD return beyond it over the same days. Measured: the
+# dip-buying school added +0.56% a trade since 2016 (t 4.0) and +0.44% on
+# 2009-15 (t 2.5); momentum added nothing.
+SATELLITE_STYLES = frozenset({"reversion"})
+
 # The leaders' sectors, in Yahoo's naming. Fixed and well known, so written
 # down rather than looked up.
 LEADER_SECTORS = {
@@ -423,9 +429,13 @@ NEWS_ARCHIVE_MAX = 20000
 
 def _news_provider():
     """The RSS feeds plus GDELT. Either can fail without stopping the other."""
-    from .providers.gdelt import CombinedNewsProvider, GDELTProvider
+    from .providers.gdelt import CombinedNewsProvider
+    from .providers.gkg import GKGProvider
 
-    return CombinedNewsProvider([RSSProvider(), GDELTProvider()])
+    # GDELT through its bulk files, not its search API: the API refused every
+    # request, and its own refusal message tells heavy users to use the bulk
+    # datasets. The files are static downloads with no request quota.
+    return CombinedNewsProvider([RSSProvider(), GKGProvider()])
 
 
 def _source_records(ledger) -> dict[str, tuple[int, float, float]]:
@@ -2054,7 +2064,7 @@ def gather_promotion_evidence(settings=SETTINGS):
     """Everything the promotion ladder judges, from the real records."""
     from .alignment import DRIFT, _stocks_trades, monthly_returns
     from .alignment import run_review as _review
-    from .benchmarks import EXPECTED, HOLD_INDEX, OUT_OF_SAMPLE
+    from .benchmarks import ACCOUNT_NET_MONTH, HOLD_INDEX, SATELLITE_OOS
     from .paper import replay
     from .promotion import Evidence
     from .risk import LOSS_STREAK_PAUSE
@@ -2068,9 +2078,11 @@ def gather_promotion_evidence(settings=SETTINGS):
     months = [r for _k, r in monthly_returns(settings.shadow_db)]
     book = replay(settings.shadow_db, models={"stocks"})
     return Evidence(
-        hist_net_month=EXPECTED.net_avg,
+        # Core-and-satellite: the account is the index plus what the
+        # dip-buying satellite adds, after costs and the survivorship haircut.
+        hist_net_month=ACCOUNT_NET_MONTH,
         index_month=HOLD_INDEX.avg_month,
-        oos_net_month=OUT_OF_SAMPLE.net_avg,
+        oos_net_month=SATELLITE_OOS.monthly_alpha(),
         paper_r=r_values,
         paper_months=months,
         paper_drawdown=float(getattr(book, "max_drawdown", 0.0) or 0.0),
@@ -2207,6 +2219,16 @@ def run_stocks(settings=SETTINGS) -> None:
         if plan is None:
             refused.append(f"{asset.symbol}: no volatility reading, so no "
                            "stop could be placed")
+            decision = None
+        elif hit.candidate.style not in SATELLITE_STYLES:
+            # Core-and-satellite: idle capital sits in the index. Momentum,
+            # measured against the index over the same 60 days, added nothing
+            # since 2016 (-0.05%, t -0.2) and lost to it on 2009-15 (-0.83%,
+            # t -5.8): its gains were the market's. Taking it would only
+            # duplicate the core at extra cost, so it is recorded on paper and
+            # never given capital.
+            refused.append(f"{asset.symbol}: {hit.candidate.name} duplicates "
+                           "the index core — recorded, not taken")
             decision = None
         else:
             decision = decide(

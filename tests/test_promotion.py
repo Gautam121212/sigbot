@@ -35,7 +35,7 @@ def test_todays_evidence_keeps_it_on_paper():
     assert v.stage == PAPER and not v.eligible
     failed = {c.name for c in v.criteria if not c.passed}
     assert "Fair history beats holding the index" in failed
-    assert "Unseen years were profitable after costs" in failed
+    assert "Unseen years added return beyond the index" in failed
 
 
 def test_every_criterion_must_pass_not_most():

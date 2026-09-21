@@ -96,10 +96,11 @@ def paper_to_pilot(ev: Evidence) -> list[Criterion]:
                   ev.hist_net_month > ev.index_month,
                   f"{ev.hist_net_month * 100:+.2f}% a month net, against "
                   f"{ev.index_month * 100:+.2f}% for the index"),
-        Criterion("Unseen years were profitable after costs",
+        Criterion("Unseen years added return beyond the index",
                   ev.oos_net_month > 0.002,
-                  f"{ev.oos_net_month * 100:+.2f}% a month on years never used "
-                  "to choose the strategies"),
+                  f"{ev.oos_net_month * 100:+.2f}% a month beyond the index on "
+                  "years never used to choose the strategy, after costs and "
+                  "the survivorship haircut"),
         Criterion(f"At least {MIN_PAPER_TRADES} closed paper trades",
                   len(ev.paper_r) >= MIN_PAPER_TRADES,
                   f"{len(ev.paper_r)} so far"),
@@ -183,29 +184,34 @@ def evaluate(ev: Evidence, worst_hist_month: float = -0.12) -> Verdict:
 # (stocks chosen by liquidity at the time, costs included), with 2009-15 as
 # years never used to choose anything.
 MODEL_VERDICTS: dict[str, tuple[str, str]] = {
-    "stocks": ("NOT YET",
-               "Improved: momentum held 60 days with the index trending up earns "
-               "+0.258 R a trade since 2016 and +0.092 R on 2009-15 (was +0.043 R "
-               "and about zero). But six positions at 1% risk open only about two "
-               "trades a month, so the account earns about +0.50% a month net "
-               "against +1.00% for the index. Per trade it works; as a whole "
-               "account it still trails."),
+    "stocks": ("CLOSEST",
+               "Core-and-satellite: idle capital in the index, dip-buying trades "
+               "on top. Dip-buying adds +0.56% a trade beyond the index since "
+               "2016 (t 4.0) and +0.44% on 2009-15 (t 2.5); the account beats "
+               "the index (+1.21% vs +1.00% a month) after costs and a "
+               "survivorship haircut. Unseen years add only +0.06% a month after "
+               "that haircut, below the bar. Momentum's gains were the market's "
+               "(-0.05% and -0.83% beyond the index), so it is never given capital."),
     "contagion": ("PROMISING",
-                  "Rebuilt: buying same-sector names that fell with a leader earned "
-                  "+0.52% over five days since 2016 and +1.61% on 2009-15 — stronger "
-                  "on unseen years. Fires only on days a leader falls 4%, so it is "
-                  "small in the account; its live paper record decides it."),
+                  "The rebound after a leader falls earned +0.52% over five days "
+                  "since 2016 and +1.61% on 2009-15 — about +0.3% and +1.4% beyond "
+                  "the index. Fires only on leader-down days; its paper record "
+                  "decides it."),
     "crypto15m": ("NO",
-                  "No edge found in either direction: dip-buying lost (-3.64% over "
-                  "5 days) and breakouts lost more (-4.45% over 20 days) in the one "
-                  "year of data available. Stays on paper."),
-    "news": ("CANNOT JUDGE",
-             "No historical test possible: GDELT refused every request this "
-             "session. Its own record is 80 checks — too few. GDELT is now saved "
-             "as it arrives, so a testable archive builds."),
+                  "No short-term edge either way (breakouts -4.45% over 20 days, "
+                  "dips -3.64% over 5, past year). Over the long run Bitcoin grew "
+                  "about x110 since 2016 with a -90% fall; the 200-day trend rule "
+                  "gave x95 with -80%. The professional approach is a small, sized "
+                  "holding, not short-term calls."),
+    "news": ("NO (AT THIS SPEED)",
+             "58,000 earnings reports: the whole reaction happens on the day "
+             "(+2.0% for big beats, -3.2% for big misses, beyond the index) and "
+             "the following 19 days show no reliable drift. A system reading "
+             "news hours later trades after the move. Kept for learning and "
+             "context; GDELT now arrives through its bulk files."),
     "opportunity": ("NOT A TRADING MODEL",
-                    "One-off situations cannot be backtested as a series. It is a "
-                    "research feed, judged by the intake gate, not the ladder."),
+                    "One-off situations cannot be backtested as a series. A "
+                    "research feed, judged by the intake gate."),
 }
 
 

@@ -113,10 +113,19 @@ a story is widely reported, the informed money has usually acted. Many
 professionals therefore build their rules on how price behaves around news
 rather than on the news itself.
 
-**Earnings specifically.** Prices tend to keep drifting in the direction of
-an earnings surprise for some time after the report — one of the more durable
-patterns in markets. Professionals who trade earnings focus on the size of the
-surprise and on guidance, which often matters more than the reported quarter.
+**Earnings specifically.** For decades, prices kept drifting in the direction
+of an earnings surprise for weeks after the report — "post-earnings drift",
+one of the most studied patterns in markets. **In liquid US stocks it has
+largely gone.** Across 58,000 reports since 2009, measured against the index,
+the whole reaction came on the day — about +2% for a big beat, −3% for a big
+miss — and the following 19 days showed no reliable drift. Once a pattern is
+widely known and traded, it tends to be priced away.
+
+Two lessons follow. **Matching expectations is punished**: reports "in line"
+with forecasts fell about 1% on the day, because the market expected a beat.
+And **speed is the edge**: with the reaction complete within the session, a
+trader who learns of the news hours later is trading after the move. That is
+why professionals who cannot act within the window do not act at all.
 
 **Macro news.** Macro traders — the tradition of Soros, Druckenmiller and
 Tudor Jones — focus on central-bank policy, liquidity and the direction of
@@ -136,6 +145,13 @@ company.
 ---
 
 ### 2 · Stocks & funds
+
+**Core and satellite.** Many professional allocators split a portfolio in
+two: a *core* held in a low-cost index fund, and a *satellite* of active
+trades. The satellite is judged only by what it adds beyond the index over the
+same period on the same money — not by whether it made money, because in a
+rising market almost anything does. A strategy whose gains are simply the
+market's rise adds nothing a fund would not have given for free.
 
 **Funds.** Professionals use funds — index and sector ETFs especially — as
 tools rather than as ideas: to take broad market or sector exposure in one
@@ -221,6 +237,35 @@ buying sharp drops lost too. The trend rule's real value in such a year is
 that it keeps a trader mostly *out*. "Crypto is a momentum market" is a
 tendency across cycles, not a rule that pays in every year.
 
+**Who the serious crypto professionals are, and how they differ.** Not
+memecoin traders but people and firms treating crypto as an asset class.
+Their public approaches fall into a few schools:
+
+- **The liquidity school** — associated with macro investors such as Arthur
+  Hayes, Raoul Pal and Lyn Alden. Bitcoin is treated as the asset most
+  sensitive to global money supply: when central banks and governments
+  expand liquidity, it tends to rise; when liquidity tightens, it falls. They
+  watch central-bank balance sheets, the dollar and real interest rates more
+  than crypto news.
+- **The on-chain school** — analysts such as Willy Woo and firms such as
+  Glassnode read the blockchain itself: how much coin sits at a profit or a
+  loss, what long-term holders are doing, what flows on and off exchanges.
+  Measures like the market value against the price holders actually paid
+  ("realised price") are used to judge when a market is stretched or washed
+  out.
+- **Systematic trend-followers** — managed-futures funds trading Bitcoin and
+  Ether futures on rules, with position sizes scaled to volatility. They make
+  no forecast; they follow the trend and cut when it breaks.
+- **Market-neutral carry traders** — they buy spot Bitcoin and sell futures
+  against it to earn the premium futures often trade at, with no bet on
+  direction.
+- **Long-term holders** — investors such as Michael Saylor's company, which
+  buys and holds Bitcoin as a treasury asset regardless of price swings.
+
+**A cautionary model.** "Stock-to-flow", which projected Bitcoin's price from
+its supply schedule, was widely followed in 2019–21 and then missed badly.
+Professionals treat any single-factor price model with suspicion.
+
 **What they act on.**
 - The trend: price relative to medium- and long-term averages. Many
   professionals are long only while the trend is up and step aside when it
@@ -238,7 +283,10 @@ tendency across cycles, not a rule that pays in every year.
   timing with caution.
 
 **How they protect themselves.** Much smaller position sizes than in
-equities, to account for far larger swings. Wider stops, placed by volatility
+equities, to account for far larger swings — falls of 70–90% have happened in
+every major cycle. Counterparty caution too: the collapse of the FTX exchange
+in 2022 taught the lesson that coins held on an exchange are only as safe as
+the exchange. Wider stops, placed by volatility
 rather than by a fixed percentage. Caution with leverage, which is the most
 common way crypto traders lose everything. Awareness that the market never
 closes, so losses can accrue overnight and at weekends.
@@ -397,6 +445,41 @@ Treat every figure above as an upper bound.
 **What to expect from one month.** Roughly four months in ten lose money. A
 loss is only unusual when it is worse than about −5% — worse than nine
 historical months in ten.
+
+**Core and satellite, measured.** Judged by what each trade added beyond the
+index over the same days — the allocator's test:
+
+| Satellite | Added per trade, 2016+ | 2009–2015 (unseen) |
+|---|---|---|
+| Mean-reversion (buy sharp drops, hold 10 days) | **+0.56%** (t 4.0) | **+0.44%** (t 2.5) |
+| Momentum (buy breakouts, hold 60 days) | −0.05% | −0.83% |
+
+Momentum's gains, however large they looked, were the market's own rise.
+Mean-reversion added return in both periods. Held as a satellite around an
+index core, that is about **+1.2% a month** for the whole account against
++1.0% for the index alone, after costs and after a deduction for bankrupt
+companies missing from the data — a deduction that leaves the unseen years
+adding only about 0.06% a month. Treat it as promising, not proven.
+
+**Crypto, measured** (Bitcoin through the GBTC trust, 2016 to now):
+
+| Approach | Growth | Worst month | Deepest fall |
+|---|---|---|---|
+| Buy and hold | ×110 | −41% | **−90%** |
+| Hold only above the 200-day average | ×95 | −41% | −80% |
+
+The trend rule gave up some growth for a slightly shallower fall; neither
+avoided a catastrophe. Short-term, in the most recent year, neither buying
+breakouts (−4.5% over 20 days) nor buying dips (−3.6% over 5) worked. This is
+why serious crypto investors control risk mainly through *how much* they hold.
+
+**News, measured** (58,000 earnings reports, beyond the index):
+
+| Surprise | Day of the news | Following 19 days |
+|---|---|---|
+| Big beat (+10% or more) | +2.0% | about 0 |
+| In line with forecasts | −1.2% | about 0 |
+| Big miss (−10% or worse) | −3.2% | inconsistent |
 
 ---
 
