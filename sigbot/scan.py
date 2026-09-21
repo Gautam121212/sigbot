@@ -237,6 +237,14 @@ def scan_row(symbol: str, row: dict) -> Hit | None:
     """
     from .setups import context_multiplier
 
+    # Never on crypto. Every candidate here buys washouts, and on five major
+    # coins over the past year a 15%+ weekly drop was followed by -3.64% over
+    # five days (34% won) against -0.39% for any day — crypto behaves as a
+    # momentum market. The stocks job already excludes crypto; this guard
+    # holds the rule wherever scan_row is called from.
+    if symbol.upper().endswith(("-USD", "-USDT", "USDT")):
+        return None
+
     if not liquid_enough(row):
         return None
 
