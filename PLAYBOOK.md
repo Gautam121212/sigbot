@@ -356,27 +356,41 @@ before trusting these links again.
 ## Part IV — What a month should look like
 
 Professionals judge a method over many months, because single months are
-mostly noise. These figures come from trading the two stock schools on liquid
-US large caps from 2016 to now — 129 months — with a small, fixed risk per
-trade (1% of capital), stops scaled to volatility, ten-day holds and about
-twelve trades a month. "Net" subtracts realistic trading costs.
+mostly noise. These figures come from trading the two stock schools on US
+stocks from 2016 to now — 129 months — with a small, fixed risk per trade (1%
+of capital), stops scaled to volatility, ten-day holds and about twelve trades
+a month. Stocks were chosen only if they were liquid **at the time** of each
+trade. "Net" subtracts trading costs.
 
 | Approach | Average month | Net of costs | Typical month | 1 month in 10 | Worst month | Months up |
 |---|---|---|---|---|---|---|
-| Both schools together | +1.19% | **+0.99%** | +1.64% | −5.29% | −11.69% | 61% |
-| Momentum school alone | +0.94% | +0.74% | +1.03% | −6.07% | −12.00% | 57% |
-| Mean-reversion school alone | +0.63% | +0.46% | +0.73% | −4.35% | −11.53% | 59% |
-| Buy and hold the index | +1.00% | +1.00% | +1.21% | −5.02% | −16.61% | 67% |
+| Both schools together | +0.74% | **+0.54%** | +1.19% | −5.41% | −12.00% | 62% |
+| Momentum school alone | +0.73% | +0.53% | +1.41% | −6.18% | −12.00% | 58% |
+| Mean-reversion school alone | +0.11% | −0.07% | +0.52% | −3.99% | −12.00% | 55% |
+| **Buy and hold the index** | +1.00% | **+1.00%** | +1.21% | −5.02% | −16.61% | 67% |
 
-**How to read it.** Run together, the two schools earned about what holding
-the index earned on average, did better in the typical month, and fell a good
-deal less in their worst month. Either school alone trailed the index after
-costs. The value of combining them is not a higher return — it is similar
-returns with shallower falls, because the two schools fail in different years.
+**The years these approaches were never tested on.** Run on 2009–2015 —
+a period neither school was chosen on — the two together earned about
+**+0.20% a month before costs, roughly nothing after**, in years when simply
+holding the index rose strongly.
 
-**What to expect from one month.** Roughly four months in ten lose money even
-for the best combination. A loss is only unusual when it is worse than about
-−5% — worse than nine historical months in ten.
+**How to read it.** After costs, systematic short-term trading of these two
+schools trailed simply holding the index, in both periods. Its one consistent
+advantage was a shallower worst month. This matches a long-standing finding
+in professional practice: most active approaches fail to beat a low-cost
+index after costs, and the ones that appear to often owe it to the period
+tested.
+
+**Two ways historical figures mislead — both found in these very numbers.**
+Choosing stocks by their size *today* uses information nobody had at the time;
+it quietly keeps the companies that did well, and here it inflated the average
+month from +0.74% to +1.19%. And databases often drop companies that later
+went bankrupt, which flatters any strategy that buys stocks after they fall.
+Treat every figure above as an upper bound.
+
+**What to expect from one month.** Roughly four months in ten lose money. A
+loss is only unusual when it is worse than about −5% — worse than nine
+historical months in ten.
 
 ---
 

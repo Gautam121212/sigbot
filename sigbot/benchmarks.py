@@ -16,14 +16,17 @@ volatility. That comes to roughly 0.20% of the account per month.
 
 WHAT THEY SAY
 -------------
-Net of costs, running both schools earns about what simply holding the index
-earned on average — and more in the typical month, with a noticeably smaller
-worst month. Neither school alone keeps up with the index. The case for this
-system is therefore not "beat the market by a wide margin". It is "match the
-market with shallower falls", and only when both schools run together.
+Measured fairly, and after costs, running both schools earned about +0.54% a
+month from 2016 against +1.00% for simply holding the index — and roughly
+nothing in 2009-2015, a period the strategies never saw, while the index rose
+strongly. Neither school alone did better.
 
-A single month tells you almost nothing: even the best combination lost money
-in about four months out of ten.
+The honest conclusion is that on history this system has TRAILED the index,
+not matched it. Its one consistent advantage is a smaller worst month. That is
+worth knowing before any money follows it.
+
+A single month tells you almost nothing: even the combination lost money in
+about four months out of ten.
 """
 from __future__ import annotations
 
@@ -33,6 +36,8 @@ from dataclasses import dataclass
 #   per side  = 0.05% base + 3.23% volatility x sqrt(10.3k / 107M) = 0.082%
 #   per trade = 10.3% of capital x 0.164% round trip             = 0.017%
 #   per month = 12 trades                                          = 0.20%
+# A FLOOR, not an estimate: measured on large caps, while the fair universe
+# includes thinner names that cost more to trade.
 MONTHLY_COST = 0.0020
 
 
@@ -59,16 +64,36 @@ class Benchmark:
         return self.median_month - cost
 
 
-BOTH_SCHOOLS = Benchmark("Both schools together", 129, 0.0119, 0.0164,
-                         -0.0529, -0.1169, 0.612, 12.0)
-MOMENTUM = Benchmark("Momentum alone", 129, 0.0094, 0.0103,
-                     -0.0607, -0.1200, 0.566, 12.0)
-WASHOUT = Benchmark("Washout alone", 123, 0.0063, 0.0073,
-                    -0.0435, -0.1153, 0.593, 10.4)
+# FAIR measurement: stocks chosen by liquidity AT THE TIME of each trade
+# (over 500k shares and $20M traded a day), all US common stocks.
+#
+# The first version chose stocks by their size TODAY, which uses information
+# nobody had when the trade was made: it keeps companies that grew into large
+# caps and drops those that faded. It inflated every figure, and the washout
+# school most of all (+0.63% a month became +0.11%) because a crashed stock
+# that stayed down is exactly what that filter removed. Those numbers were
+# wrong and are gone.
+#
+# Even these are flattered: the database drops companies that later went bust
+# entirely (SVB, Bed Bath & Beyond, First Republic, WeWork are absent), so no
+# filter can include them. Read every figure below as an upper bound.
+BOTH_SCHOOLS = Benchmark("Both schools together", 129, 0.0074, 0.0119,
+                         -0.0541, -0.1200, 0.620, 12.0)
+MOMENTUM = Benchmark("Momentum alone", 129, 0.0073, 0.0141,
+                     -0.0618, -0.1200, 0.581, 12.0)
+WASHOUT = Benchmark("Washout alone", 122, 0.0011, 0.0052,
+                    -0.0399, -0.1200, 0.549, 10.5)
 HOLD_INDEX = Benchmark("Buy and hold the S&P 500", 129, 0.0100, 0.0121,
                        -0.0502, -0.1661, 0.667, 0.0, costs_apply=False)
 
-ALL = (BOTH_SCHOOLS, MOMENTUM, WASHOUT, HOLD_INDEX)
+# OUT OF SAMPLE: 2009-2015, a period neither school was chosen on. The only
+# test here of whether the choice itself was overfitted — and it was not
+# reassuring: the combination earned roughly nothing after costs, while the
+# index rose strongly.
+OUT_OF_SAMPLE = Benchmark("Both schools, 2009-15 (unseen)", 84, 0.0020, 0.0038,
+                          -0.0571, -0.0969, 0.524, 11.7)
+
+ALL = (BOTH_SCHOOLS, MOMENTUM, WASHOUT, OUT_OF_SAMPLE, HOLD_INDEX)
 
 # What sigbot runs now, and so what its live months are held against.
 EXPECTED = BOTH_SCHOOLS

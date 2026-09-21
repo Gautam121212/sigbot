@@ -286,20 +286,29 @@ Dip-buying stays blocked on crypto (−3.64% over five days after a 15% weekly
 drop). The first guard blocked crypto entirely, which also blocked momentum —
 the style the playbook says suits it. It now blocks only dip-buying.
 
-### Monthly growth benchmark — measured, gross and net
+### Monthly growth benchmark — corrected
 
-Sigbot now runs both schools, so its live months are held against **Both
-schools together**: about **+0.99% a month net of costs**, a typical month of
-+1.44% net, a bad month (one in ten) of −5.29%, and 61% of months up. Holding
-the index earned +1.00% on average with a −16.61% worst month.
+**The first benchmark was wrong.** It chose stocks by their size today, which
+used information nobody had at the time of each trade and kept the companies
+that did well. Measured fairly — liquid **at the time**, over $20M traded a
+day — and after costs:
 
-Costs were estimated from the measured median trade — a 9.7% stop, a position
-of 10.3% of capital, $107M of daily trading, 3.23% daily volatility — through
-the same model the paper book uses: about 0.20% of the account a month.
+| | 2016 to now | 2009–15 (never seen) |
+|---|---|---|
+| Sigbot: both schools | **+0.54%** a month | **≈ 0.00%** |
+| Buy and hold the index | +1.00% | ≈ +1.1% |
 
-The monthly review (`runner review`) now includes this: each month is judged
-against the historical range, and after six months the running average is
-checked against the index. **Evidence: TESTED** on 129 months.
+Sigbot trailed the index in both periods. The washout school suffered most
+from the old filter (+0.63% became +0.11% gross) — as predicted, because a
+crashed stock that stayed down is exactly what that filter dropped.
+
+**A limit no query can fix:** Shibui removes companies that later went bust
+(SVB, Bed Bath & Beyond, First Republic, WeWork are absent), so even the fair
+figures are upper bounds, and dip-buying is the most flattered.
+
+**Change made:** live trading now requires $20M a day traded, so it trades
+only the kind of stock that was measured. **Evidence: TESTED**, in-sample and
+out-of-sample.
 
 ### The site: five models
 

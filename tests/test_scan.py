@@ -150,7 +150,7 @@ def test_thin_names_are_never_traded():
     """Names averaging under 500k shares a day returned +1.136% against
     +1.514% for liquid ones on the same entries. Thin names gap harder through
     stops and cost more to fill, so their paper results overstate reality."""
-    row = {"rsi_14": 18.0, "mfi_14": 30.0, "volume_ma_20": 100_000}
+    row = {"rsi_14": 18.0, "mfi_14": 30.0, "volume_ma_20": 100_000, "close": 50.0}
     assert scan_row("THIN", row) is None
     assert scan_row("THICK", {**row, "volume_ma_20": 2_000_000}) is not None
 

@@ -236,6 +236,12 @@ def tier_of(candidate: Candidate) -> str:
 # so the paper result overstates what a real fill would earn.
 MIN_AVG_VOLUME = 500_000
 
+# ...and at least this much traded a day in money. The fair historical test
+# measured only names over $20M a day; 500k shares of a $4 stock is $2M, a
+# name whose results were never measured. Live trading stays inside what was
+# tested.
+MIN_DOLLAR_VOLUME = 20_000_000
+
 
 def liquid_enough(row: dict) -> bool:
     """True when the name trades enough to be entered and exited cleanly.
@@ -244,8 +250,10 @@ def liquid_enough(row: dict) -> bool:
     name whose fill cannot be estimated, and the filter exists precisely for
     the names where fills are the problem.
     """
-    vol = row.get("volume_ma_20")
-    return vol is not None and vol >= MIN_AVG_VOLUME
+    vol, close = row.get("volume_ma_20"), row.get("close")
+    if vol is None or close is None:
+        return False
+    return vol >= MIN_AVG_VOLUME and vol * close >= MIN_DOLLAR_VOLUME
 
 
 # The market-regime filter is deliberately NOT applied, and the reason is a
