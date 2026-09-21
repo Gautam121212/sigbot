@@ -286,6 +286,21 @@ Dip-buying stays blocked on crypto (−3.64% over five days after a 15% weekly
 drop). The first guard blocked crypto entirely, which also blocked momentum —
 the style the playbook says suits it. It now blocks only dip-buying.
 
+### The site: five models
+
+Daily outlook was folded into **Stocks & funds**, and Tested setups into the
+same scan. The site now shows the five models the playbook is organised by:
+News scanner, Stocks & funds, Crypto, Follow-on moves, Opportunities. The
+retired models' records stay in the ledger.
+
+### Costs: estimated as desks estimate them
+
+A flat 0.075% a side is replaced by spread plus square-root market impact,
+using each name's daily traded value and volatility recorded at entry. On a
+20,000 order: a mega cap 0.052% a side (cheaper than before), a mid cap
+0.100%, a thin volatile name 0.377% (five times the old rate). Trades without
+liquidity data keep the old rate. **Evidence: TESTED** end to end.
+
 ### Coverage: the 100-name board is gone
 
 Every model drew from the 100-row watchlist. They now draw from the whole

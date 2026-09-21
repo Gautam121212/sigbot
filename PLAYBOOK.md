@@ -7,7 +7,7 @@ rules**. The only thing taken from sigbot is its list of models, which gives
 the guide its structure:
 
 1. News scanner
-2. Stocks
+2. Stocks & funds
 3. Crypto
 4. Opportunities
 5. Follow-on moves
@@ -120,10 +120,18 @@ company.
 
 ---
 
-### 2 · Stocks
+### 2 · Stocks & funds
 
-Professionals split into two schools that contradict each other, and both
-produce lasting records. Knowing which one a setup belongs to comes first.
+**Funds.** Professionals use funds — index and sector ETFs especially — as
+tools rather than as ideas: to take broad market or sector exposure in one
+trade, to express a view on a whole industry without single-company risk, and
+to hedge. Sector funds are also how many follow rotation between parts of the
+market. The same trend and risk rules below apply to them, with one advantage:
+a fund cannot go bankrupt or gap on a single company's earnings.
+
+**Individual stocks.** Professionals split into two schools that contradict
+each other, and both produce lasting records. Knowing which one a setup
+belongs to comes first.
 
 **The momentum / trend school.** Associated with William O'Neil, Mark
 Minervini, Stan Weinstein and, earlier, Jesse Livermore and Nicolas Darvas.

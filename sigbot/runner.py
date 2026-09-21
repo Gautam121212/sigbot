@@ -1541,8 +1541,11 @@ def run_priority(settings=SETTINGS, budget_minutes: float = 20.0,
     from .priority import describe, plan
 
     verdicts = _job_verdicts(settings)
-    jobs = ["resolve", "news", "contagion", "opportunity", "stocks",
-            "crypto15m", "daily", "profiles"]
+    # Only fast-decaying work. Stocks and follow-on moves read DAILY bars, so
+    # running them every three hours would repeat identical work eight times
+    # a day on 675 names — the likeliest cause of a workflow timeout. They run
+    # once a day on the weekday tick instead.
+    jobs = ["resolve", "news", "opportunity", "crypto15m"]
     queue = plan(jobs, verdicts, budget_seconds=budget_minutes * 60)
     print(describe(queue))
 
@@ -1630,9 +1633,7 @@ def _job_registry() -> dict:
         "opportunity": run_opportunities,
         "stocks": run_stocks,
         "crypto15m": run_crypto15m,
-        "daily": run_daily,
         "profiles": run_profiles,
-        "setups": run_setups,
     }
     thematic = globals().get("run_thematic")
     if thematic is not None:
@@ -1758,9 +1759,20 @@ def run_stocks(settings=SETTINGS) -> None:
         # The recorded score is conviction, so the live record can later be
         # split by tier. The exit plan rides along in expected_move, which is
         # what the paper model sizes from.
+        # Liquidity travels with the trade so the paper book can charge a
+        # realistic cost: daily traded value and daily volatility are the two
+        # inputs to the square-root impact estimate.
+        import json as _json
+        vol_ma = row.get("volume_ma_20") or 0.0
+        atr = row.get("atr_14") or 0.0
+        liquidity = _json.dumps({
+            "adv": round(float(vol_ma) * close, 2) if vol_ma else None,
+            "vol": round(float(atr) / close, 6) if atr and close else None,
+        })
         ledger.record("stocks", asset.symbol, hit.candidate.side,
                       hit.conviction_pct / 100.0,
-                      plan.stop_distance_pct if plan else 0.0, close, 24)
+                      plan.stop_distance_pct if plan else 0.0, close, 24,
+                      payload=liquidity)
 
         if decision and decision.allowed:
             hits.append(hit)
@@ -2096,7 +2108,11 @@ def run_paper() -> None:
 def main(argv: list[str]) -> int:
     cmd = argv[1] if len(argv) > 1 else "daily"
     jobs: dict[str, Callable[[], None]] = {
-        "daily": run_daily,
+        # Daily outlook is now Stocks. The old job name is kept as an alias so
+        # a workflow that still says "daily" runs the scan instead of
+        # silently running a retired model.
+        "daily": lambda: run_stocks(),
+        "daily-legacy": run_daily,
         "news": run_news,
         "contagion": run_contagion,
         "opportunities": run_opportunities,
@@ -2110,7 +2126,7 @@ def main(argv: list[str]) -> int:
         "backtest": run_backtest,
         "horizons": run_horizons,
         "diagnose": run_diagnose,
-        "setups": run_setups,
+        "setups": lambda: run_stocks(),
         "profiles": run_profiles,
         "stocks": run_stocks,
         "priority": run_priority,

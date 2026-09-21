@@ -192,6 +192,8 @@ def test_the_intraday_model_appears_on_the_home_page():
     from sigbot.export_app import MODEL_META
 
     assert "crypto15m" in MODEL_META
-    # Renamed when the schedule moved to a 3-hour horizon; the ledger id stays
-    # crypto15m so the record is continuous.
-    assert "3 hours" in MODEL_META["crypto15m"][0]
+    # The ledger id stays crypto15m so the record is continuous. The horizon
+    # moved from the name to the description when the site was cut to five
+    # models, so the page still says how often it runs.
+    assert MODEL_META["crypto15m"][0] == "Crypto"
+    assert "3 hours" in MODEL_META["crypto15m"][1]

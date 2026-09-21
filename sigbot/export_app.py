@@ -71,18 +71,24 @@ TARGET_CHECKS = {
 }
 
 MODEL_META = {
+    # The five models, in the order a trader works them. Daily outlook was
+    # folded into Stocks: forecasting every name every session scored 51.4%
+    # against a 52.2% base across 141,123 decisions, and the selective scan
+    # replaced it. Tested setups was folded in too — its candidates now live
+    # inside the Stocks scan. Both histories stay in the ledger; they are no
+    # longer shown as separate models.
     "news": ("News scanner", "Scores stories for whether they move an asset"),
-    "daily": ("Daily outlook", "Next-session direction on the watchlist"),
-    "contagion": ("Follow-on moves", "Which names react after a large move elsewhere"),
-    # Model E. Missing from this map meant it recorded thousands of forecasts,
-    # filled Learned and Missed, and never appeared on the home page — the one
-    # model producing most of the evidence was the one you could not see.
-    "crypto15m": ("Crypto, every 3 hours",
-                  "One-hour direction on the most traded pairs"),
+    "stocks": ("Stocks & funds",
+               "Scans every stock and fund, and shows only the ones worth a look"),
+    "crypto15m": ("Crypto", "Direction on the most traded pairs, every 3 hours"),
+    "contagion": ("Follow-on moves",
+                  "Which stocks react after a large move in a market leader"),
     "opportunity": ("Opportunities", "Investments and business gaps, rated on evidence"),
-    "setups": ("Tested setups", "Speaks only when a condition with a measured edge occurs"),
-    "stocks": ("Stocks", "Scans every name and shows only the ones worth a look"),
 }
+
+# Retired from the site, kept in the ledger. Their records still exist and
+# can still be diagnosed; they are simply not shown as models of their own.
+RETIRED_MODELS = ("daily", "setups")
 
 
 @dataclass

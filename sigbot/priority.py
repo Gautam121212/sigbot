@@ -40,9 +40,7 @@ HALF_LIFE_HOURS: dict[str, float] = {
     "contagion": 24.0,      # follow-on moves play out over a session or two
     "opportunity": 48.0,    # listings and event windows run for days
     "stocks": 24.0,         # a price setup is good for about a session
-    "setups": 24.0,
     "crypto15m": 3.0,       # fast-decaying — but see the evidence weighting
-    "daily": 24.0,
     "profiles": 24.0 * 30,  # how a name behaves changes over months
 }
 # `thematic` was listed here with no runner behind it, so the queue would

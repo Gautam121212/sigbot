@@ -1,22 +1,25 @@
-# Make the priority queue drive the 3-hour tick
-
-One edit on github.com. Nothing else changes.
+# Workflow change — two lines on GitHub
 
 1. github.com/Gautam121212/sigbot -> `.github` -> `workflows` -> `sigbot.yml`
 2. Pencil icon (Edit)
-3. Cmd+F, search for:  crypto15m news opportunities
-4. That line lists the jobs the 3-hour tick runs. It looks like:
-
-       jobs="resolve crypto15m news opportunities paper publish"
-
-   Replace ONLY the part inside the quotes so it reads:
-
+3. Cmd+F, search:  crypto15m news opportunities
+   Change the text inside the quotes to:
        jobs="priority-run paper publish"
+4. Cmd+F, search:  daily contagion
+   Change the text inside the quotes to:
+       jobs="stocks contagion resolve paper publish"
+5. Leave the weekly `cycle` line alone.
+6. Commit changes -> Commit directly to the master branch
 
-5. Commit changes -> Commit directly to the master branch
+If a search finds nothing or the line looks different, stop and paste the
+surrounding lines rather than guessing.
 
-Leave the daily (05:00) and weekly lines alone. `priority-run` already
-includes resolve, so it is not repeated. `paper` and `publish` stay after
-it because they must see what the queue produced.
+Why: stocks and follow-on moves read DAILY bars, so they run once a day after
+the close. News, crypto and opportunities decay in hours, so they run every
+3 hours in order of urgency. Scanning 675 names every 3 hours would redo the
+same work eight times a day and is the likeliest cause of a timeout.
 
-To undo: put the original line back. Nothing is migrated or deleted.
+Safe in either order: the old job names `daily` and `setups` now run the
+stocks scan, so an unedited workflow keeps working.
+
+To undo: put the original lines back.

@@ -40,7 +40,9 @@ def report(tmp_path):
     led = ShadowLedger(tmp_path / "s.db")
     for model, sym, p, n in [("contagion", "AVGO", 0.67, 210),
                              ("news", "NVDA", 0.55, 40),
-                             ("daily", "SPY", 0.49, 8)]:
+                             # Stocks replaced Daily outlook as the model
+                             # that covers individual stocks.
+                             ("stocks", "SPY", 0.49, 8)]:
         write_records(led, model, sym, n, p)
     data = build_export(str(tmp_path / "s.db"), str(tmp_path / "p.db"),
                         str(tmp_path / "w.db"))
@@ -89,14 +91,14 @@ def test_strong_record_calls_buy_and_weak_one_holds(report):
     strong = _page(h, "d-contagion-AVGO")
     assert "BUY" in strong and "HOLD if already in" in strong
 
-    thin = _page(h, "d-daily-SPY")
+    thin = _page(h, "d-stocks-SPY")
     assert "NO ACTION" in thin, "8 records must not produce a buy signal"
     assert "HOLD if already in" not in thin
 
 
 def test_thin_evidence_risks_nothing(report):
     h = report[0]
-    spy = _page(h, "d-daily-SPY")
+    spy = _page(h, "d-stocks-SPY")
     assert "0.00%" in spy
     assert "not enough to tell a real edge from luck" in spy or "no better than a coin" in spy
 

@@ -146,7 +146,7 @@ def _resolved_rows(db_path: str, limit: int | None = None) -> list[dict]:
     # default: risk sizing looked implemented, was tested in isolation, and
     # never once ran on a real row.
     q = ("SELECT id,model,symbol,side,entry_price,exit_price,created_at,"
-         "score,expected_move "
+         "score,expected_move,payload "
          "FROM predictions "
          "WHERE hit IS NOT NULL AND entry_price IS NOT NULL "
          "AND exit_price IS NOT NULL "
@@ -154,7 +154,7 @@ def _resolved_rows(db_path: str, limit: int | None = None) -> list[dict]:
     if limit:
         q += f" LIMIT {int(limit)}"
     cols = ("id", "model", "symbol", "side", "entry_price", "exit_price",
-            "created_at", "score", "expected_move")
+            "created_at", "score", "expected_move", "payload")
     with closing(sqlite3.connect(db_path)) as con:
         return [dict(zip(cols, r)) for r in con.execute(q)]
 
@@ -192,6 +192,49 @@ def gated_models(db_path: str) -> set[str]:
 # than a forecast. Adding a model here without making it write a stop would
 # reproduce the 5x sizing error described in replay().
 STOP_SIZED_MODELS = frozenset({"stocks"})
+
+
+# Floor cost of one side of a trade in a liquid large cap: commission plus
+# half the bid-ask spread. The flat 0.075% a side used before was reasonable
+# on average and wrong at both ends.
+BASE_COST_PER_SIDE = 0.0005
+
+# No single side ever costs more than this, however thin the name. Beyond it
+# the estimate stops meaning anything and the trade should not be taken.
+MAX_COST_PER_SIDE = 0.02
+
+
+def trade_cost_per_side(size: float, payload: str | None,
+                        fallback: float) -> float:
+    """What one side of this trade costs, as a fraction of its size.
+
+    Spread plus market impact, where impact follows the square-root rule used
+    across trading desks: it grows with the square root of the order's share
+    of a day's traded value, scaled by how volatile the stock is.
+
+        cost = base + daily_volatility x sqrt(order value / daily traded value)
+
+    A flat cost treated a 20,000 order in Apple and in a thin small cap
+    identically. Widening the scan from 100 names to 675 added many thinner
+    ones, so the flat cost was flattering exactly the names just added — and
+    overcharging the liquid ones, which the square-root rule makes cheaper.
+
+    Trades recorded without liquidity data (everything before this, and every
+    model other than Stocks) keep the old flat cost rather than being
+    assigned an invented one.
+    """
+    import json
+
+    try:
+        info = json.loads(payload) if payload else {}
+    except (TypeError, ValueError):
+        info = {}
+    adv = float(info.get("adv") or 0.0)
+    vol = float(info.get("vol") or 0.0)
+    if adv <= 0 or vol <= 0 or size <= 0:
+        return fallback
+    impact = vol * (size / adv) ** 0.5
+    return min(BASE_COST_PER_SIDE + impact, MAX_COST_PER_SIDE)
 
 
 def replay(db_path: str, starting_cash: float = STARTING_CASH,
@@ -269,7 +312,8 @@ def replay(db_path: str, starting_cash: float = STARTING_CASH,
         else:
             size = book.equity * position_pct
 
-        cost = size * cost_pct_per_side * 2      # entry and exit
+        cost = size * trade_cost_per_side(size, row.get("payload"),
+                                          cost_pct_per_side) * 2  # entry and exit
         pnl = size * gross - cost
 
         book.equity += pnl
