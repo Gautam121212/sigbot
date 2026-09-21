@@ -64,6 +64,10 @@ class Candidate:
     # the default must not flatter anything.
     beats_holding: bool = False
     payoff_ratio: float = 0.0
+    # "reversion" buys weakness; "momentum" buys strength. Recorded because
+    # the two belong to different markets: crypto punishes buying weakness,
+    # and a guard that blocks both styles blocks the one that suits it.
+    style: str = "reversion"
 
     @property
     def conviction_pct(self) -> float:
@@ -89,6 +93,25 @@ def _oversold_money_holding(row: dict) -> bool:
     rsi, mfi = row.get("rsi_14"), row.get("mfi_14")
     return (rsi is not None and rsi < 20.0
             and mfi is not None and mfi >= 10.0)
+
+
+def _momentum_breakout(row: dict) -> bool:
+    """A leader breaking out to a new 52-week high in an established uptrend.
+
+    The momentum school — O'Neil, Minervini, Weinstein — buys strength, the
+    opposite of every other candidate here, which buys weakness. On the same
+    liquid universe it earned more than twice the washout setup's edge
+    (+0.098 R vs +0.043 R) on more than twice the trades, and it FAILED IN THE
+    OPPOSITE YEARS: +0.133 R in the 2020 crash where the washout setup lost
+    -0.258 R, and -0.069 R in 2022 where the washout setup made +0.163 R.
+    Running both is what a desk with both schools on it would do.
+    """
+    raw = [row.get(k) for k in ("close", "hi52", "sma_50", "sma_200",
+                                  "volume", "volume_ma_20")]
+    if not all(raw):
+        return False
+    close, hi52, sma50, sma200, vol, vol_ma = (float(v) for v in raw)  # type: ignore[arg-type]
+    return close >= hi52 and close > sma50 > sma200 and vol > 1.5 * vol_ma
 
 
 def _stretched_below_trend(row: dict) -> bool:
@@ -124,6 +147,20 @@ CANDIDATES: tuple[Candidate, ...] = (
         # Demoted. Accurate across three eras and still worse than holding:
         # +0.599% a trade against +0.659%, payoff 1.08 against 1.66.
         beats_holding=False, payoff_ratio=1.08),
+    Candidate(
+        name="momentum-breakout", side="BUY",
+        plain=("A leading stock breaking out to a new one-year high, in an "
+               "uptrend, on heavy volume. The opposite approach to buying "
+               "dips — and it has tended to work in exactly the years when "
+               "buying dips did not."),
+        condition=_momentum_breakout,
+        # Measured in R with a volatility-scaled stop, liquid US large caps:
+        # 2016-19 +0.074, 2020-22 +0.064, 2023-now +0.137 — positive in all
+        # three eras. Against simply holding it was behind in 2016-19, level
+        # in 2020-22 and ahead only since 2023, so it does not clear the money
+        # test that demoted the washout setup. Same bar, same verdict.
+        pooled_edge_pp=2.5, pooled_n=15175, eras_positive=3,
+        beats_holding=False, payoff_ratio=1.25, style="momentum"),
     Candidate(
         name="hard-down-day", side="BUY",
         plain=("Down more than 8% in one session. Often overdone — but the "
@@ -237,18 +274,18 @@ def scan_row(symbol: str, row: dict) -> Hit | None:
     """
     from .setups import context_multiplier
 
-    # Never on crypto. Every candidate here buys washouts, and on five major
-    # coins over the past year a 15%+ weekly drop was followed by -3.64% over
-    # five days (34% won) against -0.39% for any day — crypto behaves as a
-    # momentum market. The stocks job already excludes crypto; this guard
-    # holds the rule wherever scan_row is called from.
-    if symbol.upper().endswith(("-USD", "-USDT", "USDT")):
-        return None
+    # Crypto never gets a dip-buying setup. On five major coins over the past
+    # year a 15%+ weekly drop was followed by -3.64% over five days (34% won)
+    # against -0.39% for any day: crypto behaves as a momentum market. The
+    # first version of this guard refused crypto outright, which also blocked
+    # the momentum candidate — the one style that suits it.
+    is_crypto = symbol.upper().endswith(("-USD", "-USDT", "USDT"))
 
     if not liquid_enough(row):
         return None
 
-    firing = [c for c in CANDIDATES if c.condition(row)]
+    firing = [c for c in CANDIDATES if c.condition(row)
+              and not (is_crypto and c.style == "reversion")]
     if not firing:
         return None
 

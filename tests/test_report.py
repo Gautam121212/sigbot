@@ -365,25 +365,11 @@ def test_board_explains_the_colours(board):
 
 # ------------------------------------------------- the loop is actually closed
 
-def test_models_run_on_the_board_not_a_fixed_list(tmp_path):
-    """Everything used to iterate UNIVERSE, so the board could rotate all it
-    liked while the models carried on predicting the same 55 names."""
-    from dataclasses import replace as _replace
+def test_models_are_not_capped_at_the_board(tmp_path):
+    """The models see the whole tradable pool, not the board's hundred."""
+    from sigbot.runner import POOL, board_assets
 
-    from sigbot.config import POOL, SETTINGS
-    from sigbot.runner import board_assets
-    from sigbot.watchlist import Watchlist
-
-    st = _replace(SETTINGS, shadow_db=str(tmp_path / "s.db"),
-                  watchlist_db=str(tmp_path / "w.db"))
-    cold = board_assets(st)
-    assert len(cold) == 55, "cold start should fall back to the universe"
-
-    Watchlist(st.watchlist_db).seed(POOL)
-    warm = board_assets(st)
-    assert len(warm) == 100, "once seeded, the models must follow the board"
-    assert {a.symbol for a in warm} != {a.symbol for a in cold}
-
+    assert len(board_assets()) >= len(POOL)
 
 def test_cycle_drops_and_replaces_one_or_two(tmp_path):
     from dataclasses import replace as _replace

@@ -64,25 +64,39 @@ from .types import Asset, DailyForecast
 MAX_STALE_DAYS = 4
 
 
-def board_assets(settings=SETTINGS) -> list[Asset]:
-    """The assets the models actually run on: the live board, not a fixed list.
+def board_assets(settings=SETTINGS) -> list:
+    """Every tradable asset — no 100-name ceiling.
 
-    Everything used to iterate UNIVERSE, which meant the board could rotate all
-    it liked while the models carried on predicting the same 55 names. The board
-    is the source of truth; UNIVERSE is only the fallback for a cold start.
+    This used to return the 100-row watchlist, and nine jobs drew from it, so
+    every model was confined to the same hundred names however wide the market
+    was. The watchlist now only decides what the site highlights; it no longer
+    limits what gets looked at.
+
+    The pool is the scanned universe (universe.json) merged with the built-in
+    list, de-duplicated by symbol. The built-in list is kept so a missing or
+    unreadable universe file degrades to the old coverage instead of to none.
     """
-    try:
-        wl = Watchlist(settings.watchlist_db)
-        held = set(wl.symbols())
-    except Exception as exc:  # noqa: BLE001
-        # An unreadable board silently switched the models onto the default
-        # universe. Same run, different assets, nothing said. Record it.
-        record_skip("board_read", settings.watchlist_db, exc)
-        held = set()
-    if not held:
-        return list(UNIVERSE)
-    by_symbol = {a.symbol: a for a in POOL}
-    return [by_symbol[s] for s in sorted(held) if s in by_symbol]
+    seen: dict[str, object] = {}
+    loaded, note = _load_universe()
+    if note:
+        record_skip("universe", UNIVERSE_FILE, RuntimeError(note))
+    for asset in list(loaded or []) + list(POOL):
+        sym = getattr(asset, "symbol", None)
+        if sym and sym not in seen:
+            seen[sym] = asset
+    return list(seen.values()) or list(UNIVERSE)
+
+
+# Large-cap leaders used as ANCHORS for follow-on moves. A professional reads
+# follow-on moves as leaders dragging their suppliers, customers and peers —
+# big names moving small ones — not as every stock predicting every other. It
+# also bounds the work: anchors x followers stays linear in the universe
+# instead of quadratic, so the whole pool can be followers.
+LEADERS = (
+    "AAPL", "MSFT", "NVDA", "AMZN", "GOOGL", "META", "TSLA", "AVGO",
+    "JPM", "XOM", "UNH", "LLY", "V", "WMT", "COST", "AMD",
+    "NFLX", "ORCL", "CRM", "BA", "CAT", "GS", "INTC", "QCOM",
+)
 
 
 def board_records(settings=SETTINGS) -> dict[str, tuple[int, float]]:
@@ -282,9 +296,11 @@ def run_contagion(messenger=None, market=None, settings=SETTINGS,
 
     end = (datetime.now(timezone.utc) + timedelta(days=1)).strftime("%Y-%m-%d")
 
-    anchors = [a.symbol for a in board_assets(settings)]
+    anchors = list(LEADERS)
+    followers = sorted({a.symbol for a in board_assets(settings)
+                        if getattr(a, "kind", "") == "equity"} | set(CONTAGION_CANDIDATES))
     returns: dict[str, pd.Series] = {}
-    for sym in sorted(set(anchors + CONTAGION_CANDIDATES)):
+    for sym in sorted(set(anchors) | set(followers)):
         try:
             returns[sym] = np.log(
                 market.history(sym, settings.history_start, end)["close"]
@@ -293,7 +309,7 @@ def run_contagion(messenger=None, market=None, settings=SETTINGS,
             record_skip("contagion", sym, exc)
 
     anchors = [a for a in anchors if a in returns]
-    candidates = [c for c in CONTAGION_CANDIDATES if c in returns]
+    candidates = [c for c in followers if c in returns and c not in anchors]
     links = build_network(returns, anchors, candidates, alpha=alpha)
     survivors = [lk for lk in links if lk.tradeable]
     # A run that finds nothing must still be visible as a run. Three of five
@@ -689,9 +705,15 @@ def _load_universe(path: str = UNIVERSE_FILE):
         note = (f"{path} is {age_days:.0f} days old. Listings change; refresh "
                 "it with `python scripts/check_universe.py --write` or the "
                 "screen is choosing from a stale market.")
-    return [SimpleNamespace(symbol=r["symbol"], kind=r["kind"],
-                            name=r.get("name", ""))
-            for r in rows], note
+    # Real Asset objects, not bare namespaces. The news matcher calls
+    # asset.match_terms(), and a namespace without it crashed the whole news
+    # job the first time the universe was widened — and the same crash was
+    # about to ship again when the 100-name board was removed, because the
+    # conversion lived in one caller rather than here at the source.
+    del SimpleNamespace
+    return [Asset(symbol=r["symbol"], name=r.get("name") or r["symbol"],
+                  kind=r.get("kind", "equity"))
+            for r in rows if r.get("symbol")], note
 
 
 def _refresh_universe(path: str = UNIVERSE_FILE,
@@ -1649,8 +1671,10 @@ def run_stocks(settings=SETTINGS) -> None:
     market = YahooProvider()
     end = (datetime.now(timezone.utc) + timedelta(days=1)).strftime("%Y-%m-%d")
 
-    universe = [s for s in UNIVERSE
-                if "-USD" not in s.symbol and s.kind != "crypto"]
+    # The whole pool. This iterated UNIVERSE — 55 names — which made the
+    # "wide" scan narrower than the 100-name board it was built to replace.
+    universe = [a for a in board_assets(settings)
+                if "-USD" not in a.symbol and getattr(a, "kind", "") != "crypto"]
     hits, looked, skipped = [], 0, 0
     refused: list[str] = []
     # The book as the risk rules see it, SEEDED FROM REAL RESULTS.
@@ -1682,6 +1706,11 @@ def run_stocks(settings=SETTINGS) -> None:
                 "rsi_14": float(_rsi(bars["close"]).iloc[-1]),
                 "mfi_14": float(_mfi(bars).iloc[-1]),
                 "sma_200": float(bars["close"].tail(200).mean()),
+                "sma_50": float(bars["close"].tail(50).mean()),
+                # The high of the PREVIOUS year, excluding today, so a close
+                # at a new high can register as one.
+                "hi52": (float(bars["high"].iloc[-253:-1].max())
+                         if "high" in bars and len(bars) > 60 else None),
                 "willr_14": _williams(bars),
                 "atr_14": _atr_last(bars),
                 "volume": float(bars["volume"].iloc[-1]) if "volume" in bars else None,

@@ -1,258 +1,343 @@
-# PLAYBOOK — the desk, as an experienced trader would run it
+# PLAYBOOK — how professional traders work
 
-**Read this first, every session.** It is the reference sigbot is measured
-against: imagine one experienced trader at a desk with several screens,
-running every part of this system by hand. Each section says how that trader
-sees the model, what they act on, how fast, how they protect themselves — and
-what sigbot actually does today.
+A guidebook drawn from many experienced traders rather than one. It describes
+how professionals actually operate — how they choose, when they act, how fast,
+what they watch, and how they behave under pressure. It contains **no sigbot
+rules**. The only thing taken from sigbot is its list of models, which gives
+the guide its structure:
 
-Every claim carries an evidence tag, because this project has learned the
-hard way that sound-sounding professional rules can invert on a particular
-setup:
+1. News scanner
+2. Stocks
+3. Crypto
+4. Opportunities
+5. Follow-on moves
 
-| Tag | Meaning |
+Sigbot's behaviour, measured against this guide, lives in `COMPARISON.md`.
+
+A note on method. Where traders disagree — and they often do — both sides are
+given, because the disagreement is itself the lesson: most professional rules
+were written for one kind of market, and the same rule can be right in one
+and wrong in another.
+
+---
+
+## Part I — What every professional shares
+
+However different their styles, experienced traders converge on a small set of
+habits. These are the parts of the craft that survive a change of strategy.
+
+**They manage the downside first.** Before asking how much a trade can make,
+they decide where it is wrong and how much that costs. Position size follows
+from the distance to that point, not from confidence. Risk per trade is small —
+commonly one to two percent of capital — because a string of losses arrives
+for everyone, and a small risk is what makes the string survivable.
+
+**They cut losers fast and let winners run.** The most repeated rule in
+trading, and the one most often broken. The instinct is the reverse: to take
+a quick profit and to hold a loser hoping it returns. Professionals decide the
+exit before the entry precisely because the decision gets worse once money is
+moving.
+
+**They judge by expectancy, not by win rate.** A method that wins forty
+percent of the time can be excellent if its wins are large; one that wins
+seventy percent can lose money if its losses are larger. They track the
+average outcome per trade, and in risk-sized trading they measure it in units
+of risk ("R").
+
+**They never average down on a losing trade.** Adding to a position that is
+going against them is treated as the classic path to a large loss. Adding to
+winners — pyramiding into strength — is the accepted form.
+
+**They stand aside when they are not in sync.** After a run of losses,
+experienced traders cut size or stop, on the view that the market has changed
+in a way they have not yet understood. Increasing size to win it back is the
+behaviour they are most careful to avoid.
+
+**They respect liquidity and correlation.** They avoid thinly traded names
+whose prices gap and whose spreads eat returns. They treat several positions
+that move together as one large position, because in a sell-off correlations
+rise and diversification disappears when it is needed most.
+
+**They keep records and review them.** Every trade, win or loss, is logged
+with its reason, so that decisions are judged by the process rather than by
+memory — which flatters the wins and forgets the losses.
+
+**They know which market a rule belongs to.** This is the quiet skill under
+all the others. Trend-following rules and mean-reversion rules contradict each
+other, and both are correct in their own setting. A professional knows which
+setting they are in before applying either.
+
+---
+
+## Part II — The five models
+
+### 1 · News scanner
+
+**How professionals see news.** The central question is never whether a story
+is good or bad. It is whether it is *already in the price*. Markets price
+expectations ahead of events, so the reaction to news depends on the gap
+between what happened and what was expected — not on the headline's tone. A
+strong earnings report that merely matches high expectations can send a stock
+down; a poor one that is less bad than feared can send it up.
+
+**"Buy the rumour, sell the news."** Prices often move during the build-up to
+an expected event and reverse when it is confirmed, as those who positioned
+early take profits. Professionals treat this as a tendency, not a law: it
+fails when the news is a genuine surprise, and in euphoric markets good news
+simply brings more buying.
+
+**Three professional responses to a scheduled event:**
+- *Stand aside* through the announcement, avoiding the spike entirely.
+- *Fade* a move that stretched too far ahead of the event, once price
+  confirms the turn.
+- *Follow* only a genuine surprise — when the outcome falls outside the range
+  the market had priced, and price keeps moving in that direction.
+
+**What they watch instead of headlines.** Price and positioning. By the time
+a story is widely reported, the informed money has usually acted. Many
+professionals therefore build their rules on how price behaves around news
+rather than on the news itself.
+
+**Earnings specifically.** Prices tend to keep drifting in the direction of
+an earnings surprise for some time after the report — one of the more durable
+patterns in markets. Professionals who trade earnings focus on the size of the
+surprise and on guidance, which often matters more than the reported quarter.
+
+**Macro news.** Macro traders — the tradition of Soros, Druckenmiller and
+Tudor Jones — focus on central-bank policy, liquidity and the direction of
+interest rates. A recurring theme in their public remarks is that liquidity
+and policy drive markets more than company news, and that the market's
+*reaction* to news tells you more than the news itself.
+
+**Speed.** The fastest of the five. A news edge is measured in minutes to
+hours for most stories. A professional who cannot act inside that window
+usually does not act at all, rather than chasing a move already made.
+
+**Under pressure.** In a panic, correlations jump and news of every kind is
+sold. Professionals shrink size, widen their understanding of what "normal"
+movement is, and avoid mistaking a market-wide wave for news about a single
+company.
+
+---
+
+### 2 · Stocks
+
+Professionals split into two schools that contradict each other, and both
+produce lasting records. Knowing which one a setup belongs to comes first.
+
+**The momentum / trend school.** Associated with William O'Neil, Mark
+Minervini, Stan Weinstein and, earlier, Jesse Livermore and Nicolas Darvas.
+- Buy strength, not weakness: stocks already in established uptrends, near
+  new highs, leading their group.
+- Weinstein's *stage analysis* divides a stock's life into basing, advancing,
+  topping and declining stages; buy in the advancing stage, never in the
+  declining one.
+- Enter on a breakout from a period of tight consolidation, ideally on rising
+  volume, which signals institutional buying.
+- Cut losses quickly and small — O'Neil's well-known discipline is to sell a
+  loser at around seven to eight percent below the purchase price, without
+  exception.
+- Add to winners, never to losers. Livermore's approach was to test with a
+  small position and increase only once the market proved him right.
+- Prefer the market's leaders during healthy markets; step away from long
+  positions when the broad market is in a downtrend.
+
+**The mean-reversion school.** Associated with short-term systematic traders
+such as Larry Connors.
+- Buy short, sharp pullbacks, on the view that brief extremes of selling tend
+  to snap back.
+- Hold for days, not months, and exit on the bounce rather than letting a
+  position run indefinitely.
+- Commonly used only when the longer-term trend is up, so that pullbacks are
+  bought in rising markets — although this filter behaves differently across
+  setups and periods.
+
+**Why the two coexist.** Over different horizons, prices behave differently.
+Over weeks to months, strength tends to persist (momentum). Over a few days,
+extremes tend to partly reverse. A trader using a trend rule on a short-term
+setup, or a short-term rule on a trend, applies the right tool to the wrong
+job.
+
+**Indicators professionals actually use.** Moving averages — especially the
+50-day and 200-day — to define trend; volume to confirm conviction; relative
+strength against the market to find leaders; measures of volatility such as
+average true range to size positions and place stops. The discipline most
+emphasise is to give each indicator a specific job: if it cannot change a
+decision, it does not belong in the process.
+
+**Earnings and events.** Many trend traders avoid holding through earnings
+because a report can gap a stock straight through a stop. Others deliberately
+buy leaders after strong reports, riding the post-earnings drift. The choice
+depends on the strategy — a short-term reversal trader faces a different
+risk from a trend follower.
+
+**Speed.** Hours to weeks, depending on the school. Momentum traders act at
+the breakout and are patient afterwards; mean-reversion traders act fast in
+both directions.
+
+**Under pressure.** In a bear market, trend followers are largely in cash —
+their rules keep them out. Mean-reversion traders often find their best
+opportunities there, because fear produces the deepest, fastest extremes. The
+shared behaviour is size: both shrink positions as volatility rises, so the
+money at risk stays constant even as prices swing harder.
+
+---
+
+### 3 · Crypto
+
+**How professionals see crypto.** A market of its own, not a faster version
+of stocks. It trades around the clock, moves in powerful regimes, and swings
+several times harder than equities. Most professional approaches treat it as
+predominantly a *momentum* market: strength tends to continue, weakness tends
+to continue, and catching falling prices is punished more severely than in
+equities.
+
+**What they act on.**
+- The trend: price relative to medium- and long-term averages. Many
+  professionals are long only while the trend is up and step aside when it
+  breaks.
+- Bitcoin first. Bitcoin sets the tone; most other coins follow it and fall
+  harder when it falls. Professionals watch Bitcoin's direction and its share
+  of the total market before trading anything else.
+- Leverage and positioning: funding rates and open interest in derivatives
+  markets show how crowded one side is. Heavily crowded positioning often
+  precedes sharp moves against the crowd, as leveraged traders are forced out.
+- Liquidity: they concentrate on the largest, most traded coins, because
+  smaller tokens can gap violently and lack buyers in a sell-off.
+- Market cycles: many professionals track multi-year cycles, historically
+  linked to Bitcoin's supply schedule, while treating any single cycle's
+  timing with caution.
+
+**How they protect themselves.** Much smaller position sizes than in
+equities, to account for far larger swings. Wider stops, placed by volatility
+rather than by a fixed percentage. Caution with leverage, which is the most
+common way crypto traders lose everything. Awareness that the market never
+closes, so losses can accrue overnight and at weekends.
+
+**Speed.** Fast. Regime changes can happen in hours, and 24-hour trading
+means there is no overnight pause in which to reconsider.
+
+**Under pressure.** Crypto crashes tend to cascade: falling prices trigger
+forced selling of leveraged positions, which drives prices lower still.
+Professionals do not try to catch these moves. They wait for the forced
+selling to exhaust itself and for the trend to repair before re-entering.
+
+---
+
+### 4 · Opportunities
+
+**How professionals see opportunities.** An opportunity is a specific
+situation with its own window — a listing, a restructuring, a dislocation in
+a sector. The investing tradition here runs through Warren Buffett and Charlie
+Munger, Peter Lynch, and Joel Greenblatt's work on special situations.
+
+**What they look for.**
+- *A margin of safety.* Buffett and Munger's central idea: buy only when the
+  price is well below a conservative estimate of value, so that errors of
+  judgement still leave a cushion.
+- *A circle of competence.* Invest only in businesses you genuinely
+  understand, and know where that circle ends.
+- *Durable advantages.* Businesses with a lasting edge over competitors are
+  worth more than their current profits suggest.
+- *Everyday observation.* Lynch's view that ordinary people can spot good
+  companies early, through products they use and trends they see, before the
+  professionals catch on — provided they then do the research.
+- *Special situations.* Greenblatt's focus on corporate events — spin-offs,
+  restructurings, mergers, companies emerging from difficulty — where forced
+  or indifferent sellers push prices below value.
+
+**IPOs, specifically.** Professionals are sceptical of buying new listings
+on their first day. The first-day gain largely goes to investors allocated
+shares at the offer price, and buyers who chase a hot listing on debut often
+end up supplying the exit for those early holders. Long-run studies of IPOs
+have found that new issues as a group tend to underperform comparable
+established companies over the following years. Professionals who want
+exposure commonly wait: for the first earnings reports, for the price to
+settle, or for the end of the lock-up period when insiders become free to
+sell.
+
+**Timing and windows.** Every opportunity has a clock. A professional works
+out when the window closes and whether the case can be researched in time. An
+opportunity that cannot be understood before it expires is not an
+opportunity.
+
+**Speed.** Slow to decide, often quick to act. Research can take weeks; the
+decision, once made, is carried out promptly.
+
+**Under pressure.** Broad sell-offs are where value-minded professionals find
+the most opportunities, because prices fall below value when others are forced
+or frightened into selling. Their discipline is to have done the research
+beforehand, so that they can act when prices are lowest rather than wait for
+reassurance.
+
+---
+
+### 5 · Follow-on moves
+
+**How professionals see follow-on moves.** When a major company moves hard,
+the effects ripple outward — to its suppliers, its customers, its competitors
+and its sector. Professionals read these links through the underlying
+business, not through price patterns alone.
+
+**What they act on.**
+- *Leaders drag their groups.* A long-standing observation in the momentum
+  tradition is that most of a stock's move comes from the move of its
+  industry group. When the leader of a group breaks out, professionals look
+  for the other strong names in that group to follow.
+- *Supply chains.* A strong order announcement from a manufacturer can lift
+  its component suppliers; a weak one can hit them. Professionals map who
+  supplies whom.
+- *Competitors.* A competitor's trouble can be another's gain — or, when the
+  trouble reflects the whole industry, a warning for all of it.
+- *Sympathy moves.* Stocks in the same theme often move together on one
+  company's news, sometimes justifiably and sometimes not. Professionals judge
+  whether the second company is genuinely affected or simply swept along.
+- *Sector rotation.* Money flows between sectors as the economic cycle turns.
+  Professionals watch which groups are gaining relative strength and which are
+  losing it.
+
+**Timing.** The lag matters. Some effects appear within the same session;
+others take weeks as analysts revise forecasts and investors re-read the
+situation. Professionals distinguish a quick sympathy move, which often fades,
+from a genuine change in a company's prospects, which tends to persist.
+
+**How they protect themselves.** They require a real business link before
+trading on a follow-on idea, because price correlation alone throws up many
+connections that do not hold. They size follow-on trades smaller than direct
+ones, since the second company is exposed to the first only indirectly.
+
+**Under pressure.** In a market-wide sell-off, everything falls together and
+follow-on relationships break down — correlations approach one and every
+stock moves with the market. Professionals recognise that in such periods
+there is no stock-specific signal to read, and wait for the market to settle
+before trusting these links again.
+
+---
+
+## Part III — Behaviour under pressure, across all five
+
+| Situation | What experienced traders do |
 |---|---|
-| **TESTED** | Measured on historical data here; the number is quoted |
-| **SOURCED** | Documented practitioner behaviour, not yet tested on this data |
-| **UNTESTABLE HERE** | No historical data reachable to test it (stated why) |
-| **REJECTED** | A real professional rule that inverted when tested on this setup |
+| A losing streak | Cut size or stop; review before resuming; never increase to recover |
+| A sudden market crash | Reduce exposure; avoid catching falling prices in momentum markets; value investors act only on research done beforehand |
+| Volatility spikes | Shrink positions so money at risk stays constant; widen stops in proportion |
+| A big scheduled event | Stand aside, fade an overextended move, or follow only a genuine surprise |
+| Correlations rise | Treat all positions as one bet; cut total exposure |
+| A position goes against them | Exit at the planned point; never average down |
+| A position goes their way | Let it run; add only to strength; trail the exit up |
+| Doubt or confusion | Do nothing. Not trading is a position |
 
 ---
 
-## The trader's day, in one paragraph
+## Part IV — Where professionals disagree
 
-Before the open they check what changed overnight and what the risk budget
-is: how much is already at risk, whether they are on a losing streak, how far
-below the high-water mark they are. During the session they spend attention
-in order of how fast opportunities decay — breaking news first, then setups,
-then slow themes. They size every position from where they will be proved
-wrong, never from how confident they feel. They cut losers at the stop without
-debate and let winners run. After the close they record every trade, win or
-lose, and review what the record says rather than what they remember.
-
----
-
-## Principles that apply to every model
-
-| Behaviour | Professional | Sigbot | Evidence |
-|---|---|---|---|
-| Judge by money, not accuracy | Expectancy in R | `expectancy.py`; edge quoted as +0.042 R | **TESTED** — the setup that passed every accuracy test lost to holding |
-| Risk per trade | 1% of capital, sized from the stop | `risk.py`, 1% | **TESTED** — conviction sizing put most money where swings were widest |
-| Exits | Stop scaled to volatility; winners run | `exits.py`, 3×ATR, no target | **TESTED** — +0.759% → +1.424% a trade |
-| Stop enforced when scored | Always | Stocks: yes (B84) | **TESTED** end to end |
-| Losing streak | Stand aside after several in a row | Pause after 4 | **TESTED** — −0.559 R after 4 losses vs +0.241 R otherwise |
-| Daily loss limit | Stop for the day | 3% | **SOURCED** |
-| Drawdown | Cut size, never add | Halve past 10%, quarter past 20% | **SOURCED** |
-| Correlated positions | Treat as one bet | ≤2 per sector, ≤6 open | **TESTED** — 67% of a day's signals came from one sector |
-| Capital vs risk | Separate limits | ≤75% deployed | **TESTED** in dry run |
-| Liquidity | Avoid thin names | ≥500k shares/day | **TESTED** — +1.514% vs +1.136% |
-| Attention | Fastest-decaying first | `priority.py` by half-life | **SOURCED**; queue tested |
-| Record everything | Journal wins and losses | Every signal recorded, taken or not | **TESTED** — B36/B52/B68 |
-
----
-
-## 1 · News scanner
-
-**How the trader sees it.** A headline is worth something for hours, often
-minutes. The question is never "is this news good?" — it is "is this already
-in the price?" By the time a story is widely reported, most of the move has
-often happened. They care about *surprise relative to expectation*, not about
-the headline's tone.
-
-**What they act on.** Material, unexpected news about a specific liquid name:
-guidance changes, regulatory decisions, deal announcements. They ignore
-opinion pieces, recaps of moves that already happened, and anything vague.
-
-**Speed.** Fastest of any model. If they cannot act within the first hours,
-they usually do not act at all.
-
-**How they protect themselves.** Small size — news trades gap and reverse.
-They know that a strongly positive story on a stock already up sharply is as
-likely to be sold as bought.
-
-| | Sigbot today | Gap |
+| Question | One view | The other view |
 |---|---|---|
-| Speed | Runs every 3h; first in the priority queue | Adequate for a 24h window, too slow for intraday reactions |
-| Priced-in check | None — scores the story, not the surprise | **Main gap.** Needs the price move *before* the story as a filter |
-| Record | 80 clean checks, 57.5% vs 46.9% chance | Too early to judge; target 300 |
+| Buy strength or weakness? | Momentum: buy leaders at new highs | Mean-reversion: buy short, sharp pullbacks |
+| Hold through earnings? | Avoid the gap risk | Ride the post-earnings drift |
+| Trade against the market trend? | Never — only long in an uptrend | Fear produces the best short-term bargains |
+| Cut losses at a fixed percentage? | Yes, a firm line (e.g. 7–8%) | No, scale the stop to the asset's volatility |
 
-**Evidence:** UNTESTABLE HERE for backtesting — no historical headline archive
-is reachable, so the news model can only be measured forward. The event-study
-file (`events.py`) is the substitute: it records what actually happened after
-past events of each kind.
-
----
-
-## 2 · Daily outlook
-
-**How the trader sees it.** A professional does not forecast every stock
-every day. That is a machine's habit. Most sessions contain nothing worth
-acting on, and forcing an opinion onto them pays costs to find noise.
-
-**What they act on.** Almost nothing, on most days. That is the point.
-
-| | Sigbot today | Gap |
-|---|---|---|
-| Behaviour | Forecast every name every session | **Structural** — fires ~100% of what it looks at (B69) |
-| Record | 45.8% vs 45.0% chance on 1,409 clean checks | No edge |
-| Replacement | `stocks` scan: wide look, narrow record | Already built; daily now serves as the baseline |
-
-**Evidence:** TESTED — 141,123 replayed decisions at 51.4% vs a 52.2% base
-rate. Kept only as the benchmark the selective models are measured against.
-
----
-
-## 3 · Follow-on moves (contagion)
-
-**How the trader sees it.** When a large company moves hard, its suppliers,
-competitors and customers often follow — sometimes the same day, sometimes
-over weeks. A professional knows the specific relationships (who supplies
-whom) rather than relying on price correlation alone.
-
-**What they act on.** A large, news-driven move in a leader, followed by the
-lagging names that have not yet reacted, where the business link is real.
-
-**Speed.** Same session to a few days.
-
-| | Sigbot today | Gap |
-|---|---|---|
-| Link discovery | Statistical lead-lag between prices | Misses business relationships; finds spurious ones |
-| Recording | Every triggered link recorded (fixed, B52) | — |
-| Record | Links scored 37–39% against a ~51% base | **Worse than chance** on this universe |
-
-**Evidence:** TESTED — measured worse than chance. Runs at reduced priority
-because of it. A business-relationship map would be the fix; none is
-reachable here.
-
----
-
-## 4 · Crypto
-
-**How the trader sees it.** Crypto is a momentum market, not a
-mean-reversion one. It trades 24 hours, moves in regimes, and punishes
-bottom-fishing. Professionals follow the trend and size down because the
-swings are several times those of equities.
-
-**What they act on.** Strength above the medium-term trend. They avoid
-catching falling coins.
-
-| | Sigbot today | Gap |
-|---|---|---|
-| Behaviour | 3-hour direction forecasts on many pairs | No edge on 5,135 checks |
-| Setup direction | — | The stocks washout setup must **never** be applied here |
-
-**Evidence:** TESTED this session on five major coins over the past year:
-
-| Condition | 5-day return | Won |
-|---|---|---|
-| Any day | −0.389% | 42.9% |
-| After a 15%+ weekly drop | **−3.636%** | 34.0% |
-| Above 50-day average | −0.101% | 41.5% |
-| Below 50-day average | −0.551% | 43.7% |
-
-Buying crypto washouts lost ten times the baseline. Caveats: one year only
-(the free data tier), five coins, a falling year, 50 washout cases. The
-direction is the finding; the magnitude is not reliable.
-
----
-
-## 5 · Opportunities
-
-**How the trader sees it.** Opportunities are events with windows — listings,
-restructurings, sector dislocations. The trader researches the specific case,
-works out what could go wrong, and caps the downside before thinking about
-the upside. They are sceptical of stories that are too neat.
-
-**IPOs specifically:** the first-day gain goes largely to allocated
-institutions, not to buyers on the open. A professional usually waits for the
-first earnings report or for the post-listing lock-up to expire.
-
-| | Sigbot today | Gap |
-|---|---|---|
-| Output | Cards scored on how much of the question set is answered | Measures completeness, not attractiveness |
-| Dead windows | Removed when expired or unanswerable in time | Adequate |
-| Record | 0 scored checks | Cannot be judged: each opportunity is a one-off |
-
-**Evidence:** UNTESTABLE HERE — single events cannot be backtested as a
-series. Judged on process, not on a hit rate.
-
----
-
-## 6 · Ideas
-
-**How the trader sees it.** An idea is a thesis, not a trade. It becomes a
-trade only when there is an entry, a stop and a reason it is worth acting on
-*now*. Most ideas are kept on a watchlist and never traded.
-
-| | Sigbot today | Gap |
-|---|---|---|
-| Colour | Green when a majority of the case is answered | Completeness, not timing |
-| Expiry | Dropped when the window shuts or cannot finish | Adequate |
-
-**Evidence:** UNTESTABLE HERE, for the same reason as opportunities.
-
----
-
-## 7 · Paper trading
-
-**How the trader sees it.** The paper book is the rehearsal, and it must be
-honest: real costs, real stops, real sizing, losses recorded as fully as
-wins. Its only job is to show whether the process makes money before money is
-at risk.
-
-| | Sigbot today | Gap |
-|---|---|---|
-| Sizing | Risk-based for stop-carrying models, flat otherwise | Fixed (B80) |
-| Stops | Honoured via resolution | Verified end to end this session |
-| Costs | Flat 0.15% a side | Real cost rises with size and spread — overstates results |
-
-**Evidence:** TESTED — a stopped trade replays at its stop for −1.03 R.
-
----
-
-## 8 · Stocks (after paper trading)
-
-**How the trader sees it.** Stocks that have been paper-traded with a
-positive record earn a place on the watchlist. The trader still sizes each
-one from its own stop, still respects the sector cap, and still stands aside
-after a losing streak — a good record on one name is not a reason to break
-the rules on the next trade.
-
-| | Sigbot today | Gap |
-|---|---|---|
-| Selection | Wide scan, two tiers (proven / risky) | Nothing currently proven |
-| Proven bar | Three positive eras AND beats holding | Correctly strict |
-| Risk | All breakers live and seeded from real results (B83) | — |
-
-**Evidence:** TESTED throughout. What reaches the account: +0.042 R a trade,
-+0.241 R outside losing clusters.
-
----
-
-## Professional rules that were tested and REJECTED on this setup
-
-These are sound rules for trend-following. The stocks setup buys washouts,
-the opposite mechanism, and each inverted:
-
-| Rule | Result |
-|---|---|
-| Only go long above the index's 200-day average | Below: +1.575%, above: +1.280% |
-| Don't hold through earnings | Through them: +2.265%, clear: +1.431% |
-| Step aside when volatility explodes | Cut returns; made 2020 worse |
-
-**Note the symmetry:** crypto is a momentum market, so for crypto the
-trend-following rules are the *right* ones. The lesson is not "ignore
-professional rules" — it is "know which kind of market a rule was written
-for".
-
----
-
-## What is still genuinely missing
-
-1. **A priced-in filter for news** — the move before the story.
-2. **A business-relationship map for follow-on moves**, instead of price
-   correlation alone.
-3. **Realistic costs** that rise with size and spread.
-4. **A live record.** Everything above that says TESTED was tested on
-   history. The first months of live results are the only thing that can
-   confirm it.
+The resolution is almost always the same: each view is correct for the
+strategy that produced it. The professional's real skill is recognising which
+strategy — and which market — they are in.

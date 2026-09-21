@@ -96,6 +96,8 @@ def test_the_two_dangerous_handlers_now_record():
     """Both silently changed behaviour: one switched the models onto a
     different universe, the other scored a failed measurement as neutral."""
     runner = (ROOT / "sigbot" / "runner.py").read_text()
-    assert 'record_skip("board_read"' in runner
+    # The board read and its handler were removed with the 100-name ceiling;
+    # the universe read that replaced it records its own failures.
+    assert 'record_skip("universe"' in runner
     screener = (ROOT / "sigbot" / "screener.py").read_text()
     assert 'record_skip("reactivity"' in screener

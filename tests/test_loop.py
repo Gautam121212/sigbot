@@ -28,16 +28,17 @@ from tests.conftest import write_records as _record
 
 # ------------------------------------------------- the models follow the board
 
-def test_models_run_on_the_board_not_a_fixed_list(settings):
-    """A board that rotates while the models predict a fixed universe is not a loop."""
+def test_models_are_not_capped_at_the_board(settings):
+    """The board used to decide what every model looked at, so nine jobs were
+    confined to the same hundred names. It now only decides what the site
+    highlights. The models see the whole tradable pool."""
     wl = Watchlist(settings.watchlist_db)
     wl.seed(POOL)
     on_board = set(wl.symbols())
 
-    assets = board_assets(settings)
-    assert assets, "collectors got an empty list"
-    assert {a.symbol for a in assets} <= on_board
-    assert len(assets) == len(on_board)
+    seen = {a.symbol for a in board_assets(settings)}
+    assert on_board <= seen, "everything on the board is still looked at"
+    assert len(seen) >= len(POOL), "and nothing is capped to the board's size"
 
 
 def test_cold_start_falls_back_to_the_universe(settings):
@@ -45,14 +46,14 @@ def test_cold_start_falls_back_to_the_universe(settings):
     assert board_assets(settings), "cold start left the collectors with nothing"
 
 
-def test_board_changes_change_what_the_models_see(settings):
+def test_board_changes_do_not_hide_names_from_the_models(settings):
+    """Dropping a name from the board is a display decision now. Hiding it
+    from the models as well is what kept them inside a hundred names."""
     wl = Watchlist(settings.watchlist_db)
     wl.seed(POOL)
-    before = {a.symbol for a in board_assets(settings)}
-    victim = sorted(before)[0]
+    victim = sorted(wl.symbols())[0]
     wl.drop(victim, 150, 0.38, 0.47, "test")
-    after = {a.symbol for a in board_assets(settings)}
-    assert victim in before and victim not in after
+    assert victim in {a.symbol for a in board_assets(settings)}
 
 
 # ---------------------------------------------------- outcomes come back round
@@ -159,18 +160,21 @@ def test_replacements_come_from_the_screen_ordering(settings):
     assert out["dropped"]
 
 
-def test_a_dropped_asset_stops_being_predicted(settings):
-    """The full circuit: bad record -> dropped -> models no longer see it."""
+def test_a_dropped_asset_is_recorded_but_still_scanned(settings):
+    """The board still rotates and still keeps its graveyard as a record of
+    what performed badly. What changed is that a dropped name is no longer
+    removed from the market the models can see: whether a signal on it is
+    worth acting on is decided per signal, by the evidence and risk rules,
+    not by a list."""
     led = ShadowLedger(settings.shadow_db)
     wl = Watchlist(settings.watchlist_db)
     wl.seed(POOL)
     victim = sorted(wl.symbols())[0]
     _record(led, "news", victim, 150, 0.36)
 
-    assert victim in {a.symbol for a in board_assets(settings)}
     wl.rotate(board_records(settings), POOL)
-    assert victim not in {a.symbol for a in board_assets(settings)}
     assert victim in {g["symbol"] for g in wl.graveyard()}
+    assert victim in {a.symbol for a in board_assets(settings)}
 
 
 def test_every_forecast_is_recorded_not_only_the_signals(tmp_path):
