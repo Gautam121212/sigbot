@@ -570,10 +570,46 @@ def run_resolve(market=None, settings=SETTINGS) -> None:
     end = (datetime.now(timezone.utc) + timedelta(days=1)).strftime("%Y-%m-%d")
     resolved = 0
 
+    bars_cache: dict[str, object] = {}
+
+    def _daily_bars(symbol: str):
+        if symbol not in bars_cache:
+            provider = market or YahooProvider()
+            bars_cache[symbol] = provider.history(symbol, settings.history_start, end)
+        return bars_cache[symbol]
+
     def _daily_price(symbol: str) -> float:
-        provider = market or YahooProvider()
-        bars = provider.history(symbol, settings.history_start, end)
-        return float(bars["close"].iloc[-1])
+        return float(_daily_bars(symbol)["close"].iloc[-1])
+
+    def _stopped_price(pred_id: int, entry: float, side: str) -> float | None:
+        """The stop price if a stocks trade was stopped out, else None.
+
+        Resolution used to score every trade at the latest close and never
+        looked at what happened on the way. That made the live system a fixed
+        clock, whatever the exit plan said — and the exit plan was the single
+        largest measured improvement: +0.759% a trade on the clock against
+        +1.424% with the ATR stop, on the same 9,246 historical entries.
+
+        Only the stocks model records a real stop distance, so only it is
+        checked. Every other model resolves exactly as before.
+        """
+        plan = ledger.stop_plan(pred_id)
+        if plan is None:
+            return None
+        model, created_at, stop_distance = plan
+        if model not in ("stocks",) or stop_distance < 0.005:
+            return None
+        bars = _daily_bars(symbol_of[pred_id])
+        after = bars[bars.index.astype(str).str[:10] > created_at[:10]]
+        if after.empty or "low" not in after or "high" not in after:
+            return None
+        if side.upper() == "SELL":
+            stop = entry * (1.0 + stop_distance)
+            return stop if float(after["high"].max()) >= stop else None
+        stop = entry * (1.0 - stop_distance)
+        return stop if float(after["low"].min()) <= stop else None
+
+    symbol_of: dict[int, str] = {}
 
     def _intraday_price(symbol: str) -> float:
         from .providers.binance import BinanceProvider
@@ -595,7 +631,15 @@ def run_resolve(market=None, settings=SETTINGS) -> None:
             try:
                 if symbol not in cache:
                     cache[symbol] = price_of(symbol)
-                ledger.resolve(pred_id, cache[symbol])
+                exit_price = cache[symbol]
+                if model_name is None:
+                    symbol_of[pred_id] = symbol
+                    stopped = _stopped_price(pred_id, float(entry), _side)
+                    if stopped is not None:
+                        # Stopped out on the way: the loss is the planned one,
+                        # not whatever the close happened to be at the horizon.
+                        exit_price = stopped
+                ledger.resolve(pred_id, exit_price)
                 resolved += 1
             except Exception as exc:  # noqa: BLE001
                 record_skip("resolve", symbol, exc)
@@ -1609,10 +1653,20 @@ def run_stocks(settings=SETTINGS) -> None:
                 if "-USD" not in s.symbol and s.kind != "crypto"]
     hits, looked, skipped = [], 0, 0
     refused: list[str] = []
-    # The book as the risk rules see it. Positions accumulate within this run
-    # so the sector and count limits actually bind — checking each signal
-    # against an empty book would make every limit vacuous.
-    state = RiskState(equity=100_000.0)
+    # The book as the risk rules see it, SEEDED FROM REAL RESULTS.
+    #
+    # This used to start from RiskState(equity=100_000.0) and never read the
+    # ledger, which left three of the five circuit breakers permanently dead:
+    # loss_streak was always 0, so the streak pause could never fire; day P&L
+    # was always 0, so the daily limit could never fire; peak equity was
+    # never set, so the drawdown throttle could never fire. Each was correct,
+    # tested, and switched off by the one line that built the state.
+    #
+    # The streak pause is the rule that mattered most in the historical
+    # comparison — trades after four straight losses returned -0.559 R — so
+    # a pause that cannot fire was the single most expensive gap in the
+    # system.
+    state = _seed_risk_state(ledger, settings)
     sector_count: dict[str, int] = {}
 
     for asset in universe:
@@ -1665,7 +1719,9 @@ def run_stocks(settings=SETTINGS) -> None:
                           deployed=state.deployed,
                           open_positions=state.open_positions,
                           sector_positions=sector_count.get(sector, 0),
-                          loss_streak=state.loss_streak),
+                          loss_streak=state.loss_streak,
+                          day_pnl_pct=state.day_pnl_pct,
+                          peak_equity=state.peak_equity),
                 entry_price=close, stop_price=plan.stop_price)
             if not decision.allowed:
                 refused.append(f"{asset.symbol}: {decision.reason}")
@@ -1684,7 +1740,9 @@ def run_stocks(settings=SETTINGS) -> None:
                 open_risk=state.open_risk + decision.risk_fraction,
                 deployed=state.deployed + decision.size,
                 open_positions=state.open_positions + 1,
-                loss_streak=state.loss_streak)
+                loss_streak=state.loss_streak,
+                day_pnl_pct=state.day_pnl_pct,
+                peak_equity=state.peak_equity)
             sector_count[sector] = sector_count.get(sector, 0) + 1
 
     # `recorded` counts every signal written down; `signals` counts what risk
@@ -1708,6 +1766,42 @@ def run_stocks(settings=SETTINGS) -> None:
         default_messenger().send(
             "Worth acting on:\n  " + "\n  ".join(
                 f"{h.symbol}: {h.candidate.plain}" for h in proven))
+
+
+def _seed_risk_state(ledger, settings=SETTINGS):
+    """The account as it actually stands, for the risk rules to judge.
+
+    Equity and its high-water mark come from replaying the stocks model's own
+    closed trades, so drawdown is real. The losing streak and today's P&L come
+    from the same record. Anything that cannot be read falls back to a fresh
+    account — the one direction that cannot switch a breaker off by mistake is
+    starting clean, and the failure is recorded so it is not silent.
+    """
+    from datetime import datetime, timezone
+
+    from .paper import replay
+    from .risk import RiskState
+
+    try:
+        book = replay(settings.shadow_db, models={"stocks"})
+        equity = float(book.equity)
+        peak = equity
+        running = float(book.starting_cash)
+        for t in book.trades:
+            running += t.pnl
+            peak = max(peak, running)
+        today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+        day_pnl = sum(t.pnl for t in book.trades
+                      if str(t.opened_at)[:10] == today)
+        return RiskState(
+            equity=equity,
+            peak_equity=max(peak, equity),
+            day_pnl_pct=(day_pnl / equity) if equity else 0.0,
+            loss_streak=ledger.current_loss_streak("stocks"),
+        )
+    except Exception as exc:  # noqa: BLE001  # handled: recorded, and a fresh book is used
+        record_skip("stocks", "risk-state", exc)
+        return RiskState(equity=100_000.0)
 
 
 def _williams(bars) -> float | None:

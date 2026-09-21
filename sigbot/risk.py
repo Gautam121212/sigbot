@@ -53,9 +53,20 @@ RISK_PER_TRADE = 0.01
 # always correlate.
 MAX_PORTFOLIO_HEAT = 0.06
 
-# Consecutive losses that pause new entries. Not a prediction that the next
-# one loses — an admission that the reason for the streak is unknown, and that
-# finding out is cheaper than paying for it.
+# Consecutive losses that pause new entries.
+#
+# Tested rather than assumed, because a similar "step aside" rule — a
+# volatility ceiling — turned out to skip the very rebounds it was meant to
+# protect. This one held, and held strongly. On 6,807 historical entries:
+#
+#     after 4 straight losses    -0.559 R   15.6% won
+#     after 3 of the last 4      -0.145 R   37.1% won
+#     otherwise                  +0.241 R   69.0% won
+#
+# Losses cluster — they arrive together in crash regimes — and the pause is
+# what keeps the account out of the cluster. The measured size is overstated
+# (entries were ordered by date, so a "streak" is often several names failing
+# on the same day), but the direction is not in doubt.
 LOSS_STREAK_PAUSE = 4
 
 # Loss in a single day that ends the day. A limit that stops the session

@@ -153,6 +153,35 @@ class ShadowLedger:
         with closing(sqlite3.connect(self.path)) as con:
             return list(con.execute(q, args))
 
+    def stop_plan(self, pred_id: int) -> tuple[str, str, float] | None:
+        """(model, created_at, stop distance) for one forecast, or None."""
+        with closing(sqlite3.connect(self.path)) as con:
+            row = con.execute(
+                "SELECT model, created_at, expected_move FROM predictions "
+                "WHERE id = ?", (pred_id,)).fetchone()
+        if not row:
+            return None
+        return str(row[0]), str(row[1]), float(row[2] or 0.0)
+
+    def current_loss_streak(self, model: str) -> int:
+        """Consecutive losses among the most recently CLOSED forecasts.
+
+        Counted on resolution order, not entry order: a streak is something
+        the account has actually suffered, and a forecast that has not closed
+        has not lost anything yet. Stops at the first win.
+        """
+        with closing(sqlite3.connect(self.path)) as con:
+            rows = con.execute(
+                "SELECT hit FROM predictions WHERE model = ? "
+                "AND hit IS NOT NULL ORDER BY resolve_after DESC, id DESC "
+                "LIMIT 50", (model,)).fetchall()
+        streak = 0
+        for (hit,) in rows:
+            if hit:
+                break
+            streak += 1
+        return streak
+
     def latest_score(self, model: str, symbol: str) -> float | None:
         """The most recent recorded score for one asset, or None.
 
