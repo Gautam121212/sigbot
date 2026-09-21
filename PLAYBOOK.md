@@ -58,6 +58,12 @@ whose prices gap and whose spreads eat returns. They treat several positions
 that move together as one large position, because in a sell-off correlations
 rise and diversification disappears when it is needed most.
 
+**They use time as well as price to exit.** A trade that has not moved as
+expected within its planned window is closed even if it never touched the
+stop. Capital tied up in a position that is going nowhere is capital not
+available for one that is working, and a thesis that needed a move which has
+not come is usually a thesis that was wrong.
+
 **They keep records and review them.** Every trade, win or loss, is logged
 with its reason, so that decisions are judged by the process rather than by
 memory — which flatters the wins and forgets the losses.
@@ -66,6 +72,15 @@ memory — which flatters the wins and forgets the losses.
 all the others. Trend-following rules and mean-reversion rules contradict each
 other, and both are correct in their own setting. A professional knows which
 setting they are in before applying either.
+
+**A professional's day.** Before the open: what changed overnight, what is
+scheduled, how much capital is already at risk, and whether they are in a
+losing run that calls for smaller size. During the session: attention goes
+first to whatever decays fastest — breaking news — then to setups, then to
+slower themes; positions are managed against their planned exits, not
+against the latest price. After the close: every trade is logged with its
+reason and outcome, and the week's record is reviewed against the plan
+rather than against memory.
 
 ---
 
@@ -289,8 +304,9 @@ business, not through price patterns alone.
 
 **What they act on.**
 - *Leaders drag their groups.* A long-standing observation in the momentum
-  tradition is that most of a stock's move comes from the move of its
-  industry group. When the leader of a group breaks out, professionals look
+  tradition is that a large share of a stock's move — by O'Neil's own
+  estimates, roughly half once industry and sector are counted together —
+  comes from the move of its group. When the leader of a group breaks out, professionals look
   for the other strong names in that group to follow.
 - *Supply chains.* A strong order announcement from a manufacturer can lift
   its component suppliers; a weak one can hit them. Professionals map who

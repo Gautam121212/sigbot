@@ -49,3 +49,25 @@ def test_a_signal_without_volatility_is_never_traded():
     src = inspect.getsource(runner.run_stocks)
     assert "if plan is None:" in src
     assert "no volatility reading" in src
+
+
+def test_the_site_draws_the_board_not_the_whole_pool():
+    """Removing the 100-name ceiling from the models also removed it from the
+    page: 606 charts and a page that grew from about 2 MB to 17 MB."""
+    import inspect
+
+    from sigbot.runner import board_assets, display_assets
+
+    assert len(display_assets()) < len(board_assets())
+    src = inspect.getsource(runner.run_publish)
+    assert "display_assets(settings)" in src and "board_assets(settings)" not in src
+
+
+def test_publish_is_tracked_not_a_helper_inside_it():
+    """The tracker reset failure counts mid-run while publish itself was
+    untracked and carried stale counts between runs."""
+    import inspect
+
+    src = inspect.getsource(runner)
+    assert '@_tracked("publish")\ndef run_publish(' in src
+    assert '@_tracked("publish")\ndef _report_fingerprint(' not in src

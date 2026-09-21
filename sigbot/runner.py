@@ -87,6 +87,30 @@ def board_assets(settings=SETTINGS) -> list:
     return list(seen.values()) or list(UNIVERSE)
 
 
+def display_assets(settings=SETTINGS) -> list:
+    """The names the SITE draws — the highlighted board, not the whole pool.
+
+    `board_assets` answers "what may the models look at?" and now returns all
+    675 tradable assets. Publish used the same function to decide what to
+    CHART, so removing the 100-name ceiling from the models also removed it
+    from the page: 606 charts, and a page that grew from about 2 MB to 17 MB —
+    slow on a phone, larger with every name added, and heading for Cloudflare's
+    25 MB file limit. Two different questions, so two functions.
+
+    Falls back to the old built-in universe when the watchlist is empty, so a
+    fresh install still draws something.
+    """
+    try:
+        held = set(Watchlist(settings.watchlist_db).symbols())
+    except Exception as exc:  # noqa: BLE001
+        record_skip("display", settings.watchlist_db, exc)
+        held = set()
+    pool = {a.symbol: a for a in board_assets(settings)}
+    if not held:
+        return list(UNIVERSE)
+    return [pool[s] for s in sorted(held) if s in pool]
+
+
 # Large-cap leaders used as ANCHORS for follow-on moves. A professional reads
 # follow-on moves as leaders dragging their suppliers, customers and peers —
 # big names moving small ones — not as every stock predicting every other. It
@@ -908,8 +932,14 @@ def run_cycle(messenger=None, market=None, settings=SETTINGS,
     lines.append(result["note"])
     messenger.send("\n".join(lines))
 
+    # The monthly review runs with the weekly cycle. It only reports, so a
+    # failure here must never undo the cycle that has already run.
+    try:
+        run_review(settings)
+    except Exception as exc:  # noqa: BLE001  # handled: recorded; the cycle's work stands
+        record_skip("cycle_review", "alignment", exc)
 
-@_tracked("publish")
+
 def _report_fingerprint(path: str) -> str:
     """Digest of the report, ignoring the timestamp.
 
@@ -1149,6 +1179,11 @@ def _green_count(path: str = "app/data.json") -> int:
                if str(m.get("tier", "")).lower() in ("trade", "green", "alert"))
 
 
+# Tracking belongs on the job, not on a helper inside it. It sat on
+# _report_fingerprint, which runs partway through publishing, so it reset the
+# publish failure counts mid-run — while run_publish itself was untracked and
+# carried stale counts from one run into the next.
+@_tracked("publish")
 def run_publish(settings=SETTINGS, market=None, days: int = 180) -> None:
     """Draw a chart for every asset on the board, then write the app files.
 
@@ -1165,7 +1200,7 @@ def run_publish(settings=SETTINGS, market=None, days: int = 180) -> None:
     # Stocks only. Crypto has its own model on its own clock; forecasting a
     # coin here as well would double-count it — two records for one asset,
     # each too thin to mean anything, at two horizons neither page explains.
-    assets = [a for a in board_assets(settings) if a.kind != "crypto"]
+    assets = [a for a in display_assets(settings) if a.kind != "crypto"]
     bars, kinds = {}, {}
     for a in assets:
         try:
@@ -1641,6 +1676,23 @@ def _job_registry() -> dict:
     return registry
 
 
+def run_review(settings=SETTINGS) -> None:
+    """The monthly review: live behaviour measured against the playbook."""
+    from .alignment import describe, record_history
+    from .alignment import run_review as _review
+    from .risk import LOSS_STREAK_PAUSE
+    from .shadow import ShadowLedger
+
+    considered, recorded, _alerted = ShadowLedger(settings.shadow_db).selectivity("stocks")
+    checks, setups = _review(settings.shadow_db, considered, recorded,
+                             LOSS_STREAK_PAUSE)
+    print(describe(checks, setups))
+    try:
+        record_history(checks, setups)
+    except Exception as exc:  # noqa: BLE001  # handled: the review still printed; only the history write is lost
+        record_skip("review", "history", exc)
+
+
 def run_events(settings=SETTINGS) -> None:
     """Print what each recorded class of event actually did to each asset."""
     from .events import describe
@@ -1768,6 +1820,14 @@ def run_stocks(settings=SETTINGS) -> None:
         liquidity = _json.dumps({
             "adv": round(float(vol_ma) * close, 2) if vol_ma else None,
             "vol": round(float(atr) / close, 6) if atr and close else None,
+            # Which setup fired and in which tier, so each one's live record
+            # can be compared with what its history promised. Without this the
+            # monthly review can only judge the model as a whole, and a setup
+            # quietly decaying would be averaged away by one that works.
+            "setup": hit.candidate.name,
+            "style": hit.candidate.style,
+            "tier": hit.tier,
+            "taken": bool(decision and decision.allowed),
         })
         ledger.record("stocks", asset.symbol, hit.candidate.side,
                       hit.conviction_pct / 100.0,
@@ -2132,6 +2192,7 @@ def main(argv: list[str]) -> int:
         "priority": run_priority,
         "priority-run": lambda: run_priority(execute=True),
         "events": run_events,
+        "review": run_review,
         "reset": run_reset,
         "reset-all": lambda: run_reset(full=True),
     }
