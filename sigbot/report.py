@@ -512,6 +512,8 @@ def _model_page(m: dict) -> str:
     # in its only answerable form.
     if m["id"] == "stocks":
         rows = _scan_rows(m)
+    elif m["id"] == "opportunity" and m.get("sector_cards"):
+        rows = _sector_rows(m)
     else:
         rows = "".join(f"""
     <a href="#d-{_e(m['id'])}-{_e(a['symbol'])}"><div class="card row">
@@ -1636,6 +1638,39 @@ def _scan_note(model: dict) -> str:
   separate stretches of history. Grey means it looks promising but has not
   proved itself — those are traded at a third of the size, on purpose, so the
   record that would settle it actually gets built.</p>"""
+
+
+def _sector_rows(model: dict) -> str:
+    """The 20 industry sector cards on the Opportunities page.
+
+    Each card shows the sector, a readiness bar built from the asymmetry of the
+    ventures inside it, and a count of worth-taking and risky ventures. Risky
+    ones are labelled, never hidden. Tapping through would show the ventures;
+    for now the card summarises them.
+    """
+    cards = model.get("sector_cards") or []
+    if not cards:
+        return ""
+    out = []
+    for c in cards:
+        readiness = float(c.get("readiness", 0) or 0)
+        worth = int(c.get("worth_taking", 0) or 0)
+        risky = int(c.get("risky", 0) or 0)
+        n = len(c.get("ventures", []))
+        colour = "var(--green)" if worth else "var(--faint)"
+        risky_tag = (f'<span class="badge" style="background:#e0a03022;'
+                     f'color:#e0a030">{risky} risky</span>' if risky else "")
+        detail = (f"{worth} worth a small bet, {n} watched" if n
+                  else "no live ventures yet")
+        out.append(f"""
+    <div class="card row">
+      <span class="pip" style="background:{colour};margin-top:0"></span>
+      <div class="grow"><h3>{_e(c.get('sector', ''))}  {risky_tag}</h3>
+        <p class="what-sm">{_e(c.get('blurb', ''))}</p>
+        <p>{_e(detail)}</p>
+        {_bar("readiness", readiness, colour)}</div>
+    </div>""")
+    return "".join(out)
 
 
 def _scan_rows(model: dict) -> str:

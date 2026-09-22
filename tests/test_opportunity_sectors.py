@@ -44,3 +44,25 @@ def test_rows_carry_every_card_and_its_ventures():
     assert len(rows) == 20
     manu = next(r for r in rows if r["sector"] == "Manufacturing")
     assert manu["ventures"] and "verdict" in manu["ventures"][0]
+
+
+def test_the_twenty_cards_render_on_the_opportunity_page(tmp_path, monkeypatch):
+    """The data existed but was never wired into the page — the reason the user
+    saw no cards. The opportunity page must now show all 20."""
+    import json
+
+    from sigbot.export_app import _attach_sectors
+
+    monkeypatch.chdir(tmp_path)
+    from sigbot.opportunity_sectors import build_sector_cards, to_rows
+    from sigbot.ventures import Venture
+    vs = [Venture("Tape plant", "manufacturing factory", 6.0, 0.3, 0.4, True, ())]
+    (tmp_path / "opportunity_sectors.json").write_text(
+        json.dumps({"sectors": to_rows(build_sector_cards(vs))}))
+
+    models = _attach_sectors([{"id": "opportunity"}])
+    assert len(models[0]["sector_cards"]) == 20
+
+    from sigbot.report import _sector_rows
+    html = _sector_rows(models[0])
+    assert "Manufacturing" in html and "readiness" in html

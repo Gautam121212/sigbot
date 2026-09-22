@@ -298,6 +298,26 @@ def _next_tier_above(tier):
     return ladder[i + 1] if i + 1 < len(ladder) else None
 
 
+def _attach_sectors(model_dicts: list[dict]) -> list[dict]:
+    """Put the 20 sector cards onto the opportunity model so the page shows them."""
+    cards = _load_sector_cards()
+    for m in model_dicts:
+        if m.get("id") == "opportunity":
+            m["sector_cards"] = cards
+    return model_dicts
+
+
+def _load_sector_cards(path: str = "opportunity_sectors.json") -> list[dict]:
+    """The 20 opportunity sector cards, if the sectors job has written them."""
+    import json
+    from pathlib import Path
+    try:
+        data = json.loads(Path(path).read_text(encoding="utf-8"))
+        return data.get("sectors", [])
+    except (OSError, ValueError):
+        return []
+
+
 def build_export(db_path: str = "shadow.db", patterns_path: str = "patterns.db",
                  watchlist_path: str = "watchlist.db", max_alerts: int = 40,
                  charts: list[dict] | None = None, is_sample: bool = False,
@@ -477,7 +497,7 @@ def build_export(db_path: str = "shadow.db", patterns_path: str = "patterns.db",
                 "exactly what should happen — it means nothing is being made up."
             ),
         },
-        "models": [m.to_dict() for m in models],
+        "models": _attach_sectors([m.to_dict() for m in models]),
         "board": board,
         "charts": charts or [],
         "opportunities": opportunities or [],
