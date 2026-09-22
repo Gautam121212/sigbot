@@ -2204,6 +2204,106 @@ def crypto_exposure(index_regime: str | None) -> str:
     return "STAND ASIDE" if index_regime == "down/volatile" else "HOLD"
 
 
+# Example ventures, replaced by a real feed once a business-intelligence source
+# is connected. They are shown so the model's shape is visible and testable;
+# each is marked as an example, never presented as a live recommendation.
+EXAMPLE_VENTURES = (
+    ("Tape-manufacturing plant, Philippines",
+     "Low industrial setup cost, government manufacturing incentives, and rising "
+     "regional packaging demand. Capped by a fixed build-out budget.",
+     6.0, 0.30, 0.35, True,
+     ("investment-board reports", "trade-ministry incentive notices")),
+    ("Dubai residential property",
+     "Sustained in-migration, high rental yields, no property tax. Downside "
+     "bounded by the purchase price and holding costs.",
+     3.5, 0.45, 0.45, True,
+     ("property-market indices", "migration statistics")),
+    ("Frontier-market fintech licence",
+     "First-mover licence in an underbanked market — large upside, but "
+     "regulatory approval is uncertain and the licence fee is at risk.",
+     12.0, 0.15, 0.25, True,
+     ("central-bank filings", "regulatory announcements")),
+)
+
+
+# Each example venture carries a country ISO so its macro can be read.
+VENTURE_COUNTRY = {
+    "Tape-manufacturing plant, Philippines": "PHL",
+    "Dubai residential property": "ARE",
+    "Frontier-market fintech licence": "NGA",
+}
+
+
+def run_opportunities_review(settings=SETTINGS) -> None:
+    """Business ventures, judged by asymmetry (barbell), not by a stock edge.
+
+    A venture's evidence_strength is nudged by its country's real macro (World
+    Bank: GDP growth, industrial production) so the label and stake reflect
+    ground truth, not just the stated thesis.
+    """
+    from .macro import evidence_adjustment
+    from .risk_learning import record_risky_bet
+    from .ventures import Venture, evaluate, size_bet
+
+    ventures = []
+    for (t, th, up, p, ev, cap, src) in EXAMPLE_VENTURES:
+        iso = VENTURE_COUNTRY.get(t)
+        macro_reasons: tuple[str, ...] = ()
+        if iso:
+            adj, macro_reasons = evidence_adjustment(iso)
+            ev = max(0.0, min(1.0, ev + adj))
+        ventures.append((Venture(t, th, up, p, ev, cap, tuple(src) + macro_reasons)))
+    for v in evaluate(ventures):
+        bet = size_bet(100_000.0, v)
+        print(f"  {v.verdict():<28} {v.title}")
+        print(f"       EV {v.ev_multiple:+.1f}x  upside {v.upside_multiple:.0f}x  "
+              f"~{v.p_success:.0%} odds  suggested stake ${bet:,.0f}")
+        for r in v.risk_reasons():
+            print(f"       - {r}")
+        for source in v.sources:
+            if any(k in source for k in ("GDP", "production", "economy", "neutral", "unavailable")):
+                print(f"       macro: {source}")
+        if v.risky and v.worth_taking:
+            # Every risky venture taken is logged to the risk loop (capped
+            # downside, small stake) so the system learns which risks pay.
+            record_risky_bet("opportunity", "venture-thin-evidence",
+                              downside_capped=v.downside_capped,
+                              amount_risked_pct=bet / 100_000.0,
+                              outcome_multiple=None, note=v.title)
+
+
+def run_sizing(settings=SETTINGS) -> None:
+    """Fractional-Kelly position size for each model, from its live record.
+
+    Shows the profitable gate at work: a model with a positive live edge gets
+    a small, capped stake; a negative or too-thin one gets zero. Nothing is
+    blocked outright — risk is admitted in proportion to what it pays.
+    """
+    from .sizing import size_from_record
+    from .alignment import _stocks_trades
+
+    trades = _stocks_trades(settings.shadow_db)
+    rs = [t["r"] for t in trades if t.get("r") is not None]
+    wins = [r for r in rs if r > 0]
+    losses = [-r for r in rs if r < 0]
+    if len(rs) < 20:
+        print(f"  stocks: {len(rs)} closed trades — too few to size (need 20).")
+        return
+    avg_win = sum(wins) / len(wins) if wins else 0.0
+    avg_loss = sum(losses) / len(losses) if losses else 0.0
+    s = size_from_record(len(wins), len(losses), avg_win, avg_loss)
+    print(f"  stocks: {len(wins)}W / {len(losses)}L, avg win {avg_win:+.2f}R "
+          f"avg loss -{avg_loss:.2f}R")
+    print(f"    -> {'TAKE' if s.take else 'NO BET'}: risk {s.risk_fraction:.2%} "
+          f"of capital  ({s.reason})")
+
+
+def run_risk_loop(settings=SETTINGS) -> None:
+    """What the risk loop has learned: which risks, sized small, have paid."""
+    from .risk_learning import describe
+    print(describe())
+
+
 def run_outcomes(settings=SETTINGS) -> None:
     """Old strategy against new, year by year, for every model."""
     from .outcomes import describe
@@ -2772,6 +2872,9 @@ def main(argv: list[str]) -> int:
         "promotion": run_promotion,
         "research": run_research,
         "outcomes": run_outcomes,
+        "opportunities-review": run_opportunities_review,
+        "risk-loop": run_risk_loop,
+        "sizing": run_sizing,
         "reset": run_reset,
         "reset-all": lambda: run_reset(full=True),
     }

@@ -94,8 +94,8 @@ done
 # the whole conflict loop.
 for f in shadow.db patterns.db watchlist.db opportunities.json universe.json \
          paper.json themes.json dead_symbols.json alignment_history.json \
-         learning_log.jsonl sectors.json \
-         news_archive.jsonl gkg_state.json; do
+         learning_log.jsonl \
+         news_archive.jsonl gkg_state.json risk_loop.jsonl; do
   git add -f "$f" 2>/dev/null || true
 done
 git add -A

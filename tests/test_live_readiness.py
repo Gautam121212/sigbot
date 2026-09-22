@@ -100,5 +100,7 @@ def test_the_losing_follow_bet_is_off():
 def test_the_new_memory_files_reach_the_github_runs():
     from pathlib import Path
     ship = (Path(__file__).resolve().parents[1] / "scripts" / "ship.sh").read_text()
-    for f in ("sectors.json", "learning_log.jsonl", "dead_symbols.json"):
+    # State files the GitHub runs must persist. sectors.json was removed when
+    # the stocks-by-industry model was scrapped; risk_loop.jsonl replaced it.
+    for f in ("learning_log.jsonl", "dead_symbols.json", "risk_loop.jsonl"):
         assert f in ship, f
