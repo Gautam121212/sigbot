@@ -162,6 +162,18 @@ def forecast(symbol: str, bars: pd.DataFrame,
         reason = ("recorded but not tradeable: " + reason
                   + " — right and unprofitable is worse than nothing")
 
+    # Leverage-crowding filter (confirmed on a year of major coins, both halves
+    # independently): when volatility is rising while price is flat, longs fell
+    # -1.29% over the next 5 days vs +0.35% when calm. So a BUY is stood aside
+    # when crowded — the forecast is still RECORDED (for the learning loop),
+    # just marked not tradeable. Sells are unaffected: crowding favours them.
+    from .crypto_signals import read_crowding
+
+    crowd = read_crowding(close.tolist())
+    if crowd.crowded and side == "BUY":
+        tradeable = False
+        reason = "stood aside — " + crowd.reason
+
     return IntradayForecast(symbol, side, score, expected,
                             float(close.iloc[-1]), horizon, reason, tradeable)
 

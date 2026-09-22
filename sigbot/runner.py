@@ -622,7 +622,14 @@ def run_news(messenger=None, settings=SETTINGS, hours: int = 12) -> None:
         # reliably wrong.
         import json as _json
         src = s.articles[0].source if s.articles else ""
-        ledger.record("news", symbol, s.side, s.raw_score, None, entry, 24,
+        # The score column is a 0..1 CONFIDENCE, as for every other model.
+        # raw_score is a signed -1..1 impact (sign = direction), and direction
+        # already lives in `side` — so store its MAGNITUDE as confidence.
+        # Storing the signed value put negative scores in the ledger (down to
+        # -0.51), which the data-quality audit flagged: every probability-based
+        # measure on news was reading a malformed column.
+        confidence = min(1.0, abs(float(s.raw_score)))
+        ledger.record("news", symbol, s.side, confidence, None, entry, 24,
                       payload=_json.dumps({"source": src}))
     messenger.send("\n\n".join(format_news(s) for s in signals))
 
@@ -888,6 +895,23 @@ def run_opportunities(messenger=None, settings=SETTINGS, hours: int = 24) -> Non
                 listings.append(card)
     except Exception as exc:  # noqa: BLE001
         record_skip("listings", "scan", exc)
+
+    # The 20 industry sector cards — the top layer the page shows. Ventures
+    # (from the example set until a live venture feed exists) are grouped into
+    # sectors; each card holds its ventures and a readiness from their asymmetry.
+    try:
+        import json as _json
+
+        from .opportunity_sectors import build_sector_cards, to_rows
+        from .ventures import Venture
+        ventures = [Venture(t, th, up, pw, ev, cap, tuple(src))
+                    for (t, th, up, pw, ev, cap, src) in EXAMPLE_VENTURES]
+        Path("opportunity_sectors.json").write_text(
+            _json.dumps({"generated_at": datetime.now(timezone.utc).isoformat(),
+                         "sectors": to_rows(build_sector_cards(ventures))}, indent=1),
+            encoding="utf-8")
+    except Exception as exc:  # noqa: BLE001  # handled: recorded; the news cards still write
+        record_skip("opportunity", "sector-cards", exc)
 
     _write_opportunity_store(cards, candidates, listings)
     ShadowLedger(settings.shadow_db).log_run(

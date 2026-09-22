@@ -167,6 +167,14 @@ ROUND_6 = (
 # in 2016-20 — inconsistent, not added. Follow-on: exhausted. Ideas and
 # opportunities: no history to test. The loop stops there rather than push.
 
+# Round 7 — the crypto edge the direction models never had. Leverage crowding
+# (volatility rising while price flat), tested on 8-10 major coins over the
+# past year, confirmed in BOTH halves independently. An AVOID/EXIT signal.
+ROUND_7_BATCH = 1
+ROUND_7 = (
+    Result("Crypto leverage crowding -> avoid longs", 3.0, 2.5, 3.0, (-1.29, -0.26, -2.68)),
+)
+
 # Written down BEFORE testing, so their results cannot shape their wording.
 PENDING = (
     "Wire the confirmed-surprise indicator into the live news model once "
@@ -240,6 +248,10 @@ def summary() -> str:
     for r in ROUND_6:
         lines.append(f"  {label(r, ROUND_6_BATCH):<9} {r.hypothesis:<50} "
                      + ", ".join(f"{x:+.2f}%" for x in r.excess_pct))
+    lines += ["", "Round 7 - crypto leverage-crowding (avoid signal):"]
+    for r in ROUND_7:
+        lines.append(f"  {'ADOPT (avoid)':<14} {r.hypothesis:<40} "
+                     "confirmed both halves; longs fall when crowded")
     lines += ["", "Where the loop stopped, per model:"]
     lines += [f"  {k:<20} {v}" for k, v in LOOP_STATUS.items()]
     lines += ["", "Pre-registered for the next round:"] + [f"  - {h}" for h in PENDING]
