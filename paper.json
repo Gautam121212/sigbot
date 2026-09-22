@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-22T10:34:04.793118+00:00",
+  "generated_at": "2026-09-22T11:05:47.909543+00:00",
   "starting_cash": 100000.0,
   "equity": 110819.05284320074,
   "total_pnl": 10819.052843200741,
@@ -31,8 +31,8 @@
     "contagion",
     "stocks"
   ],
-  "benchmark_return": 0.1081905284320075,
-  "benchmark_trades": 501,
+  "benchmark_return": 0.10912627888861337,
+  "benchmark_trades": 502,
   "recent_trades": [
     {
       "prediction_id": 11499,
