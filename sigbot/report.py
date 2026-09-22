@@ -893,6 +893,7 @@ def build_report(data: dict) -> str:
   <p class="note">{_e(data.get('disclaimer', ''))}</p>
 </div></div>
 {"".join(_model_page(m) for m in data["models"])}
+{"".join(_sector_detail_pages(m) for m in data["models"] if m.get("id") == "opportunity")}
 
 <!-- The board is backend-only. It still rotates the watchlist and keeps its
      graveyard; it no longer has a page. With the 100-name ceiling gone it was
@@ -1651,7 +1652,9 @@ def _sector_rows(model: dict) -> str:
     cards = model.get("sector_cards") or []
     if not cards:
         return ""
-    out = []
+    out = ['<p class="what-sm" style="padding:0 4px 8px">The bar is APPEAL — '
+           'how attractive a sector\'s ventures are by expected value. It is '
+           'not a probability and not a predicted move.</p>']
     for c in cards:
         readiness = float(c.get("readiness", 0) or 0)
         worth = int(c.get("worth_taking", 0) or 0)
@@ -1660,17 +1663,98 @@ def _sector_rows(model: dict) -> str:
         colour = "var(--green)" if worth else "var(--faint)"
         risky_tag = (f'<span class="badge" style="background:#e0a03022;'
                      f'color:#e0a030">{risky} risky</span>' if risky else "")
+        # Plain-language, not a percentage that reads as a prediction. The
+        # "appeal" bar is how attractive the ventures inside are (their
+        # expected value), NOT a probability and NOT a predicted move.
         detail = (f"{worth} worth a small bet, {n} watched" if n
                   else "no live ventures yet")
+        slug = _slug(c.get("sector", ""))
         out.append(f"""
-    <div class="card row">
+    <a href="#sec-{slug}"><div class="card row">
       <span class="pip" style="background:{colour};margin-top:0"></span>
       <div class="grow"><h3>{_e(c.get('sector', ''))}  {risky_tag}</h3>
         <p class="what-sm">{_e(c.get('blurb', ''))}</p>
         <p>{_e(detail)}</p>
-        {_bar("readiness", readiness, colour)}</div>
-    </div>""")
+        {_bar("appeal", readiness, colour)}</div>
+      <span class="chev">&rsaquo;</span></div></a>""")
     return "".join(out)
+
+
+def _slug(text: str) -> str:
+    """A URL-safe id fragment from a sector or venture name."""
+    import re
+    return re.sub(r"[^a-z0-9]+", "-", text.lower()).strip("-")[:40]
+
+
+def _sector_detail_pages(model: dict) -> str:
+    """One page per sector, listing its ventures as clickable rows, plus one
+    page per venture with the full reasoning — mirroring the stocks drill-down.
+    """
+    cards = model.get("sector_cards") or []
+    pages = []
+    for c in cards:
+        sector = c.get("sector", "")
+        slug = _slug(sector)
+        ventures = c.get("ventures", [])
+        if ventures:
+            rows = []
+            for v in ventures:
+                vslug = _slug(v.get("title", ""))
+                vcol = "var(--green)" if "WORTH" in v.get("verdict", "") else "var(--faint)"
+                vtag = ('<span class="badge" style="background:#e0a03022;'
+                        'color:#e0a030">risky</span>' if v.get("risky") else "")
+                rows.append(f"""
+    <a href="#ven-{slug}-{vslug}"><div class="card row">
+      <span class="pip" style="background:{vcol};margin-top:0"></span>
+      <div class="grow"><h3>{_e(v.get('title', ''))}  {vtag}</h3>
+        <p>{_e(v.get('verdict', ''))} &middot; upside {_e(str(v.get('upside', '')))}x</p></div>
+      <span class="chev">&rsaquo;</span></div></a>""")
+            body = "".join(rows)
+        else:
+            body = ('<div class="card"><p>No live ventures in this sector yet. '
+                    'It stays quiet until a real opportunity is found.</p></div>')
+        pages.append(f"""
+<div class="page" id="sec-{slug}"><div class="wrap">
+  <a class="back" href="#m-opportunity">&lsaquo; Opportunities</a>
+  <div class="card"><h1>{_e(sector)}</h1>
+    <p style="margin-bottom:10px">{_e(c.get('blurb', ''))}</p>
+    <p class="what-sm">{c.get('worth_taking', 0)} worth a small bet, {len(ventures)} watched.</p>
+  </div>
+  {body}
+</div></div>""")
+        # A full page per venture.
+        for v in ventures:
+            vslug = _slug(v.get("title", ""))
+            reasons = "".join(f"<li>{_e(r)}</li>" for r in v.get("reasons", [])) or "<li>—</li>"
+            sources = "".join(f"<li>{_e(x)}</li>" for x in v.get("sources", [])) or "<li>no source recorded</li>"
+            vcol = "var(--green)" if "WORTH" in v.get("verdict", "") else "var(--faint)"
+            pages.append(f"""
+<div class="page" id="ven-{slug}-{vslug}"><div class="wrap">
+  <a class="back" href="#sec-{slug}">&lsaquo; {_e(sector)}</a>
+  <div class="card call"><div class="sig" style="color:{vcol}">{_e(v.get('verdict', ''))}</div>
+    <div class="sub">{_e(v.get('title', ''))}</div></div>
+  <p class="lead">{_e(v.get('thesis', ''))}</p>
+
+  <h4>The asymmetry</h4>
+  <div class="card"><dl>
+    <dt>Upside if it works</dt><dd>{_e(str(v.get('upside', '')))}x the amount risked</dd>
+    <dt>Expected value</dt><dd>{_e(str(v.get('ev', '')))}x</dd>
+    <dt>Downside</dt><dd>capped and survivable</dd>
+  </dl>
+  <p style="margin-top:10px">A bet is worth a small stake when the downside is
+  bounded and the expected value is positive — regardless of how likely it is.
+  You do not need it to be certain; you need being wrong to be survivable.</p></div>
+
+  <h4>Why it is risky</h4>
+  <div class="card"><ul>{reasons}</ul></div>
+
+  <h4>Where the evidence comes from</h4>
+  <div class="card"><ul>{sources}</ul>
+    <p style="margin-top:10px">This is not a forecast. It is a case someone
+    could make, with the parts that are settled separated from the parts that
+    are not.</p></div>
+</div></div>""")
+    return "".join(pages)
 
 
 def _scan_rows(model: dict) -> str:

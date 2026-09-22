@@ -65,4 +65,51 @@ def test_the_twenty_cards_render_on_the_opportunity_page(tmp_path, monkeypatch):
 
     from sigbot.report import _sector_rows
     html = _sector_rows(models[0])
-    assert "Manufacturing" in html and "readiness" in html
+    assert "Manufacturing" in html and "appeal" in html.lower()
+
+
+
+def test_sector_cards_link_to_detail_pages_and_ventures(tmp_path, monkeypatch):
+    """Cards must OPEN, like the stocks model — sector -> ventures -> full
+    reasoning. They were static divs before (the user could not click them)."""
+    import json
+
+    from sigbot.export_app import _attach_sectors
+    from sigbot.report import _sector_detail_pages, _sector_rows
+
+    monkeypatch.chdir(tmp_path)
+    from sigbot.opportunity_sectors import build_sector_cards, to_rows
+    from sigbot.ventures import Venture
+    vs = [Venture("Tape plant", "manufacturing factory", 6.0, 0.3, 0.4, True, ())]
+    (tmp_path / "opportunity_sectors.json").write_text(
+        json.dumps({"sectors": to_rows(build_sector_cards(vs))}))
+    model = _attach_sectors([{"id": "opportunity"}])[0]
+
+    rows = _sector_rows(model)
+    assert 'href="#sec-' in rows, "sector cards must be clickable"
+
+    pages = _sector_detail_pages(model)
+    assert 'id="sec-manufacturing"' in pages, "a sector detail page must exist"
+    assert 'href="#ven-' in pages, "the venture inside must be clickable"
+    assert 'id="ven-manufacturing' in pages, "a venture detail page must exist"
+    assert "The asymmetry" in pages, "the venture page shows its reasoning"
+
+
+def test_the_bar_is_labelled_appeal_not_a_probability(tmp_path, monkeypatch):
+    """The bar read as a prediction (35% next to a 1% move). It is expected
+    value on a 0-100 scale — labelled 'appeal', with a note that it is not a
+    probability."""
+    import json
+
+    from sigbot.export_app import _attach_sectors
+    from sigbot.report import _sector_rows
+
+    monkeypatch.chdir(tmp_path)
+    from sigbot.opportunity_sectors import build_sector_cards, to_rows
+    from sigbot.ventures import Venture
+    vs = [Venture("Tape plant", "manufacturing factory", 6.0, 0.3, 0.4, True, ())]
+    (tmp_path / "opportunity_sectors.json").write_text(
+        json.dumps({"sectors": to_rows(build_sector_cards(vs))}))
+    rows = _sector_rows(_attach_sectors([{"id": "opportunity"}])[0])
+    assert "appeal" in rows.lower()
+    assert "not a probability" in rows.lower()
