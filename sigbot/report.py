@@ -401,6 +401,33 @@ def _plain_risk_note(n: int, note: str) -> str:
     return note
 
 
+# How long each model's signal stays actionable, in days. From the horizons
+# the models actually use.
+SIGNAL_WINDOW_DAYS = {
+    "crypto15m": 1, "news": 1, "daily": 1, "contagion": 5, "stocks": 20,
+    "opportunity": 90,
+}
+
+
+def _signal_window(model_id: str, generated_at: str) -> str:
+    """Plain-language dates: when to act by, when the window closes, and a
+    warning not to chase a move that has already happened."""
+    from datetime import datetime, timedelta, timezone
+    days = SIGNAL_WINDOW_DAYS.get(model_id, 1)
+    try:
+        start = datetime.fromisoformat(generated_at.replace("Z", "+00:00"))
+    except (ValueError, AttributeError):
+        start = datetime.now(timezone.utc)
+    end = start + timedelta(days=days)
+    unit = "same day" if days <= 1 else f"{days} days"
+    return (f'<div class="card"><h4>When to act</h4>'
+            f'<dl><dt>Act from</dt><dd>{start:%d %b %Y}</dd>'
+            f'<dt>Window closes</dt><dd>{end:%d %b %Y} (holds about {unit})</dd></dl>'
+            f'<p style="color:#e0a030;margin-top:8px">Do not chase: if the move '
+            f'has already happened by the time you see this, skip it. The edge is '
+            f'in entering near the signal, not after the move is largely over.</p></div>')
+
+
 def _call(model: dict, a: dict) -> tuple[str, str, str]:
     """What the record permits, stated so it cannot be read two ways.
 
@@ -445,9 +472,14 @@ def _detail(model: dict, a: dict) -> str:
     if failures:
         right = int(failures.get("win", 0))
         wrong = sum(v for k, v in failures.items() if k != "win")
+        # The asset's OWN rate from its own wins/checks — NOT the model-wide
+        # rate. Showing the model's 56% next to a symbol with 1 check was the
+        # "1 check but 56%" confusion: two different scopes on one line.
+        rate = (right / n) if n else 0.0
     else:
         right = int(round((rate or 0) * n))
         wrong = max(n - right, 0)
+    side_label = (a.get("side") or "call").lower()
     shortcomings = _shortcomings(failures, wrong)
     sizing = size_position(n, int(round((rate or 0) * n)), target_r=1.0) if n else None
     risk = sizing.recommended_risk_pct if sizing else 0.0
@@ -461,18 +493,22 @@ def _detail(model: dict, a: dict) -> str:
     <div class="sub">{_e(sym)} &middot; {_e(model['name'])}</div>
     {f'<p class="what">{_e(a["description"])}</p>' if a.get("description") else ''}</div>
   <p class="lead">{_e(reason.capitalize())}.</p>
+  {_signal_window(model['id'], model.get('generated_at', '')) if sig.startswith(('BUY','SELL')) else ''}
 
   <h4>Where the number comes from</h4>
   <div class="card"><dl>
-    <dt>Times we checked</dt><dd>{n:,}</dd>
-    <dt>Times we were right</dt><dd>{_pct(rate)}</dd>
-    <dt>Worst case, realistically</dt><dd style="color:{col}">{_pct(floor)}</dd>
-    <dt>Times we were wrong</dt><dd>{wrong:,}</dd>
+    <dt>Times checked</dt><dd>{n:,}</dd>
+    <dt>Right</dt><dd>{int(round(rate * n)):,} of {n:,} ({_pct(rate)})</dd>
+    <dt>Wrong</dt><dd>{wrong:,} of {n:,}</dd>
+    <dt>Worst case on a {_e(side_label)}</dt><dd style="color:{col}">{_pct(floor)}</dd>
     <dt>A coin flip would give</dt><dd>{_pct(null)}</dd>
     <dt>Better than a coin by</dt>
     <dd style="color:{'var(--green)' if edge and edge > 0 else 'var(--red)'}">
       {'—' if edge is None else f'{edge * 100:+.0f} points'}</dd>
   </dl>
+  {('<p style="color:var(--red)">Negative means it has done WORSE than a coin'
+    ' flip so far — it is losing, not winning. A coin flip is 50%; this is below'
+    ' it.</p>') if (edge is not None and edge < 0) else ''}
   {_meter(min(100, (floor or 0) * 100), col)}
   <p>Use the worst case, not the headline number. With {n:,} checks behind it,
   that is what the record actually supports — the higher figure is the luckiest
@@ -538,7 +574,7 @@ def _model_page(m: dict) -> str:
     <p class="what-sm" style="margin-top:10px">Next tier: {_e(m.get('ready_in', ''))}.
     {_e(_null_note(m))}</p>
     <p class="what-sm">Intake: {_e(m.get('intake', ''))}.</p>
-    {_bar("sample", m.get("sample_progress", 0), "var(--indigo)")}
+    {_bar("progress to a verdict", m.get("sample_progress", 0), "var(--indigo)")}
     <p class="what-sm">{_e(m.get('benchmark', ''))}</p>
     <span class="badge" style="background:{tc}1f;color:{tc}">{_e(TIER_PLAIN.get(m['tier'], m['tier']))}</span>
     {_meter((m.get('lower_bound') or 0) * 100, tc)}
@@ -1042,9 +1078,26 @@ def _paper_body(data: dict) -> str:
                 'entry and an exit price.</p></div>')
 
     days = state.get("days") or []
-    today = days[0] if days else None
     start = state.get("starting_cash", 0)
 
+    # If the newest day on record is not the actual calendar day (UTC), the new
+    # day has opened with no trades yet: show a fresh zero, and the prior day
+    # has already moved down into the record below. This is the "refresh to 0
+    # at market open, move yesterday to P&L" behaviour.
+    from datetime import datetime, timezone
+    real_today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    newest = days[0] if days else None
+    today: dict | None
+    # New calendar day with no trades yet: synthesise an empty "today" so the
+    # view shows 0 trades and yesterday drops into the record below — the
+    # "refresh at market open" behaviour. The real days list is untouched.
+    if newest and newest.get("date") != real_today:
+        today = {"date": real_today, "pct": 0.0, "trades": [], "wins": 0,
+                 "losses": 0, "opening": newest.get("closing", start),
+                 "closing": newest.get("closing", start), "costs": 0.0,
+                 "fresh": True}
+    else:
+        today = newest
     if today:
         pct = today.get("pct") or 0.0
         colour = ("var(--green)" if pct > 0

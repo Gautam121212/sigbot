@@ -79,7 +79,7 @@ def test_detail_view_has_all_four_parts(report):
     for section in ("Where the number comes from", "What we are actually measuring",
                     "What this will not tell you", "What to do about it"):
         assert section in h, f"missing section: {section}"
-    assert "Worst case, realistically" in h
+    assert "Worst case on a" in h  # now anchored to the side (buy/sell)
     assert "Risk per position" in h
 
 
@@ -581,7 +581,7 @@ def test_asset_pages_explain_why_the_misses_missed(report):
     call for opposite responses."""
     html = report[0]
     assert "Why the wrong ones were wrong" in html
-    assert "Times we were wrong" in html
+    assert "Wrong" in html  # label shortened from "Times we were wrong"
 
 
 def test_failure_shares_sum_to_the_miss_total():
@@ -867,3 +867,35 @@ def test_the_page_shows_how_fresh_it_is(report):
     assert "<script" not in html, "the page must stay JavaScript-free"
     assert "updated " in html or "UTC" in html
     assert 'title="' in html and "UTC" in html
+
+
+def test_buy_signals_carry_dates_and_a_dont_chase_warning():
+    """A buy/sell signal must say when to act by and warn against chasing a
+    move that already happened."""
+    from sigbot.report import _signal_window
+    out = _signal_window("stocks", "2026-09-23T10:00:00+00:00")
+    assert "Act from" in out and "Window closes" in out
+    assert "Do not chase" in out
+    import re
+    assert len(re.findall(r"\d{2} \w{3} \d{4}", out)) == 2, "start and end dates"
+
+
+def test_paper_page_shows_a_fresh_zero_on_a_new_day(tmp_path):
+    """At market open the daily view resets to 0 trades and yesterday drops
+    into the record — not left showing yesterday as 'today'."""
+    from datetime import datetime, timezone
+
+    from sigbot.report import _paper_body
+
+    real_today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    data = {"paper": {"starting_cash": 100000, "equity": 101000,
+                      "total_return": 0.01, "total_costs": 5,
+                      "days": [{"date": "2020-01-01", "pct": 1.2, "trades": [{}],
+                                "wins": 1, "losses": 0, "opening": 100000,
+                                "closing": 101000, "costs": 5}],
+                      "by_model": {}, "verdict": ""}}
+    html = _paper_body(data)
+    assert real_today in html, "the new calendar day is shown, not yesterday"
+    assert "after 0" in html and "trade(s)" in html, "zero trades on the fresh day"
+    assert "2020-01-01" not in html.split("Since the record began")[0], \
+        "yesterday is not shown as today"

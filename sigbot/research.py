@@ -170,9 +170,31 @@ ROUND_6 = (
 # Round 7 — the crypto edge the direction models never had. Leverage crowding
 # (volatility rising while price flat), tested on 8-10 major coins over the
 # past year, confirmed in BOTH halves independently. An AVOID/EXIT signal.
-ROUND_7_BATCH = 1
+ROUND_7_BATCH = 3
 ROUND_7 = (
     Result("Crypto leverage crowding -> avoid longs", 3.0, 2.5, 3.0, (-1.29, -0.26, -2.68)),
+    # No edge: after losing streaks the next hit rate is unchanged.
+    Result("Recency-bias arbitrage (crypto)", 0.3, 0.0, -0.6, (0.02, -0.06, -0.04)),
+    # No edge: rising price-impact separates nothing.
+    Result("Price-impact elasticity (stocks)", 0.1, 7.6, 5.7, (0.12, 0.12, 0.07)),
+)
+
+# Round 8 — a crypto BUY edge (crowding was avoid-only). Low-volume 3%+ drops
+# rebound; confirmed both halves (+1.77% / +1.69% next 3 days vs -0.30% base).
+# The high-volume half did NOT confirm and is not used.
+ROUND_8_BATCH = 1
+ROUND_8 = (
+    Result("Crypto low-volume drop -> rebound (BUY)", 3.0, 3.0, 3.0, (1.77, 1.69, 1.73)),
+)
+
+# Round 9 — edge hunt in the models WITHOUT one (news, follow-on). Both failed:
+# the disciplined result is to record the failure, not force an edge.
+ROUND_9_BATCH = 2
+ROUND_9 = (
+    # News post-gap drift: flips sign between periods (+0.38/+0.29/-0.43%).
+    Result("News post-gap drift", 2.5, 2.3, -3.5, (0.38, 0.29, -0.43)),
+    # Follow-on laggard catch-up: flips (+0.13/-0.06%), no edge.
+    Result("Follow-on laggard catch-up", 4.1, -2.4, -1.1, (0.13, -0.06, -0.04)),
 )
 
 # Written down BEFORE testing, so their results cannot shape their wording.
@@ -252,6 +274,12 @@ def summary() -> str:
     for r in ROUND_7:
         lines.append(f"  {'ADOPT (avoid)':<14} {r.hypothesis:<40} "
                      "confirmed both halves; longs fall when crowded")
+    lines += ["", "Round 8 - crypto low-volume-drop rebound (BUY signal):"]
+    for r in ROUND_8:
+        lines.append(f"  {'ADOPT (buy)':<14} {r.hypothesis:<44} confirmed both halves")
+    lines += ["", "Round 9 - edge hunt in news and follow-on (both failed):"]
+    for r in ROUND_9:
+        lines.append(f"  {'no edge':<14} {r.hypothesis:<44} flips sign between periods")
     lines += ["", "Where the loop stopped, per model:"]
     lines += [f"  {k:<20} {v}" for k, v in LOOP_STATUS.items()]
     lines += ["", "Pre-registered for the next round:"] + [f"  - {h}" for h in PENDING]

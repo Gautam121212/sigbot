@@ -1,4 +1,13 @@
 #!/usr/bin/env bash
+
+# Refuse to ship if any file carries merge-conflict markers — the failure that
+# left runner.py full of <<<<<<< and broke every test. Catch it before tests.
+if grep -rl '^<<<<<<< \|^>>>>>>> \|^=======$' sigbot tests 2>/dev/null | grep -q .; then
+  echo "CONFLICT MARKERS found — resolve the merge before shipping:"
+  grep -rl '^<<<<<<< \|^>>>>>>> \|^=======$' sigbot tests
+  exit 1
+fi
+
 # One command to ship: npm run github
 #
 # Order matters and is not negotiable. Tests run BEFORE anything is committed,

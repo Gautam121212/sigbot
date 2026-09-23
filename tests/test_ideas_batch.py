@@ -46,7 +46,7 @@ def test_the_benchmark_wording_does_not_conclude_early(tmp_path):
                         str(tmp_path / "c.db"))
     for m in data["models"]:
         if m["resolved"] < m["target_checks"]:
-            assert "Nothing is concluded" in m["benchmark"], m["id"]
+            assert "No conclusion yet" in m["benchmark"] or "we wait for enough" in m["benchmark"], m["id"]
 
 
 def test_the_horizon_job_measures_the_ceiling_not_the_model():

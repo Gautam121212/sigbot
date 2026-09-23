@@ -298,6 +298,15 @@ def _next_tier_above(tier):
     return ladder[i + 1] if i + 1 < len(ladder) else None
 
 
+def _stamp_time(model_dicts: list[dict]) -> list[dict]:
+    """Put the generation time on each model so the page can date its signals."""
+    from datetime import datetime, timezone
+    now = datetime.now(timezone.utc).isoformat()
+    for m in model_dicts:
+        m["generated_at"] = now
+    return model_dicts
+
+
 def _attach_sectors(model_dicts: list[dict]) -> list[dict]:
     """Put the 20 sector cards onto the opportunity model so the page shows them."""
     cards = _load_sector_cards()
@@ -316,6 +325,21 @@ def _load_sector_cards(path: str = "opportunity_sectors.json") -> list[dict]:
         return data.get("sectors", [])
     except (OSError, ValueError):
         return []
+
+
+def _dominant_side(ledger, model_id: str, symbol: str) -> str:
+    """The side (BUY/SELL) most of a symbol's forecasts took, for display."""
+    import sqlite3
+    from contextlib import closing
+    try:
+        with closing(sqlite3.connect(ledger.path)) as con:
+            row = con.execute(
+                "SELECT side, COUNT(*) c FROM predictions WHERE model=? AND symbol=? "
+                "AND hit IS NOT NULL GROUP BY side ORDER BY c DESC LIMIT 1",
+                (model_id, symbol)).fetchone()
+        return row[0] if row else ""
+    except sqlite3.Error:
+        return ""
 
 
 def build_export(db_path: str = "shadow.db", patterns_path: str = "patterns.db",
@@ -389,9 +413,9 @@ def build_export(db_path: str = "shadow.db", patterns_path: str = "patterns.db",
                          "judged at a point fixed before the data arrived.")
         else:
             benchmark = (f"{n:,} of {target:,} checks toward a verdict. "
-                         "Nothing is concluded until the sample is complete — "
-                         "watching a growing number against a bar is how "
-                         "luck gets mistaken for skill.")
+                         "No conclusion yet — still gathering checks. We wait "
+                         "for enough before trusting the result, so a lucky "
+                         "streak is not mistaken for a real edge.")
 
         # Intake, so "limited news" is a measured claim rather than a feeling.
         job = {"opportunity": "opportunity"}.get(model_id, model_id)
@@ -403,8 +427,14 @@ def build_export(db_path: str = "shadow.db", patterns_path: str = "patterns.db",
         alerts = [
             {"model": model_id, "symbol": sym, "tier": t.value,
              "description": DESCRIPTIONS.get(sym, ""),
-             "detail": f"{cnt:,} checks, right {r:.0%} of the time, {lo:.0%} worst case",
+             # Plain counts, not just a percentage, and the direction (BUY/SELL)
+             # so "worst case" is anchored to an action. "right 8 of 13" reads
+             # clearer than "62%" on small samples — the confusion the user hit.
+             "detail": (f"{cnt:,} check{'s' if cnt != 1 else ''}: right "
+                        f"{int(round(r*cnt))}, wrong {cnt - int(round(r*cnt))}"
+                        + (f" ({side})" if (side := _dominant_side(ledger, model_id, sym)) else "")),
              "resolved": cnt,
+             "side": _dominant_side(ledger, model_id, sym),
              # How the wrong ones went wrong. Already in the ledger; without
              # it the page can say a call missed but never why, which is the
              # only part a person can learn from.
@@ -497,7 +527,7 @@ def build_export(db_path: str = "shadow.db", patterns_path: str = "patterns.db",
                 "exactly what should happen — it means nothing is being made up."
             ),
         },
-        "models": _attach_sectors([m.to_dict() for m in models]),
+        "models": _attach_sectors(_stamp_time([m.to_dict() for m in models])),
         "board": board,
         "charts": charts or [],
         "opportunities": opportunities or [],
