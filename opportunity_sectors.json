@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-09-24T08:43:14.780994+00:00",
+ "generated_at": "2026-09-24T10:11:32.818163+00:00",
  "sectors": [
   {
    "sector": "Agriculture",
@@ -65,7 +65,7 @@
    "sector": "Information Technology",
    "blurb": "Software, hardware, and data networks.",
    "readiness": 0.0,
-   "breadth_signal": "decline-likely",
+   "breadth_signal": "",
    "worth_taking": 0,
    "risky": 0,
    "risky_label": false,
