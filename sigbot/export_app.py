@@ -156,6 +156,16 @@ def _row_hold_days(ledger, model_id: str, symbol: str) -> int | None:
     return 10
 
 
+def _benchmark_info(paper: dict) -> list[dict]:
+    """Daily / monthly / yearly benchmark rows for the benchmark page."""
+    try:
+        from .benchmark_page import benchmark_rows
+        return [{"period": r.period, "target": r.target_pct, "actual": r.actual_pct,
+                 "met": r.met, "detail": r.detail} for r in benchmark_rows(paper)]
+    except Exception:  # noqa: BLE001  # handled: benchmark page is cosmetic; skip on error
+        return []
+
+
 def _cycle_info() -> dict:
     """The daily-cycle phase for the Predictions and Paper pages."""
     try:
@@ -601,6 +611,7 @@ def build_export(db_path: str = "shadow.db", patterns_path: str = "patterns.db",
         "learning": learning,
         "paper": paper_state,
         "cycle": _cycle_info(),
+        "benchmarks": _benchmark_info(paper_state or {}),
         "failures": failures,
         "alerts": all_alerts[:max_alerts],
         "patterns": patterns,

@@ -554,6 +554,7 @@ def _model_page(m: dict) -> str:
     # anything, and a bar showing how far its floor has travelled from chance
     # to the trade gate — which is the question "where do I spend attention"
     # in its only answerable form.
+    _row_fn: object = None
     if m["id"] == "stocks":
         rows = _scan_rows(m)
     elif m["id"] == "opportunity" and m.get("sector_cards"):
@@ -574,6 +575,11 @@ def _model_page(m: dict) -> str:
         {_bar("ready to act", a.get("to_trade", 0), tcol)}</div>
       <span class="chev">&rsaquo;</span></div></a>"""
         rows = _horizon_groups(m, _one_row) or "".join(_one_row(a) for a in m["alerts"])
+        _row_fn = _one_row
+    if m["id"] == "stocks":
+        _row_fn = _one_scan_row
+    elif m["id"] == "opportunity":
+        _row_fn = None
     return f"""
 <div class="page" id="m-{_e(m['id'])}"><div class="wrap">
   <a class="back" href="#home">&lsaquo; Home</a>
@@ -608,7 +614,8 @@ def _model_page(m: dict) -> str:
   {rows or '<div class="card"><p>Nothing has been checked for this one yet. It stays quiet until it has something to show.</p></div>'}
   <p class="note">Tap any row for the full reasoning.</p>
 </div></div>
-{"".join(_detail(m, a) for a in m["alerts"])}"""
+{"".join(_detail(m, a) for a in m["alerts"])}
+{_horizon_pages(m, _row_fn) if _row_fn else ""}"""
 
 
 def _feed_card(e: dict, page: str, colour: str) -> str:
@@ -1006,6 +1013,17 @@ def build_report(data: dict) -> str:
   gate. Finding out whether they are worth money is exactly what it is for,
   and the answer is allowed to be no.</p>
 </div></div>
+<div class="page" id="benchmarks"><div class="wrap">
+  <div class="top"><span class="brand">Benchmarks</span>
+    <span class="stamp">daily / monthly / yearly</span></div>
+  <p class="lead">Did the paper account beat the index over each window? Each
+  row measures only the current period — the daily row resets each day, the
+  monthly each month, the yearly each year.</p>
+  {_benchmark_rows(data)}
+  <p class="note">The target is the index return over the same window — the bar
+  the account must clear to be worth running. Beating it on one day is noise;
+  the monthly and yearly rows are the ones that matter.</p>
+</div></div>
 <div class="page" id="predictions"><div class="wrap">
   <div class="top"><span class="brand">Predictions</span>
     <span class="stamp">every model that forecasts</span></div>
@@ -1055,6 +1073,7 @@ def build_report(data: dict) -> str:
   <a class="n-paper" href="#paper"><b>&#8942;</b><span>Paper</span></a>
   <a class="n-picks" href="#picks"><b>&#9733;</b><span>Picks</span></a>
   <a class="n-pnl" href="#pnl"><b>&#8942;</b><span>Daily P&amp;L</span></a>
+  <a class="n-bench" href="#benchmarks"><b>&#9878;</b><span>Benchmarks</span></a>
 </nav>
 <script>
 /* Isolated, fail-safe enhancements. If anything throws, the static page — which
@@ -1421,6 +1440,27 @@ def _picks_stamp(data: dict) -> str:
     return f"{len(picks)} name(s)" if picks else "nothing yet"
 
 
+def _benchmark_rows(data: dict) -> str:
+    """Three rows — daily, monthly, yearly — each with a met/not-met check."""
+    rows = data.get("benchmarks", [])
+    if not rows:
+        return ('<div class="card"><p>No benchmark data yet. It fills once the '
+                'paper account has a day of results.</p></div>')
+    out = []
+    for r in rows:
+        met = r.get("met")
+        check = ("&#10003;" if met else "&#10007;")
+        colour = "var(--green)" if met else "var(--red)"
+        out.append(f"""
+  <div class="card row">
+    <span class="pip" style="background:{colour};margin-top:0"></span>
+    <div class="grow"><h3>{_e(r.get('period', ''))}
+      <span style="color:{colour};font-size:20px;float:right">{check}</span></h3>
+      <p>{_e(r.get('detail', ''))}</p></div>
+  </div>""")
+    return "".join(out)
+
+
 def _predictions_rows(data: dict) -> str:
     """One row per forecasting model, with a pass/fail checker, linking through
     to that model's page. Blanks between reset and the next prediction run."""
@@ -1438,10 +1478,9 @@ def _predictions_rows(data: dict) -> str:
                       f'yet. New forecasts for the next session appear shortly.</p>'
                       f'<p class="what-sm">{_e(cycle["reset_line"])}</p></div>')
         elif phase in ("predict", "trade", "closed") and cycle.get("trading_day"):
-            locked = " (locked — market open)" if cycle.get("predictions_locked") else ""
             header = (f'<div class="card" data-reset-at="{_e(cycle.get("reset_at", ""))}" '
                       f'data-reset-label="resetting"><p class="lead">Fixed '
-                      f'predictions for {_e(cycle["trading_day"])}{locked}.</p>'
+                      f'predictions for {_e(cycle["trading_day"])}.</p>'
                       f'<p class="what-sm">{_e(cycle["reset_line"])} '
                       f'&middot; <span class="countdown"></span></p></div>')
 
@@ -1953,13 +1992,16 @@ HORIZONS = (("intra-day", "Held less than a day"),
 
 
 def _horizon_groups(model: dict, row_fn) -> str:
-    """Three horizon rows (intra-day / short-term / long-term); each expands to
-    the assets in that horizon. row_fn renders one asset's row. Empty horizons
-    are shown greyed with a count of 0, so the classifier is always complete.
+    """Three horizon rows that LINK to separate pages (intra-day / short-term /
+    long-term). Clicking a row opens that horizon's own page, like the sector
+    cards. row_fn is kept for the page bodies (see _horizon_pages).
+
+    Only horizons with at least one item are shown as active links; an empty
+    horizon is greyed and not clickable, so the classifier is honest about
+    where there is anything to see.
     """
     alerts = model.get("alerts") or []
-    if not alerts:
-        return ""
+    mid = model.get("id", "")
     by_h: dict[str, list] = {h: [] for h, _ in HORIZONS}
     for a in alerts:
         by_h.setdefault(a.get("horizon", "short-term"), []).append(a)
@@ -1967,17 +2009,48 @@ def _horizon_groups(model: dict, row_fn) -> str:
     for h, blurb in HORIZONS:
         items = by_h.get(h, [])
         n = len(items)
-        head = (f'<summary class="card row"><span class="pip" '
-                f'style="background:{"var(--green)" if n else "var(--faint)"};margin-top:0">'
-                f'</span><div class="grow"><h3>{h.replace("-", " ").title()} '
-                f'<span class="what-sm">({n})</span></h3>'
-                f'<p class="what-sm">{blurb}</p></div>'
-                f'<span class="chev">&rsaquo;</span></summary>')
-        body = ("".join(row_fn(a) for a in items) if items
-                else '<div class="card"><p class="what-sm">Nothing in this '
-                     'horizon yet.</p></div>')
-        out.append(f'<details class="horizon">{head}{body}</details>')
+        title = h.replace("-", " ").title()
+        if n:
+            out.append(f"""
+  <a href="#h-{_e(mid)}-{h}"><div class="card row">
+    <span class="pip" style="background:var(--green);margin-top:0"></span>
+    <div class="grow"><h3>{title} <span class="what-sm">({n})</span></h3>
+      <p class="what-sm">{blurb}</p></div>
+    <span class="chev">&rsaquo;</span></div></a>""")
+        else:
+            out.append(f"""
+  <div class="card row" style="opacity:.45">
+    <span class="pip" style="background:var(--faint);margin-top:0"></span>
+    <div class="grow"><h3>{title} <span class="what-sm">(0)</span></h3>
+      <p class="what-sm">Nothing held over this horizon yet.</p></div>
+  </div>""")
     return "".join(out)
+
+
+def _horizon_pages(model: dict, row_fn) -> str:
+    """One separate page per non-empty horizon, listing its assets sorted by
+    confidence. Reached from the horizon rows on the model page."""
+    alerts = model.get("alerts") or []
+    mid = model.get("id", "")
+    name = model.get("name", mid.title())
+    by_h: dict[str, list] = {h: [] for h, _ in HORIZONS}
+    for a in alerts:
+        by_h.setdefault(a.get("horizon", "short-term"), []).append(a)
+    pages = []
+    for h, blurb in HORIZONS:
+        items = by_h.get(h, [])
+        if not items:
+            continue
+        items = sorted(items, key=lambda a: -(a.get("conviction") or a.get("lower") or 0))
+        title = h.replace("-", " ").title()
+        pages.append(f"""
+<div class="page" id="h-{_e(mid)}-{h}"><div class="wrap">
+  <a class="back" href="#m-{_e(mid)}">&lsaquo; {_e(name)}</a>
+  <div class="card"><h1>{title}</h1>
+    <p class="what-sm">{blurb} &middot; sorted by confidence.</p></div>
+  {"".join(row_fn(a) for a in items)}
+</div></div>""")
+    return "".join(pages)
 
 
 def _scan_rows(model: dict) -> str:

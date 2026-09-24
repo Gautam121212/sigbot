@@ -950,3 +950,49 @@ def test_fresh_paper_day_separates_today_from_all_time():
     assert real_today in html
     assert "all time" in html.lower()
     assert "ALL-TIME record, not today" in html
+
+
+def test_horizon_rows_link_to_separate_pages():
+    """Clicking a horizon (intra-day/short-term/long-term) opens its own page,
+    not an inline expand."""
+    from sigbot.report import _horizon_groups, _horizon_pages
+    model = {"id": "crypto15m", "name": "Crypto", "alerts": [
+        {"symbol": "BTC", "horizon": "intra-day", "conviction": 60, "detail": "x",
+         "tier": "WATCH", "to_trade": 30},
+        {"symbol": "ETH", "horizon": "short-term", "conviction": 70, "detail": "y",
+         "tier": "WATCH", "to_trade": 40}]}
+    def row(a): return f'<div>{a["symbol"]}</div>'
+    groups = _horizon_groups(model, row)
+    assert 'href="#h-crypto15m-intra-day"' in groups
+    pages = _horizon_pages(model, row)
+    assert 'id="h-crypto15m-intra-day"' in pages
+    assert "BTC" in pages
+    # no inline <details> horizon expander any more
+    assert 'details class="horizon"' not in groups
+
+
+def test_benchmark_page_has_daily_monthly_yearly_with_checks(report):
+    """The benchmark page shows three rows, each with a met/not-met check."""
+    html = report[0]
+    assert 'id="benchmarks"' in html and 'href="#benchmarks"' in html
+    assert "Today" in html and "This month" in html and "This year" in html
+    # a check or cross mark is present
+    assert "&#10003;" in html or "&#10007;" in html
+
+
+def test_benchmark_rows_reset_per_period():
+    """Daily row measures only today; monthly only this month; yearly this year."""
+    from datetime import datetime, timezone
+
+    from sigbot.benchmark_page import benchmark_rows
+    paper = {"days": [{"date": "2026-09-24", "pct": 0.5},
+                      {"date": "2026-08-15", "pct": 2.0},   # last month
+                      {"date": "2026-01-10", "pct": 5.0}]}   # earlier this year
+    rows = {r.period: r for r in benchmark_rows(
+        paper, datetime(2026, 9, 24, 20, tzinfo=timezone.utc))}
+    # Today only counts today's 0.5%, not the older days
+    assert abs(rows["Today"].actual_pct - 0.5) < 0.01
+    # This month counts only September (0.5%), not August
+    assert abs(rows["This month"].actual_pct - 0.5) < 0.01
+    # This year counts all 2026 days compounded
+    assert rows["This year"].actual_pct > 5.0
