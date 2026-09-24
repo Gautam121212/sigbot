@@ -874,10 +874,10 @@ def test_buy_signals_carry_dates_and_a_dont_chase_warning():
     move that already happened."""
     from sigbot.report import _signal_window
     out = _signal_window("stocks", "2026-09-23T10:00:00+00:00")
-    assert "Act from" in out and "Window closes" in out
-    assert "Do not chase" in out
+    assert "Act from" in out and "Act BY" in out
+    assert "Do not chase" in out and "Horizon" in out
     import re
-    assert len(re.findall(r"\d{2} \w{3} \d{4}", out)) == 2, "start and end dates"
+    assert len(re.findall(r"\d{2} \w{3} \d{4}", out)) >= 2, "start and end dates shown"
 
 
 def test_paper_page_shows_a_fresh_zero_on_a_new_day(tmp_path):
@@ -899,3 +899,51 @@ def test_paper_page_shows_a_fresh_zero_on_a_new_day(tmp_path):
     assert "after 0" in html and "trade(s)" in html, "zero trades on the fresh day"
     assert "2020-01-01" not in html.split("Since the record began")[0], \
         "yesterday is not shown as today"
+
+
+def test_predictions_page_lists_every_model(report):
+    """The Predictions nav page shows a row per forecasting model, each linking
+    to that model's page."""
+    html = report[0]
+    assert 'id="predictions"' in html
+    assert 'href="#predictions"' in html, "nav link exists"
+    from sigbot.report import _predictions_rows
+    rows = _predictions_rows({"models": [
+        {"id": "stocks", "subtitle": "x", "alerts": [{}], "resolved": 10},
+        {"id": "crypto15m", "subtitle": "y", "alerts": [], "resolved": 5}]})
+    assert 'href="#m-stocks"' in rows and 'href="#m-crypto15m"' in rows
+
+
+def test_top_picks_are_grouped_by_model(report):
+    """Picks sit under per-model headings, not one flat list."""
+    from sigbot.report import _picks_rows
+    # Build from the real structure: days -> trades, several winning trades per
+    # symbol so it clears the confidence shrink.
+    def wins(model, sym, n):
+        return [{"model": model, "symbol": sym, "pnl": 100.0, "won": True,
+                 "gross_ret": 0.02} for _ in range(n)]
+    data = {"paper": {"days": [{"date": "2024-01-01",
+                                "trades": wins("stocks", "AAPL", 8)
+                                          + wins("news", "MSFT", 8)}]},
+            "models": []}
+    html = _picks_rows(data)
+    assert "Stocks &amp; funds" in html and "News" in html
+
+
+def test_fresh_paper_day_separates_today_from_all_time():
+    """On a new day the all-time sections are labelled all-time so they are not
+    mistaken for today's activity."""
+    from datetime import datetime, timezone
+
+    from sigbot.report import _paper_body
+    real_today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    data = {"paper": {"starting_cash": 100000, "equity": 101000,
+                      "total_return": 0.01, "total_costs": 5,
+                      "days": [{"date": "2020-01-01", "pct": 1.0, "trades": [{}],
+                                "wins": 1, "losses": 0, "opening": 100000,
+                                "closing": 101000, "costs": 5}],
+                      "by_model": {}, "verdict": ""}}
+    html = _paper_body(data)
+    assert real_today in html
+    assert "all time" in html.lower()
+    assert "ALL-TIME record, not today" in html

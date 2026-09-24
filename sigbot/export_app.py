@@ -130,6 +130,45 @@ class ModelView:
 # confusing thing on the page. Every model, every row obeys this.
 MIN_DISPLAY_CHECKS = 5
 
+
+# Hold period of each stock setup, for horizon classification.
+_SETUP_HOLD = {"hammer-in-downtrend": 5, "capitulation": 20, "momentum-breakout": 20}
+
+
+def _row_hold_days(ledger, model_id: str, symbol: str) -> int | None:
+    """The hold period of a stock row's most recent setup, or None (non-stocks
+    use their model default)."""
+    if model_id != "stocks":
+        return None
+    try:
+        import json
+        import sqlite3
+        from contextlib import closing
+        with closing(sqlite3.connect(ledger.path)) as con:
+            row = con.execute("SELECT payload FROM predictions WHERE model='stocks' "
+                              "AND symbol=? ORDER BY created_at DESC LIMIT 1",
+                              (symbol,)).fetchone()
+        if row and row[0]:
+            setup = json.loads(row[0]).get("setup", "")
+            return _SETUP_HOLD.get(setup, 10)   # default short-term for stocks
+    except (sqlite3.Error, ValueError, TypeError):
+        pass
+    return 10
+
+
+def _horizon_class(model_id: str, hold_days: int | None) -> str:
+    """Classify a row as intra-day, short-term, or long-term.
+
+    Stocks use the firing signal's own hold period; the other models use their
+    fixed horizon. This is the classifier the page groups rows under.
+    """
+    if hold_days is not None:
+        return ("intra-day" if hold_days <= 1
+                else "short-term" if hold_days <= 15 else "long-term")
+    return {"crypto15m": "intra-day", "news": "intra-day", "daily": "intra-day",
+            "contagion": "short-term", "opportunity": "long-term",
+            "stocks": "short-term"}.get(model_id, "short-term")
+
 def _status_line(tier: Tier, n: int, rate: float | None, need: int | None) -> str:
     if n == 0:
         return "Nothing checked yet. It stays quiet until it has something to show."
@@ -441,6 +480,7 @@ def build_export(db_path: str = "shadow.db", patterns_path: str = "patterns.db",
                         + (f" ({side})" if (side := _dominant_side(ledger, model_id, sym)) else "")),
              "resolved": cnt,
              "side": _dominant_side(ledger, model_id, sym),
+             "horizon": _horizon_class(model_id, _row_hold_days(ledger, model_id, sym)),
              # How the wrong ones went wrong. Already in the ledger; without
              # it the page can say a call missed but never why, which is the
              # only part a person can learn from.

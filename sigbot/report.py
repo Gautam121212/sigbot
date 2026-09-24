@@ -173,6 +173,12 @@ a{color:inherit;text-decoration:none}
   align-items:center;justify-content:center;font-weight:700;font-size:16px;
   border:1px solid}
 .chev{color:var(--faint);font-size:20px}
+details.horizon{margin:0 0 6px}
+details.horizon>summary{cursor:pointer;list-style:none}
+details.horizon>summary::-webkit-details-marker{display:none}
+details.horizon>summary .chev{transition:transform .15s}
+details.horizon[open]>summary .chev{transform:rotate(90deg)}
+details.horizon>*:not(summary){margin-left:14px}
 /* -------- board / lists -------- */
 .tile{display:flex;gap:12px;align-items:flex-start;background:transparent;
   border:0;border-bottom:1px solid var(--line);border-radius:0;
@@ -420,12 +426,14 @@ def _signal_window(model_id: str, generated_at: str) -> str:
         start = datetime.now(timezone.utc)
     end = start + timedelta(days=days)
     unit = "same day" if days <= 1 else f"{days} days"
+    horizon = ("intra-day" if days <= 1 else "short-term" if days <= 15 else "long-term")
     return (f'<div class="card"><h4>When to act</h4>'
-            f'<dl><dt>Act from</dt><dd>{start:%d %b %Y}</dd>'
-            f'<dt>Window closes</dt><dd>{end:%d %b %Y} (holds about {unit})</dd></dl>'
-            f'<p style="color:#e0a030;margin-top:8px">Do not chase: if the move '
-            f'has already happened by the time you see this, skip it. The edge is '
-            f'in entering near the signal, not after the move is largely over.</p></div>')
+            f'<dl><dt>Horizon</dt><dd>{horizon} (holds about {unit})</dd>'
+            f'<dt>Act from</dt><dd>{start:%d %b %Y}</dd>'
+            f'<dt>Act BY (window closes)</dt><dd>{end:%d %b %Y}</dd></dl>'
+            f'<p style="color:#e0a030;margin-top:8px">After {end:%d %b %Y} this '
+            f'signal expires and is removed from the list — do not enter past that '
+            f'date. Do not chase: if the move has already happened, skip it.</p></div>')
 
 
 def _call(model: dict, a: dict) -> tuple[str, str, str]:
@@ -995,6 +1003,14 @@ def build_report(data: dict) -> str:
   gate. Finding out whether they are worth money is exactly what it is for,
   and the answer is allowed to be no.</p>
 </div></div>
+<div class="page" id="predictions"><div class="wrap">
+  <div class="top"><span class="brand">Predictions</span>
+    <span class="stamp">every model that forecasts</span></div>
+  <p class="lead">Each model that makes predictions, and how many it has
+  scored. Tap one to see its predictions, grouped by how long they are held
+  (intra-day, short-term, long-term).</p>
+  {_predictions_rows(data)}
+</div></div>
 <div class="page" id="picks"><div class="wrap">
   <div class="top"><span class="brand">Suggested picks</span>
     <span class="stamp">{_e(_picks_stamp(data))}</span></div>
@@ -1030,6 +1046,7 @@ def build_report(data: dict) -> str:
 
 <nav class="nav">
   <a class="n-home" href="#home"><b>&#8962;</b><span>Home</span></a>
+  <a class="n-pred" href="#predictions"><b>&#9673;</b><span>Predictions</span></a>
   <a class="n-ideas" href="#ideas"><b>&#10022;</b><span>Ideas</span></a>
   <a class="n-learn" href="#learned"><b>&#8599;</b><span>Top picks</span></a>
   <a class="n-paper" href="#paper"><b>&#8942;</b><span>Paper</span></a>
@@ -1144,7 +1161,7 @@ def _paper_body(data: dict) -> str:
                                  key=lambda kv: -kv[1]["pnl"]))
 
     return banner + f"""
-  <h2>Since the record began</h2>
+  <h2>Since the record began (all time)</h2>
   <div class="stats">
     <div class="stat"><b style="color:{run_colour}">{ret * 100:+.2f}%</b>
       <span>All time</span></div>
@@ -1153,7 +1170,8 @@ def _paper_body(data: dict) -> str:
   </div>
   <h2>Today's trades</h2>
   {_trade_rows(today)}
-  <h2>Which model paid</h2>
+  {'<p class="note" style="border-top:1px solid var(--line);padding-top:14px;margin-top:18px">Everything below is the ALL-TIME record, not today. Today is shown above.</p>' if today and today.get("fresh") else ''}
+  <h2>Which model paid (all time)</h2>
   <div class="tiles-grid">{rows or "<p>No trades yet.</p>"}</div>
   <p class="what-sm">{_e(state.get("verdict", ""))}</p>"""
 
@@ -1359,6 +1377,30 @@ def _picks_stamp(data: dict) -> str:
     return f"{len(picks)} name(s)" if picks else "nothing yet"
 
 
+def _predictions_rows(data: dict) -> str:
+    """One row per forecasting model, linking through to that model's page."""
+    MODEL_TITLES = {"stocks": "Stocks & funds", "crypto15m": "Crypto",
+                    "news": "News", "contagion": "Follow-on moves",
+                    "daily": "Daily outlook", "opportunity": "Opportunities"}
+    out = []
+    for m in data.get("models", []):
+        mid = m.get("id", "")
+        n_rows = len(m.get("alerts", []))
+        scored = m.get("resolved", 0)
+        colour = "var(--green)" if n_rows else "var(--faint)"
+        title = MODEL_TITLES.get(mid, mid.title())
+        detail = (f"{n_rows} name(s) shown, {scored:,} prediction(s) scored"
+                  if n_rows else f"{scored:,} scored — nothing clears the bar to show yet")
+        out.append(f"""
+  <a href="#m-{_e(mid)}"><div class="card row">
+    <span class="pip" style="background:{colour};margin-top:0"></span>
+    <div class="grow"><h3>{_e(title)}</h3>
+      <p class="what-sm">{_e(m.get('subtitle', ''))}</p>
+      <p>{_e(detail)}</p></div>
+    <span class="chev">&rsaquo;</span></div></a>""")
+    return "".join(out)
+
+
 def _picks_rows(data: dict) -> str:
     picks = _paper_by_symbol(data)
     # Only link where the detail page actually exists. A pick can come from a
@@ -1373,12 +1415,24 @@ def _picks_rows(data: dict) -> str:
                 'below their bars, and an empty list is the honest one.</p>'
                 '</div>')
 
-    out = []
+    # Grouped by model (issue 7): each model's picks under its own heading,
+    # rather than one flat list, so picks are read per model.
+    from collections import defaultdict
+    MODEL_TITLES = {"stocks": "Stocks & funds", "crypto15m": "Crypto",
+                    "news": "News", "contagion": "Follow-on moves",
+                    "daily": "Daily outlook", "opportunity": "Opportunities"}
+    by_model = defaultdict(list)
     for row in picks:
-        conf = row["confidence"]
-        colour = ("var(--green)" if conf >= 20
-                  else "var(--amber)" if conf >= 5 else "var(--faint)")
-        body = f"""<div class="card row">
+        by_model[row.get("model", "other")].append(row)
+
+    sections = []
+    for model in sorted(by_model):
+        rows_out = []
+        for row in by_model[model]:
+            conf = row["confidence"]
+            colour = ("var(--green)" if conf >= 20
+                      else "var(--amber)" if conf >= 5 else "var(--faint)")
+            body = f"""<div class="card row">
     <span class="pip" style="background:{colour};margin-top:0"></span>
     <div class="grow"><h3>{_e(row['symbol'])}</h3>
       <p>Worth a look: paper trading made {row['pnl']:+,.0f} on this name
@@ -1386,12 +1440,13 @@ def _picks_rows(data: dict) -> str:
       in profit.</p>
       {_bar("conf", conf, colour)}</div>
     <span class="chev">&rsaquo;</span></div>"""
-        key = f"{row['model']}-{row['symbol']}"
-        if key in pages:
-            out.append(f'<a href="#d-{_e(key)}">{body}</a>')
-        else:
-            out.append(body)
-    return "".join(out)
+            key = f"{row['model']}-{row['symbol']}"
+            rows_out.append(f'<a href="#d-{_e(key)}">{body}</a>'
+                            if key in pages else body)
+        sections.append(f'<h3 style="margin-top:14px">'
+                        f'{_e(MODEL_TITLES.get(model, model.title()))}</h3>'
+                        + "".join(rows_out))
+    return "".join(sections)
 
 
 def _board_progress(asset: dict) -> tuple[float, float]:
@@ -1816,6 +1871,39 @@ def _sector_detail_pages(model: dict) -> str:
     return "".join(pages)
 
 
+HORIZONS = (("intra-day", "Held less than a day"),
+            ("short-term", "Held days to a few weeks"),
+            ("long-term", "Held weeks to months"))
+
+
+def _horizon_groups(model: dict, row_fn) -> str:
+    """Three horizon rows (intra-day / short-term / long-term); each expands to
+    the assets in that horizon. row_fn renders one asset's row. Empty horizons
+    are shown greyed with a count of 0, so the classifier is always complete.
+    """
+    alerts = model.get("alerts") or []
+    if not alerts:
+        return ""
+    by_h: dict[str, list] = {h: [] for h, _ in HORIZONS}
+    for a in alerts:
+        by_h.setdefault(a.get("horizon", "short-term"), []).append(a)
+    out = []
+    for h, blurb in HORIZONS:
+        items = by_h.get(h, [])
+        n = len(items)
+        head = (f'<summary class="card row"><span class="pip" '
+                f'style="background:{"var(--green)" if n else "var(--faint)"};margin-top:0">'
+                f'</span><div class="grow"><h3>{h.replace("-", " ").title()} '
+                f'<span class="what-sm">({n})</span></h3>'
+                f'<p class="what-sm">{blurb}</p></div>'
+                f'<span class="chev">&rsaquo;</span></summary>')
+        body = ("".join(row_fn(a) for a in items) if items
+                else '<div class="card"><p class="what-sm">Nothing in this '
+                     'horizon yet.</p></div>')
+        out.append(f'<details class="horizon">{head}{body}</details>')
+    return "".join(out)
+
+
 def _scan_rows(model: dict) -> str:
     """Stocks rows: a dot, two bars, and a link through to the full page.
 
@@ -1829,18 +1917,22 @@ def _scan_rows(model: dict) -> str:
     if not alerts:
         return ""
 
-    ordered = sorted(alerts, key=lambda a: (
-        0 if a.get("scan_tier") == "PROVEN" else 1,
-        -(a.get("conviction") or 0),
-        a.get("symbol", "")))
+    # Grouped into the three horizon rows; each expands to its assets, sorted
+    # proven-first then by conviction inside the group.
+    for a in alerts:
+        a["_sortkey"] = (0 if a.get("scan_tier") == "PROVEN" else 1,
+                         -(a.get("conviction") or 0), a.get("symbol", ""))
+    model = dict(model)
+    model["alerts"] = sorted(alerts, key=lambda a: a["_sortkey"])
+    return _horizon_groups(model, _one_scan_row)
 
-    out = []
-    for a in ordered:
-        proven = a.get("scan_tier") == "PROVEN"
-        colour = "var(--green)" if proven else "var(--faint)"
-        label = "Worth acting on" if proven else "Risky — unproven"
-        conviction = a.get("conviction") or 0
-        out.append(f"""
+
+def _one_scan_row(a: dict) -> str:
+    proven = a.get("scan_tier") == "PROVEN"
+    colour = "var(--green)" if proven else "var(--faint)"
+    label = "Worth acting on" if proven else "Risky — unproven"
+    conviction = a.get("conviction") or 0
+    return f"""
   <a href="#d-stocks-{_e(a['symbol'])}"><div class="card row">
     <span class="pip" style="background:{colour};margin-top:0"></span>
     <div class="grow"><h3>{_e(a['symbol'])}</h3>
@@ -1849,5 +1941,4 @@ def _scan_rows(model: dict) -> str:
       <p>{_e(a.get('detail', ''))}</p>
       {_bar("conviction", conviction, colour)}
       {_bar("record", a.get("to_trade", 0), colour)}</div>
-    <span class="chev">&rsaquo;</span></div></a>""")
-    return "".join(out)
+    <span class="chev">&rsaquo;</span></div></a>"""
