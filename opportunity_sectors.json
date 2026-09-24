@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-09-24T11:44:46.595752+00:00",
+ "generated_at": "2026-09-24T11:58:08.202590+00:00",
  "sectors": [
   {
    "sector": "Agriculture",
@@ -45,7 +45,7 @@
    "sector": "Healthcare",
    "blurb": "Medical services, hospitals, pharmaceuticals, devices.",
    "readiness": 0.0,
-   "breadth_signal": "",
+   "breadth_signal": "decline-likely",
    "worth_taking": 0,
    "risky": 0,
    "risky_label": false,
@@ -145,7 +145,7 @@
    "sector": "Real Estate",
    "blurb": "Buying, leasing, and managing property.",
    "readiness": 0.0,
-   "breadth_signal": "recovery-likely",
+   "breadth_signal": "",
    "worth_taking": 0,
    "risky": 0,
    "risky_label": false,
