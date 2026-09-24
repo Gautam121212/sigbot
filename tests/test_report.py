@@ -996,3 +996,35 @@ def test_benchmark_rows_reset_per_period():
     assert abs(rows["This month"].actual_pct - 0.5) < 0.01
     # This year counts all 2026 days compounded
     assert rows["This year"].actual_pct > 5.0
+
+
+def test_ideas_finished_unfinished_pages_exist_in_the_shell(report):
+    """The Ideas page carries the finished and unfinished sub-pages so the
+    split rows always have somewhere to link (empty is handled separately)."""
+    html = report[0]
+    # The sub-pages are always emitted in the shell.
+    assert 'id="ideas-finished"' in html and 'id="ideas-unfinished"' in html
+
+
+def test_prediction_time_labels_render():
+    """A prediction detail page shows made-on / predicted-move / result-time."""
+    from sigbot.report import _prediction_time_labels
+    out = _prediction_time_labels({"made_at": "2026-09-24 10:00",
+                                   "result_at": "2026-09-25 10:00",
+                                   "predicted_move": "+2.5%"})
+    assert "Prediction made on" in out
+    assert "Predicted move" in out and "+2.5%" in out
+    assert "Result time" in out
+    assert _prediction_time_labels({}) == "", "empty when no times"
+
+
+def test_regime_policy_selects_signals_by_market_state():
+    """The crucial fix: signals fire only in the regime where they were
+    measured to work."""
+    from sigbot.regime_policy import signal_allowed
+    # capitulation only in a volatile decline
+    assert signal_allowed("capitulation", "down/volatile")
+    assert not signal_allowed("capitulation", "up/calm")
+    # momentum only in a calm rally
+    assert signal_allowed("momentum-breakout", "up/calm")
+    assert not signal_allowed("momentum-breakout", "down/volatile")

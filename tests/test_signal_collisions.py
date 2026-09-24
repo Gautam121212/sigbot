@@ -16,7 +16,7 @@ def _row(**kw):
     base = {"close": 100.0, "prev_close": 99.0, "rsi_14": 50.0, "mfi_14": 50.0,
             "sma_200": 110.0, "sma_50": 105.0, "willr_14": -50.0, "hi52": 120.0,
             "volume": 2e6, "volume_ma_20": 2e6, "index_up": True,
-            "index_regime": "up/calm", "price_change_10d": 0.0,
+            "index_regime": "down/volatile", "price_change_10d": 0.0,
             "obv_rising": False, "cdl_hammer": 0.0}
     base.update(kw)
     return base

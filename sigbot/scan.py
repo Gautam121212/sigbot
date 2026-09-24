@@ -399,8 +399,17 @@ def scan_row(symbol: str, row: dict) -> Hit | None:
     if not liquid_enough(row):
         return None
 
+    # Regime-aware selection: read the market state first, then keep only the
+    # signals proven to work in THIS regime. The same pattern means opposite
+    # things in different weather, so a signal whose condition is met but which
+    # loses in the current regime does not fire. Unknown regime falls back to
+    # the most robust signal only.
+    from .regime_policy import stock_signals_allowed
+    regime = row.get("index_regime")
+    allowed = stock_signals_allowed(regime)
     firing = [c for c in CANDIDATES if c.condition(row)
-              and not (is_crypto and c.style == "reversion")]
+              and not (is_crypto and c.style == "reversion")
+              and (is_crypto or c.name in allowed)]
     if not firing:
         return None
 

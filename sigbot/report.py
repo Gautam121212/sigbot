@@ -415,6 +415,24 @@ SIGNAL_WINDOW_DAYS = {
 }
 
 
+def _prediction_time_labels(a: dict) -> str:
+    """The three time labels for a prediction (item 7): when it was made, the
+    predicted move, and when its result is due."""
+    made = a.get("made_at", "")
+    result = a.get("result_at", "")
+    move = a.get("predicted_move", "")
+    if not (made or result or move):
+        return ""
+    rows = []
+    if made:
+        rows.append(f"<dt>Prediction made on</dt><dd>{_e(made)} UTC</dd>")
+    if move:
+        rows.append(f"<dt>Predicted move</dt><dd>{_e(move)}</dd>")
+    if result:
+        rows.append(f"<dt>Result time</dt><dd>{_e(result)} UTC</dd>")
+    return f'<div class="card"><dl>{"".join(rows)}</dl></div>'
+
+
 def _signal_window(model_id: str, generated_at: str) -> str:
     """Plain-language dates: when to act by, when the window closes, and a
     warning not to chase a move that has already happened."""
@@ -502,6 +520,7 @@ def _detail(model: dict, a: dict) -> str:
     {f'<p class="what">{_e(a["description"])}</p>' if a.get("description") else ''}</div>
   <p class="lead">{_e(reason.capitalize())}.</p>
   {_signal_window(model['id'], model.get('generated_at', '')) if sig.startswith(('BUY','SELL')) else ''}
+  {_prediction_time_labels(a)}
 
   <h4>Where the number comes from</h4>
   <div class="card"><dl>
@@ -827,7 +846,8 @@ def build_report(data: dict) -> str:
     empty_ideas = ('<div class="card"><p>Nothing new. The scan runs every four '
                    'hours and speaks only when something it has not already '
                    'shown you turns up.</p></div>')
-    idea_cards = "".join(f"""
+    def _one_idea(i, o):
+        return f"""
   <a href="#i-{i}"><div class="tile">
     <span class="pip" style="background:{_idea_state(o)[0]}"></span>
     <b>{_e(o['kind'])}</b>
@@ -836,7 +856,37 @@ def build_report(data: dict) -> str:
       <p style="color:{_idea_state(o)[0]};font-weight:600">{_e(_idea_state(o)[1])}</p>
       {_bar("ready", _idea_state(o)[2], _idea_state(o)[0])}
       <p class="what-sm">{_e(_idea_eta(o))}</p></div>
-    <span class="chev">&rsaquo;</span></div></a>""" for i, o in enumerate(opps))
+    <span class="chev">&rsaquo;</span></div></a>"""
+    # Finished = the case is answered (ready to act, bar at 100). Unfinished =
+    # still being checked. Two rows on the landing, each opening its own page.
+    finished = [(i, o) for i, o in enumerate(opps) if _idea_state(o)[2] >= 100]
+    unfinished = [(i, o) for i, o in enumerate(opps) if _idea_state(o)[2] < 100]
+    idea_cards = "" if not opps else f"""
+  <a href="#ideas-finished"><div class="card row">
+    <span class="pip" style="background:{'var(--green)' if finished else 'var(--faint)'};margin-top:0"></span>
+    <div class="grow"><h3>Finished <span class="what-sm">({len(finished)})</span></h3>
+      <p class="what-sm">The case is answered — ready to act on.</p></div>
+    <span class="chev">&rsaquo;</span></div></a>
+  <a href="#ideas-unfinished"><div class="card row">
+    <span class="pip" style="background:{'var(--amber)' if unfinished else 'var(--faint)'};margin-top:0"></span>
+    <div class="grow"><h3>Unfinished <span class="what-sm">({len(unfinished)})</span></h3>
+      <p class="what-sm">Still being checked — not ready yet.</p></div>
+    <span class="chev">&rsaquo;</span></div></a>"""
+    # The two sub-pages.
+    finished_page = f"""
+<div class="page" id="ideas-finished"><div class="wrap">
+  <a class="back" href="#ideas">&lsaquo; Ideas</a>
+  <div class="card"><h1>Finished</h1><p class="what-sm">Ideas whose case is
+  answered and ready to act on.</p></div>
+  {"".join(_one_idea(i, o) for i, o in finished) or '<div class="card"><p>None ready yet.</p></div>'}
+</div></div>"""
+    unfinished_page = f"""
+<div class="page" id="ideas-unfinished"><div class="wrap">
+  <a class="back" href="#ideas">&lsaquo; Ideas</a>
+  <div class="card"><h1>Unfinished</h1><p class="what-sm">Ideas still being
+  checked, with how far each has to go.</p></div>
+  {"".join(_one_idea(i, o) for i, o in unfinished) or '<div class="card"><p>Nothing in checking.</p></div>'}
+</div></div>"""
     if dropped:
         idea_cards += (f'<p class="what-sm">{dropped} card(s) hidden: their '
                        'coverage never gave dates, so whether the window is '
@@ -987,6 +1037,8 @@ def build_report(data: dict) -> str:
   </div>
   {idea_cards or empty_ideas}
 </div></div>
+{finished_page}
+{unfinished_page}
 {idea_pages}
 
 <div class="page" id="learned"><div class="wrap">

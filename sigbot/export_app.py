@@ -135,6 +135,29 @@ MIN_DISPLAY_CHECKS = 5
 _SETUP_HOLD = {"hammer-in-downtrend": 5, "capitulation": 20, "momentum-breakout": 20}
 
 
+def _prediction_times(ledger, model_id: str, symbol: str) -> dict:
+    """The latest prediction's made-at and result-due times, for the row's time
+    labels (item 7). Empty strings if unreadable."""
+    import sqlite3
+    from contextlib import closing
+    try:
+        with closing(sqlite3.connect(ledger.path)) as con:
+            row = con.execute(
+                "SELECT created_at, resolve_after, expected_move FROM predictions "
+                "WHERE model=? AND symbol=? ORDER BY created_at DESC LIMIT 1",
+                (model_id, symbol)).fetchone()
+        if row:
+            made = (row[0] or "")[:16].replace("T", " ")
+            due = (row[1] or "")[:16].replace("T", " ")
+            move = row[2]
+            return {"made_at": made, "result_at": due,
+                    "predicted_move": (f"{move * 100:+.1f}%" if isinstance(move, (int, float))
+                                       else "")}
+    except sqlite3.Error:
+        pass
+    return {"made_at": "", "result_at": "", "predicted_move": ""}
+
+
 def _row_hold_days(ledger, model_id: str, symbol: str) -> int | None:
     """The hold period of a stock row's most recent setup, or None (non-stocks
     use their model default)."""
@@ -508,6 +531,7 @@ def build_export(db_path: str = "shadow.db", patterns_path: str = "patterns.db",
              "resolved": cnt,
              "side": _dominant_side(ledger, model_id, sym),
              "horizon": _horizon_class(model_id, _row_hold_days(ledger, model_id, sym)),
+             **_prediction_times(ledger, model_id, sym),
              # How the wrong ones went wrong. Already in the ledger; without
              # it the page can say a call missed but never why, which is the
              # only part a person can learn from.
@@ -530,6 +554,10 @@ def build_export(db_path: str = "shadow.db", patterns_path: str = "patterns.db",
             # convincing sit at the top. A row with 4 checks shows nothing.
             for sym, (cnt, r, lo) in sorted(
                 ((s, v) for s, v in ledger.stats(model_id).items()
+                 # A row shows once it has at least MIN_DISPLAY_CHECKS scored
+                 # predictions. Whether it has EARNED a clear action is shown by
+                 # its tier and banner on the row (green = act, grey = not yet),
+                 # not by hiding it — hiding removed useful context.
                  if v[0] >= MIN_DISPLAY_CHECKS),
                 key=lambda kv: (-kv[1][2], -kv[1][0]))
             for t, _, _ in [ledger.tier(model_id, sym)]

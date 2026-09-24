@@ -77,7 +77,7 @@ def test_a_proven_reason_beats_a_risky_one_on_the_same_name():
     """A name is never labelled risky when there is a proven reason to hold
     it — that would understate the evidence and mis-size the position."""
     both = {"rsi_14": 18.0, "mfi_14": 30.0, "close": 70.0, "sma_200": 100.0,
-            "volume_ma_20": 2_000_000}
+            "volume_ma_20": 2_000_000, "index_regime": "down/volatile"}
     hit = scan_row("AAPL", both)
     assert hit is not None
     # Highest conviction wins when no candidate is proven, which is the
@@ -88,7 +88,8 @@ def test_a_proven_reason_beats_a_risky_one_on_the_same_name():
 def test_only_two_colours_ever():
     """Green or grey. A third state would reintroduce the amber problem: a
     colour that sorts high while meaning "not yet"."""
-    liquid = {"volume_ma_20": 2_000_000}
+    # In a volatile decline — the regime where these oversold signals fire.
+    liquid = {"volume_ma_20": 2_000_000, "index_regime": "down/volatile"}
     rows = [
         {"rsi_14": 18.0, "mfi_14": 30.0, **liquid},
         {"close": 70.0, "sma_200": 100.0, **liquid},
@@ -156,7 +157,8 @@ def test_thin_names_are_never_traded():
     """Names averaging under 500k shares a day returned +1.136% against
     +1.514% for liquid ones on the same entries. Thin names gap harder through
     stops and cost more to fill, so their paper results overstate reality."""
-    row = {"rsi_14": 18.0, "mfi_14": 30.0, "volume_ma_20": 100_000, "close": 50.0}
+    row = {"rsi_14": 18.0, "mfi_14": 30.0, "volume_ma_20": 100_000, "close": 50.0,
+           "index_regime": "down/volatile"}
     assert scan_row("THIN", row) is None
     assert scan_row("THICK", {**row, "volume_ma_20": 2_000_000}) is not None
 
