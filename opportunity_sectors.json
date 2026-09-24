@@ -1,36 +1,11 @@
 {
- "generated_at": "2026-09-24T04:47:37.975542+00:00",
+ "generated_at": "2026-09-24T07:57:41.943716+00:00",
  "sectors": [
-  {
-   "sector": "Construction",
-   "blurb": "Building and maintaining homes, offices, and infrastructure.",
-   "readiness": 36.7,
-   "worth_taking": 1,
-   "risky": 1,
-   "risky_label": false,
-   "ventures": [
-    {
-     "title": "Tape-manufacturing plant, Philippines",
-     "thesis": "Low industrial setup cost, government manufacturing incentives, and rising regional packaging demand. Capped by a fixed build-out budget.",
-     "verdict": "WORTH A SMALL BET (RISKY)",
-     "ev": 1.1,
-     "upside": 6.0,
-     "risky": true,
-     "reasons": [
-      "thin evidence (35% supported) \u2014 sources suggest, none confirm",
-      "long odds (~30% success) \u2014 most such bets fail; the payoff has to carry it"
-     ],
-     "sources": [
-      "investment-board reports",
-      "trade-ministry incentive notices"
-     ]
-    }
-   ]
-  },
   {
    "sector": "Agriculture",
    "blurb": "Crops, livestock, and raw food materials.",
    "readiness": 0.0,
+   "breadth_signal": "",
    "worth_taking": 0,
    "risky": 0,
    "risky_label": false,
@@ -40,6 +15,17 @@
    "sector": "Mining",
    "blurb": "Extraction of minerals, oil, gas, and geological materials.",
    "readiness": 0.0,
+   "breadth_signal": "",
+   "worth_taking": 0,
+   "risky": 0,
+   "risky_label": false,
+   "ventures": []
+  },
+  {
+   "sector": "Construction",
+   "blurb": "Building and maintaining homes, offices, and infrastructure.",
+   "readiness": 0.0,
+   "breadth_signal": "",
    "worth_taking": 0,
    "risky": 0,
    "risky_label": false,
@@ -49,6 +35,7 @@
    "sector": "Manufacturing",
    "blurb": "Turning raw materials into finished products at scale.",
    "readiness": 0.0,
+   "breadth_signal": "",
    "worth_taking": 0,
    "risky": 0,
    "risky_label": false,
@@ -58,6 +45,7 @@
    "sector": "Healthcare",
    "blurb": "Medical services, hospitals, pharmaceuticals, devices.",
    "readiness": 0.0,
+   "breadth_signal": "",
    "worth_taking": 0,
    "risky": 0,
    "risky_label": false,
@@ -67,6 +55,7 @@
    "sector": "Education",
    "blurb": "Schools, colleges, and digital learning.",
    "readiness": 0.0,
+   "breadth_signal": "",
    "worth_taking": 0,
    "risky": 0,
    "risky_label": false,
@@ -76,32 +65,17 @@
    "sector": "Information Technology",
    "blurb": "Software, hardware, and data networks.",
    "readiness": 0.0,
+   "breadth_signal": "",
    "worth_taking": 0,
-   "risky": 1,
-   "risky_label": true,
-   "ventures": [
-    {
-     "title": "Frontier-market fintech licence",
-     "thesis": "First-mover licence in an underbanked market \u2014 large upside, but regulatory approval is uncertain and the licence fee is at risk.",
-     "verdict": "PASS \u2014 upside too small for the uncertainty",
-     "ev": 0.95,
-     "upside": 12.0,
-     "risky": true,
-     "reasons": [
-      "thin evidence (25% supported) \u2014 sources suggest, none confirm",
-      "long odds (~15% success) \u2014 most such bets fail; the payoff has to carry it"
-     ],
-     "sources": [
-      "central-bank filings",
-      "regulatory announcements"
-     ]
-    }
-   ]
+   "risky": 0,
+   "risky_label": false,
+   "ventures": []
   },
   {
    "sector": "Finance and Banking",
    "blurb": "Money circulation, investments, loans, banking.",
    "readiness": 0.0,
+   "breadth_signal": "",
    "worth_taking": 0,
    "risky": 0,
    "risky_label": false,
@@ -111,6 +85,7 @@
    "sector": "Insurance",
    "blurb": "Risk-management and financial-protection policies.",
    "readiness": 0.0,
+   "breadth_signal": "",
    "worth_taking": 0,
    "risky": 0,
    "risky_label": false,
@@ -120,6 +95,7 @@
    "sector": "Hospitality and Tourism",
    "blurb": "Lodging, travel, and dining.",
    "readiness": 0.0,
+   "breadth_signal": "",
    "worth_taking": 0,
    "risky": 0,
    "risky_label": false,
@@ -129,6 +105,7 @@
    "sector": "Entertainment and Media",
    "blurb": "Film, music, games, sport, news.",
    "readiness": 0.0,
+   "breadth_signal": "",
    "worth_taking": 0,
    "risky": 0,
    "risky_label": false,
@@ -138,6 +115,7 @@
    "sector": "Retail",
    "blurb": "Selling finished goods to the public.",
    "readiness": 0.0,
+   "breadth_signal": "",
    "worth_taking": 0,
    "risky": 0,
    "risky_label": false,
@@ -147,6 +125,7 @@
    "sector": "Transportation and Logistics",
    "blurb": "Moving people and freight by air, rail, sea, road.",
    "readiness": 0.0,
+   "breadth_signal": "",
    "worth_taking": 0,
    "risky": 0,
    "risky_label": false,
@@ -156,6 +135,7 @@
    "sector": "Telecommunications",
    "blurb": "Phone, mobile, and fibre networks.",
    "readiness": 0.0,
+   "breadth_signal": "recovery-likely",
    "worth_taking": 0,
    "risky": 0,
    "risky_label": false,
@@ -165,31 +145,17 @@
    "sector": "Real Estate",
    "blurb": "Buying, leasing, and managing property.",
    "readiness": 0.0,
+   "breadth_signal": "recovery-likely",
    "worth_taking": 0,
-   "risky": 1,
-   "risky_label": true,
-   "ventures": [
-    {
-     "title": "Dubai residential property",
-     "thesis": "Sustained in-migration, high rental yields, no property tax. Downside bounded by the purchase price and holding costs.",
-     "verdict": "PASS \u2014 upside too small for the uncertainty",
-     "ev": 1.02,
-     "upside": 3.5,
-     "risky": true,
-     "reasons": [
-      "thin evidence (45% supported) \u2014 sources suggest, none confirm"
-     ],
-     "sources": [
-      "property-market indices",
-      "migration statistics"
-     ]
-    }
-   ]
+   "risky": 0,
+   "risky_label": false,
+   "ventures": []
   },
   {
    "sector": "Energy and Utilities",
    "blurb": "Electricity, gas, water, and waste services.",
    "readiness": 0.0,
+   "breadth_signal": "",
    "worth_taking": 0,
    "risky": 0,
    "risky_label": false,
@@ -199,6 +165,7 @@
    "sector": "Automotive",
    "blurb": "Designing, building, and repairing vehicles.",
    "readiness": 0.0,
+   "breadth_signal": "",
    "worth_taking": 0,
    "risky": 0,
    "risky_label": false,
@@ -208,6 +175,7 @@
    "sector": "Aerospace",
    "blurb": "Aircraft, satellites, and spacecraft.",
    "readiness": 0.0,
+   "breadth_signal": "",
    "worth_taking": 0,
    "risky": 0,
    "risky_label": false,
@@ -217,6 +185,7 @@
    "sector": "Food Processing and Beverage",
    "blurb": "Packaged food and drink from agriculture.",
    "readiness": 0.0,
+   "breadth_signal": "",
    "worth_taking": 0,
    "risky": 0,
    "risky_label": false,
@@ -226,6 +195,7 @@
    "sector": "Consulting and Professional Services",
    "blurb": "Legal, accounting, marketing, management.",
    "readiness": 0.0,
+   "breadth_signal": "",
    "worth_taking": 0,
    "risky": 0,
    "risky_label": false,
