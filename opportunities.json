@@ -1,29 +1,10 @@
 [
  {
-  "title": "Rupee",
-  "kind": "Market thesis",
-  "colour": "#00e676",
-  "verdict": "Corroborated by outlets with a record. The case is as complete as press coverage gets \u2014 which is still not a forecast, and has never been scored against outcomes.",
-  "summary": "Rupee declines to one-week low as oil rally fans global rate hike worries - reuters.com",
-  "answered": [],
-  "unanswered": [
-   "the asset is genuinely priced lower in real terms, not just in a depreciating local currency",
-   "there is a liquid, legal exit available to a non-resident",
-   "the dislocation has a plausible resolution path with a timeframe"
-  ],
-  "money": "Not stated. A market thesis says nothing about what acting on it would cost you.",
-  "sources": [
-   "reuters.com (2026-09-24)",
-   "Markets-Economic Times (2026-09-24)",
-   "Latest Share Market News, Sensex, Nifty, BSE, NSE Today | The HinduBusinessLine (2026-09-24)"
-  ]
- },
- {
-  "title": "Inflation Fed",
+  "title": "Inflation Fed Reuters",
   "kind": "Market thesis",
   "colour": "#ffd93d",
   "verdict": "Reported at 70% sourcing strength. Enough to be worth reading, not enough to lean on. This model has never been scored against outcomes.",
-  "summary": "Inflation pressures raise prospect of Fed rate hike on eve of elections - reuters.com",
+  "summary": "Inflation pressures raise prospect of Fed rate hike on eve of elections - Reuters",
   "answered": [],
   "unanswered": [
    "the asset is genuinely priced lower in real terms, not just in a depreciating local currency",
@@ -32,7 +13,7 @@
   ],
   "money": "Not stated. A market thesis says nothing about what acting on it would cost you.",
   "sources": [
-   "reuters.com (2026-09-23)"
+   "Reuters (2026-09-23)"
   ]
  },
  {
@@ -87,11 +68,11 @@
   ]
  },
  {
-  "title": "Fed US",
+  "title": "Fed US Reuters",
   "kind": "Market thesis",
   "colour": "#ffd93d",
   "verdict": "Reported at 70% sourcing strength. Enough to be worth reading, not enough to lean on. This model has never been scored against outcomes.",
-  "summary": "Fed rate hike cycles have a history of denting US stock prices - reuters.com",
+  "summary": "Fed rate hike cycles have a history of denting US stock prices - Reuters",
   "answered": [],
   "unanswered": [
    "the asset is genuinely priced lower in real terms, not just in a depreciating local currency",
@@ -100,7 +81,7 @@
   ],
   "money": "Not stated. A market thesis says nothing about what acting on it would cost you.",
   "sources": [
-   "reuters.com (2026-09-24)"
+   "Reuters (2026-09-24)"
   ]
  },
  {
@@ -142,7 +123,7 @@
   "kind": "Market thesis",
   "colour": "#ffd93d",
   "verdict": "Reported at 70% sourcing strength. Enough to be worth reading, not enough to lean on. This model has never been scored against outcomes.",
-  "summary": "Serbia's Russian-owned NIS oil firm seeks new US sanctions waiver - reuters.com",
+  "summary": "Serbia's Russian-owned NIS oil firm seeks new US sanctions waiver - Reuters",
   "answered": [],
   "unanswered": [
    "the asset is genuinely priced lower in real terms, not just in a depreciating local currency",
@@ -151,15 +132,15 @@
   ],
   "money": "Not stated. A market thesis says nothing about what acting on it would cost you.",
   "sources": [
-   "reuters.com (2026-09-24)"
+   "Reuters (2026-09-24)"
   ]
  },
  {
-  "title": "Fed's Williams US",
+  "title": "Fed's Williams US Reuters",
   "kind": "Market thesis",
   "colour": "#ffd93d",
   "verdict": "Reported at 70% sourcing strength. Enough to be worth reading, not enough to lean on. This model has never been scored against outcomes.",
-  "summary": "Fed's Williams says it is reasonable to see another US rate hike this year - reuters.com",
+  "summary": "Fed's Williams says it is reasonable to see another US rate hike this year - Reuters",
   "answered": [],
   "unanswered": [
    "the asset is genuinely priced lower in real terms, not just in a depreciating local currency",
@@ -168,26 +149,7 @@
   ],
   "money": "Not stated. A market thesis says nothing about what acting on it would cost you.",
   "sources": [
-   "reuters.com (2026-09-24)"
-  ]
- },
- {
-  "title": "NSE IPO GMP What",
-  "kind": "IPO \u2014 dates unknown",
-  "colour": "#8b8b9a",
-  "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 0 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
-  "summary": "NSE IPO listing date, time, GMP today: What investors should watch on September 24 - CNBC TV18",
-  "answered": [],
-  "unanswered": [
-   "Does reporting say it makes money?",
-   "Is revenue growing?",
-   "Does the money go into the business?",
-   "Is the price being called reasonable?",
-   "Did serious institutions take an allocation?"
-  ],
-  "money": "0 of a possible 0 points on the ten tests the coverage could answer.",
-  "sources": [
-   "CNBC TV18 (2026-09-23)"
+   "Reuters (2026-09-24)"
   ]
  },
  {
@@ -229,7 +191,7 @@
   "kind": "IPO \u2014 dates unknown",
   "colour": "#8b8b9a",
   "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 0 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
-  "summary": "NSE IPO listing time today: Check share listing price prediction ahead of BSE debut - Will there be gains or discount? - livemint.com",
+  "summary": "NSE IPO listing time today: Check share listing price prediction ahead of BSE debut - Will there be gains or discount? - Livemint",
   "answered": [],
   "unanswered": [
    "Does reporting say it makes money?",
@@ -240,7 +202,7 @@
   ],
   "money": "0 of a possible 0 points on the ten tests the coverage could answer.",
   "sources": [
-   "livemint.com (2026-09-24)"
+   "Livemint (2026-09-24)"
   ]
  },
  {
@@ -356,6 +318,46 @@
   ]
  },
  {
+  "title": "Varmora Granito IPO Day",
+  "kind": "IPO \u2014 dates unknown",
+  "colour": "#8b8b9a",
+  "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 10 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
+  "summary": "Varmora Granito IPO subscribed 30% so far on Day 3; GMP signals flat listing - Moneycontrol.com",
+  "answered": [
+   "Is the book filling?"
+  ],
+  "unanswered": [
+   "Does reporting say it makes money?",
+   "Is revenue growing?",
+   "Does the money go into the business?",
+   "Is the price being called reasonable?",
+   "Did serious institutions take an allocation?"
+  ],
+  "money": "10 of a possible 10 points on the ten tests the coverage could answer.",
+  "sources": [
+   "Moneycontrol.com (2026-09-24)"
+  ]
+ },
+ {
+  "title": "Adroit Industries IPO Day",
+  "kind": "IPO \u2014 dates unknown",
+  "colour": "#8b8b9a",
+  "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 0 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
+  "summary": "Adroit Industries IPO booked over 18x on Day 2; GMP soars to 25% - Moneycontrol.com",
+  "answered": [],
+  "unanswered": [
+   "Does reporting say it makes money?",
+   "Is revenue growing?",
+   "Does the money go into the business?",
+   "Is the price being called reasonable?",
+   "Did serious institutions take an allocation?"
+  ],
+  "money": "0 of a possible 0 points on the ten tests the coverage could answer.",
+  "sources": [
+   "Moneycontrol.com (2026-09-24)"
+  ]
+ },
+ {
   "title": "The hype, the",
   "kind": "New listing",
   "colour": "#8b8b9a",
@@ -466,7 +468,7 @@
    "Did serious institutions take an allocation?"
   ],
   "sources": [
-   "indiainfoline.com"
+   "India Infoline"
   ]
  },
  {
@@ -523,7 +525,7 @@
    "Did serious institutions take an allocation?"
   ],
   "sources": [
-   "reuters.com"
+   "Reuters"
   ]
  },
  {
@@ -542,7 +544,7 @@
    "Did serious institutions take an allocation?"
   ],
   "sources": [
-   "reuters.com"
+   "Reuters"
   ]
  },
  {
@@ -875,27 +877,6 @@
   ]
  },
  {
-  "title": "Varmora Granito",
-  "kind": "New listing",
-  "colour": "#8b8b9a",
-  "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 10 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
-  "summary": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live.",
-  "money": "10 of a possible 10 points on the ten tests the coverage could answer",
-  "answered": [
-   "Is the book filling?"
-  ],
-  "unanswered": [
-   "Does reporting say it makes money?",
-   "Is revenue growing?",
-   "Does the money go into the business?",
-   "Is the price being called reasonable?",
-   "Did serious institutions take an allocation?"
-  ],
-  "sources": [
-   "Moneycontrol.com"
-  ]
- },
- {
   "title": "Shah Investor\u2019s Home",
   "kind": "New listing",
   "colour": "#8b8b9a",
@@ -1087,6 +1068,27 @@
   ],
   "sources": [
    "NDTV Profit"
+  ]
+ },
+ {
+  "title": "Varmora Granito",
+  "kind": "New listing",
+  "colour": "#8b8b9a",
+  "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 10 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
+  "summary": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live.",
+  "money": "10 of a possible 10 points on the ten tests the coverage could answer",
+  "answered": [
+   "Is the book filling?"
+  ],
+  "unanswered": [
+   "Does reporting say it makes money?",
+   "Is revenue growing?",
+   "Does the money go into the business?",
+   "Is the price being called reasonable?",
+   "Did serious institutions take an allocation?"
+  ],
+  "sources": [
+   "Moneycontrol.com"
   ]
  },
  {
