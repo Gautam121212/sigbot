@@ -1138,12 +1138,25 @@ def _paper_body(data: dict) -> str:
   <p class="what-sm">Today's figures reset at the end of the day. Every trade
   stays in the ledger and in Daily P&amp;L — only this view resets.</p>"""
     else:
+        cycle = data.get("cycle", {})
+        phase = cycle.get("phase", "")
+        reason = {
+            "reset": "The day has just reset. Predictions for the next session "
+                     "are being made; trading begins when the market opens.",
+            "predict": "The market is closed. Predictions are set for the next "
+                       "session; paper trading places them when it opens.",
+            "closed": "The market has closed for the day. Paper trading is off "
+                      "until the next session.",
+            "trade": "The market is open. Trades appear here as gated signals "
+                     "are scored.",
+        }.get(phase, "A trade appears here when a gated signal is scored.")
+        reset = f'<p class="what-sm">{_e(cycle["reset_line"])}</p>' if cycle.get("reset_line") else ""
         banner = f"""
   <div class="card call">
     <div class="eyebrow"><span class="dot"></span>Today</div>
-    <h1>No trades yet today</h1>
-    <p class="lead">Starting capital {start:,.0f}. A trade appears here when a
-    gated signal is scored.</p>
+    <h1>No trades placed today</h1>
+    <p class="lead">Starting capital {start:,.0f}. {_e(reason)}</p>
+    {reset}
   </div>"""
 
     ret = state.get("total_return") or 0.0
@@ -1378,23 +1391,53 @@ def _picks_stamp(data: dict) -> str:
 
 
 def _predictions_rows(data: dict) -> str:
-    """One row per forecasting model, linking through to that model's page."""
+    """One row per forecasting model, with a pass/fail checker, linking through
+    to that model's page. Blanks between reset and the next prediction run."""
     MODEL_TITLES = {"stocks": "Stocks & funds", "crypto15m": "Crypto",
                     "news": "News", "contagion": "Follow-on moves",
                     "daily": "Daily outlook", "opportunity": "Opportunities"}
-    out = []
+    cycle = data.get("cycle", {})
+
+    # The cycle header: reset time, which day these are for, and the phase.
+    phase = cycle.get("phase", "")
+    header = ""
+    if cycle.get("reset_line"):
+        if phase == "reset":
+            header = (f'<div class="card"><p class="lead">Reset — no predictions '
+                      f'yet. New forecasts for the next session appear shortly.</p>'
+                      f'<p class="what-sm">{_e(cycle["reset_line"])}</p></div>')
+        elif phase in ("predict", "trade", "closed") and cycle.get("trading_day"):
+            locked = " (locked — market open)" if cycle.get("predictions_locked") else ""
+            header = (f'<div class="card"><p class="lead">Fixed predictions for '
+                      f'{_e(cycle["trading_day"])}{locked}.</p>'
+                      f'<p class="what-sm">{_e(cycle["reset_line"])}</p></div>')
+
+    # Between reset and the first prediction run, show nothing but the header.
+    if phase == "reset":
+        return header
+
+    out = [header] if header else []
     for m in data.get("models", []):
         mid = m.get("id", "")
-        n_rows = len(m.get("alerts", []))
+        alerts = m.get("alerts", [])
+        n_rows = len(alerts)
         scored = m.get("resolved", 0)
+        # Pass/fail checker: how many of this model's shown names are proven vs risky.
+        passed = sum(1 for a in alerts if a.get("scan_tier") == "PROVEN"
+                     or (a.get("lower") or 0) > (a.get("null") or 0.5))
+        failed = n_rows - passed
         colour = "var(--green)" if n_rows else "var(--faint)"
         title = MODEL_TITLES.get(mid, mid.title())
-        detail = (f"{n_rows} name(s) shown, {scored:,} prediction(s) scored"
-                  if n_rows else f"{scored:,} scored — nothing clears the bar to show yet")
+        checker = (f'<span class="badge" style="background:#2ecc7122;color:#2ecc71">'
+                   f'{passed} passing</span> '
+                   f'<span class="badge" style="background:#e5484d22;color:#e5484d">'
+                   f'{failed} not yet</span>' if n_rows else "")
+        detail = (f"{n_rows} name(s), {scored:,} scored"
+                  if n_rows else f"{scored:,} scored — nothing clears the bar yet")
         out.append(f"""
   <a href="#m-{_e(mid)}"><div class="card row">
     <span class="pip" style="background:{colour};margin-top:0"></span>
-    <div class="grow"><h3>{_e(title)}</h3>
+    <div class="grow"><h3>{_e(title)}  {checker}</h3>
       <p class="what-sm">{_e(m.get('subtitle', ''))}</p>
       <p>{_e(detail)}</p></div>
     <span class="chev">&rsaquo;</span></div></a>""")

@@ -156,6 +156,22 @@ def _row_hold_days(ledger, model_id: str, symbol: str) -> int | None:
     return 10
 
 
+def _cycle_info() -> dict:
+    """The daily-cycle phase for the Predictions and Paper pages."""
+    try:
+        from .daily_cycle import cycle_state, reset_line
+        st = cycle_state()
+        return {"phase": st.phase.value, "trading_day": st.trading_day,
+                "reset_line": reset_line(),
+                "predictions_locked": st.predictions_locked,
+                "show_predictions": st.phase.value in ("predict", "trade", "closed"),
+                "trading": st.phase.value == "trade"}
+    except Exception:  # noqa: BLE001  # handled: cycle info is cosmetic; page still renders
+        return {"phase": "unknown", "trading_day": "", "reset_line": "",
+                "predictions_locked": False, "show_predictions": True,
+                "trading": False}
+
+
 def _horizon_class(model_id: str, hold_days: int | None) -> str:
     """Classify a row as intra-day, short-term, or long-term.
 
@@ -583,6 +599,7 @@ def build_export(db_path: str = "shadow.db", patterns_path: str = "patterns.db",
         "opportunities": opportunities or [],
         "learning": learning,
         "paper": paper_state,
+        "cycle": _cycle_info(),
         "failures": failures,
         "alerts": all_alerts[:max_alerts],
         "patterns": patterns,
