@@ -146,6 +146,45 @@ def _capitulation(row: dict) -> bool:
     return w is not None and w < -90 and row.get("index_regime") == "down/volatile"
 
 
+def _accumulation_divergence(row: dict) -> bool:
+    """Price down over 10 days but OBV (volume) rising — quiet accumulation.
+    Worth +0.29% in normal times, but it INVERTS in a crisis (2023 banks
+    -3.28%, COVID -0.99%), so it is HARD-GATED to fire only when the market is
+    NOT in a volatile decline.
+
+    COLLISION GUARD: requires the 10-day price change in (-8%, -3%] and a
+    non-crisis regime. The -8% floor keeps it clear of _hard_down_day (a single
+    -8% day) and the extreme oversold signals, which own the deeper falls.
+    """
+    px10 = row.get("price_change_10d")
+    obv_rising = row.get("obv_rising")
+    regime = row.get("index_regime")
+    if px10 is None or obv_rising is None:
+        return False
+    # Crisis filter: never in a volatile decline — that is where it inverts.
+    if regime == "down/volatile":
+        return False
+    return -0.08 < px10 <= -0.03 and obv_rising is True
+
+
+def _hammer_in_downtrend(row: dict) -> bool:
+    """A hammer candle while oversold (RSI 20-40) — confirmed in all three
+    periods (+0.27 / +0.12 / +0.26% over 5d). The candlestick ALONE fails; it
+    is the hammer PLUS the oversold context that works.
+
+    COLLISION GUARD: deliberately requires RSI in [20, 40), so it can never
+    fire on the same row as _oversold_money_holding (RSI < 20) or the
+    capitulation setup. Each row triggers at most one reversal signal, so the
+    ledger never double-counts one day as two independent forecasts.
+    """
+    hammer = row.get("cdl_hammer")
+    rsi = row.get("rsi_14")
+    if hammer is None or rsi is None or hammer == 0:
+        return False
+    # 20 <= RSI < 40: oversold, but NOT the extreme the other signals own.
+    return 20.0 <= rsi < 40.0
+
+
 def _stretched_below_trend(row: dict) -> bool:
     """25% or more below the 200-day average — 49.2% on 204,051 sessions."""
     close, sma = row.get("close"), row.get("sma_200")
@@ -212,11 +251,29 @@ CANDIDATES: tuple[Candidate, ...] = (
         pooled_edge_pp=2.5, pooled_n=15175, eras_positive=3,
         beats_holding=False, payoff_ratio=1.25, style="momentum", hold_days=20),
     Candidate(
+        name="hammer-in-downtrend", side="BUY",
+        plain=("A hammer candlestick — a day that fell hard then closed back "
+               "near its open — while the stock is oversold but not in free "
+               "fall. The pattern plus the oversold context has marked short "
+               "rebounds; the pattern alone has not."),
+        condition=_hammer_in_downtrend,
+        pooled_edge_pp=0.22, pooled_n=24277, eras_positive=3,
+        beats_holding=True, payoff_ratio=1.1, style="reversion", hold_days=5),
+    Candidate(
         name="hard-down-day", side="BUY",
         plain=("Down more than 8% in one session. Often overdone — but the "
                "edge leans heavily on 2020-22, so this one is unproven."),
         condition=_hard_down_day,
         pooled_edge_pp=5.4, pooled_n=31831, eras_positive=2),
+    Candidate(
+        name="accumulation-divergence", side="BUY",
+        plain=("The price has drifted down over two weeks while trading volume "
+               "flowed IN — a sign that steady buyers are accumulating under the "
+               "weakness. Switched off during a market crisis, where the same "
+               "pattern has meant the opposite."),
+        condition=_accumulation_divergence,
+        pooled_edge_pp=0.29, pooled_n=95094, eras_positive=2,
+        beats_holding=False, payoff_ratio=1.1, style="reversion", hold_days=10),
     Candidate(
         name="stretched-below-trend", side="BUY",
         plain=("A quarter or more below its own one-year average. A long way "
@@ -347,7 +404,11 @@ def scan_row(symbol: str, row: dict) -> Hit | None:
     if not firing:
         return None
 
-    firing.sort(key=lambda c: (tier_of(c) != PROVEN, -c.conviction_pct))
+    # Exactly one signal per row: proven before risky, then higher conviction,
+    # then name as a stable final tiebreak so the pick is deterministic and a
+    # row is never recorded as two forecasts. This is the collision resolver —
+    # candidates may overlap, but only one is ever chosen and logged.
+    firing.sort(key=lambda c: (tier_of(c) != PROVEN, -c.conviction_pct, c.name))
     best = firing[0]
     weight, why = context_multiplier(row)
     return Hit(symbol=symbol, candidate=best, tier=tier_of(best),

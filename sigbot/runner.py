@@ -211,6 +211,39 @@ def _open_book(ledger) -> tuple[int, dict[str, int]]:
     return n, sectors
 
 
+def _obv_rising(bars) -> bool | None:
+    """True if on-balance volume is higher than 10 bars ago — buyers flowing in."""
+    if "volume" not in bars or "close" not in bars or len(bars) < 12:
+        return None
+    try:
+        ch = bars["close"].diff()
+        direction = (ch > 0).astype(float) - (ch < 0).astype(float)
+        obv = (direction * bars["volume"]).cumsum()
+        return bool(obv.iloc[-1] > obv.iloc[-11])
+    except Exception:  # noqa: BLE001  # handled: unreadable volume -> no signal
+        return None
+
+
+def _hammer_flag(bars) -> float:
+    """A simple hammer: small body near the top of the range, long lower wick.
+    Returns 1.0 for a hammer, 0.0 otherwise — enough for the scan's flag."""
+    if not all(c in bars for c in ("open", "high", "low", "close")) or len(bars) < 1:
+        return 0.0
+    try:
+        o, h, low, c = (float(bars[x].iloc[-1]) for x in ("open", "high", "low", "close"))
+        rng = h - low
+        if rng <= 0:
+            return 0.0
+        body = abs(c - o)
+        lower_wick = min(o, c) - low
+        upper_wick = h - max(o, c)
+        # small body, long lower wick, little upper wick
+        return 1.0 if (body <= rng * 0.35 and lower_wick >= rng * 0.5
+                       and upper_wick <= rng * 0.15) else 0.0
+    except Exception:  # noqa: BLE001  # handled: unreadable bar -> no hammer
+        return 0.0
+
+
 def market_regime(closes) -> str | None:
     """"up" or "down" (index vs its 200-day average) / "calm" or "volatile"
     (20-day volatility vs its own long-run median) — the split under which
@@ -904,11 +937,22 @@ def run_opportunities(messenger=None, settings=SETTINGS, hours: int = 24) -> Non
 
         from .opportunity_sectors import build_sector_cards, to_rows
         from .ventures import Venture
-        ventures = [Venture(t, th, up, pw, ev, cap, tuple(src))
-                    for (t, th, up, pw, ev, cap, src) in EXAMPLE_VENTURES]
+        # Only REAL ventures reach the page. Until a live venture feed exists,
+        # this is empty and every card reads "no live ventures yet" — never the
+        # example ventures, which were misleading (they looked real). Set
+        # SIGBOT_SHOW_EXAMPLE_VENTURES=1 to preview the examples in dev only.
+        import os as _os
+        if _os.environ.get("SIGBOT_SHOW_EXAMPLE_VENTURES") == "1":
+            ventures = [Venture(t, th, up, pw, ev, cap, tuple(src))
+                        for (t, th, up, pw, ev, cap, src) in EXAMPLE_VENTURES]
+        else:
+            ventures = []
+        # Real sector breadth (% of each sector's names in an uptrend) for the
+        # mean-reversion timing flag. Best-effort; empty if it can't be read.
+        breadth = _sector_breadth_map(settings)
         Path("opportunity_sectors.json").write_text(
             _json.dumps({"generated_at": datetime.now(timezone.utc).isoformat(),
-                         "sectors": to_rows(build_sector_cards(ventures))}, indent=1),
+                         "sectors": to_rows(build_sector_cards(ventures, breadth))}, indent=1),
             encoding="utf-8")
     except Exception as exc:  # noqa: BLE001  # handled: recorded; the news cards still write
         record_skip("opportunity", "sector-cards", exc)
@@ -2258,6 +2302,51 @@ VENTURE_COUNTRY = {
 }
 
 
+def _sector_breadth_map(settings=SETTINGS) -> dict:
+    """% of each industry's stocks in an uptrend, mapped to the 20 sector names.
+
+    Reuses the board scan's own daily bars; failures yield an empty map so the
+    mean-reversion flag simply does not show rather than blocking the run.
+    """
+    from collections import defaultdict
+
+    from .opportunity_sectors import SECTORS
+    # GICS sector -> the industry card names that map to it (reverse of the
+    # sectors table's second column, kept simple: match by shared words).
+    try:
+        market = YahooProvider()
+        end = (datetime.now(timezone.utc) + timedelta(days=1)).strftime("%Y-%m-%d")
+        agg: dict[str, list] = defaultdict(list)
+        for asset in board_assets(settings):
+            if getattr(asset, "kind", "equity") != "equity":
+                continue
+            sector = _sector_of(asset.symbol)
+            if sector == "unknown":
+                continue
+            try:
+                bars = market.history(asset.symbol, settings.history_start, end)
+                if len(bars) < 200:
+                    continue
+                up = float(bars["close"].iloc[-1]) > float(bars["close"].tail(200).mean())
+                agg[sector].append(1.0 if up else 0.0)
+            except Exception as exc:  # noqa: BLE001  # handled: recorded; the name is skipped
+                record_skip("sectors", asset.symbol, exc)
+        gics_breadth = {sec: 100.0 * sum(v) / len(v) for sec, v in agg.items() if v}
+        # Map GICS breadth to the 20 industry card names by their GICS column.
+        # The SECTORS table is (industry, blurb); the gics mapping lives in the
+        # older sectors module — here we approximate by name containment.
+        out = {}
+        for industry, _blurb in SECTORS:
+            for gics, pct in gics_breadth.items():
+                if gics.split()[0].lower() in industry.lower() or industry.split()[0].lower() in gics.lower():
+                    out[industry] = pct
+                    break
+        return out
+    except Exception as exc:  # noqa: BLE001  # handled: recorded; empty map, flag simply hidden
+        record_skip("sectors", "breadth", exc)
+        return {}
+
+
 def run_opportunities_review(settings=SETTINGS) -> None:
     """Business ventures, judged by asymmetry (barbell), not by a stock edge.
 
@@ -2436,6 +2525,13 @@ def run_stocks(settings=SETTINGS) -> None:
                          if "high" in bars and len(bars) > 60 else None),
                 "willr_14": _williams(bars),
                 "atr_14": _atr_last(bars),
+                # 10-day price change and whether OBV rose over the same window
+                # (for accumulation-divergence), and a simple hammer flag (for
+                # hammer-in-downtrend). All fail closed to None/False.
+                "price_change_10d": (float(bars["close"].iloc[-1] / bars["close"].iloc[-11] - 1)
+                                     if len(bars) > 11 else None),
+                "obv_rising": _obv_rising(bars),
+                "cdl_hammer": _hammer_flag(bars),
                 "volume": float(bars["volume"].iloc[-1]) if "volume" in bars else None,
                 "volume_ma_20": (float(bars["volume"].tail(20).mean())
                                  if "volume" in bars else None),

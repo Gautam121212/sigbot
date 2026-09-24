@@ -124,6 +124,12 @@ class ModelView:
         return self.__dict__.copy()
 
 
+
+# A row is not shown until the model has scored at least this many predictions
+# for it. Below this a hit rate is noise ("1 check, 100%"), which was the most
+# confusing thing on the page. Every model, every row obeys this.
+MIN_DISPLAY_CHECKS = 5
+
 def _status_line(tier: Tier, n: int, rate: float | None, need: int | None) -> str:
     if n == 0:
         return "Nothing checked yet. It stays quiet until it has something to show."
@@ -452,8 +458,12 @@ def build_export(db_path: str = "shadow.db", patterns_path: str = "patterns.db",
             # that shows a tenth of the board cannot answer "where should I
             # look", which is the only question it is there for. Ordered by
             # worst-case floor so the closest-to-qualifying sit at the top.
+            # Only rows with at least MIN_DISPLAY_CHECKS scored predictions,
+            # sorted by conviction (worst-case floor, then count) so the most
+            # convincing sit at the top. A row with 4 checks shows nothing.
             for sym, (cnt, r, lo) in sorted(
-                ledger.stats(model_id).items(),
+                ((s, v) for s, v in ledger.stats(model_id).items()
+                 if v[0] >= MIN_DISPLAY_CHECKS),
                 key=lambda kv: (-kv[1][2], -kv[1][0]))
             for t, _, _ in [ledger.tier(model_id, sym)]
         ]

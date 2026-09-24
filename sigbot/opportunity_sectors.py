@@ -18,6 +18,10 @@ from dataclasses import dataclass, field
 from .ventures import Venture
 
 # The 20 industries, each a card. Ventures are assigned to a sector by keyword.
+# Sector mean-reversion thresholds (% of a sector's stocks in an uptrend).
+WASHED_OUT = 30.0           # below this: recovery-likely within ~3 months
+SECTOR_HOT = 70.0           # above this: decline-likely
+
 SECTORS: tuple[tuple[str, str], ...] = (
     ("Agriculture", "Crops, livestock, and raw food materials."),
     ("Mining", "Extraction of minerals, oil, gas, and geological materials."),
@@ -74,6 +78,7 @@ class SectorCard:
     ventures: tuple = field(default_factory=tuple)
     worth_taking: int = 0
     risky: int = 0
+    breadth_signal: str = ""   # "recovery-likely", "decline-likely", or ""
 
     @property
     def risky_label(self) -> bool:
@@ -106,8 +111,25 @@ def _readiness(ventures) -> float:
     return round(sum(scores) / len(scores), 1)
 
 
-def build_sector_cards(ventures) -> list[SectorCard]:
-    """The 20 cards, always all 20 (empty ones included), sorted by readiness."""
+def sector_timing(breadth_pct: float | None) -> str:
+    """Mean-reversion timing from the sector's own breadth (% in uptrend)."""
+    if breadth_pct is None:
+        return ""
+    if breadth_pct < WASHED_OUT:
+        return "recovery-likely"
+    if breadth_pct > SECTOR_HOT:
+        return "decline-likely"
+    return ""
+
+
+def build_sector_cards(ventures, breadth: dict[str, float] | None = None
+                       ) -> list[SectorCard]:
+    """The 20 cards, always all 20 (empty ones included), sorted by readiness.
+
+    breadth maps a sector name to the % of its stocks in an uptrend, used only
+    for the mean-reversion timing flag.
+    """
+    breadth = breadth or {}
     by_sector: dict[str, list] = {name: [] for name, _ in SECTORS}
     for v in ventures:
         by_sector[assign_sector(v)].append(v)
@@ -118,7 +140,8 @@ def build_sector_cards(ventures) -> list[SectorCard]:
         risky = [v for v in vs if v.risky]
         cards.append(SectorCard(
             sector=name, blurb=blurb, readiness=_readiness(vs),
-            ventures=tuple(vs), worth_taking=len(takers), risky=len(risky)))
+            ventures=tuple(vs), worth_taking=len(takers), risky=len(risky),
+            breadth_signal=sector_timing(breadth.get(name))))
     return sorted(cards, key=lambda c: -c.readiness)
 
 
@@ -128,6 +151,7 @@ def to_rows(cards) -> list[dict]:
     for c in cards:
         rows.append({
             "sector": c.sector, "blurb": c.blurb, "readiness": c.readiness,
+            "breadth_signal": c.breadth_signal,
             "worth_taking": c.worth_taking, "risky": c.risky,
             "risky_label": c.risky_label,
             "ventures": [{

@@ -49,7 +49,9 @@ def test_nothing_currently_ships_as_proven():
     # measured beyond the index over the same days — the first candidate to.
     # It stays RISKY: a second-round finding whose evidence clusters on panic
     # days. Nothing else beats holding.
-    assert [c.name for c in CANDIDATES if c.beats_holding] == ["capitulation"]
+    # Signals confirmed to beat the index within their regime, in all periods.
+    assert set(c.name for c in CANDIDATES if c.beats_holding) == {
+        "capitulation", "hammer-in-downtrend"}
 
 
 def test_conviction_is_mostly_era_consistency():

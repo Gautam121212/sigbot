@@ -1716,6 +1716,12 @@ def _sector_rows(model: dict) -> str:
         colour = "var(--green)" if worth else "var(--faint)"
         risky_tag = (f'<span class="badge" style="background:#e0a03022;'
                      f'color:#e0a030">{risky} risky</span>' if risky else "")
+        sig = c.get("breadth_signal", "")
+        timing_tag = ("" if not sig else
+                      '<span class="badge" style="background:#2ecc7122;'
+                      'color:#2ecc71">recovery-likely</span>' if sig == "recovery-likely"
+                      else '<span class="badge" style="background:#e5484d22;'
+                      'color:#e5484d">cooling</span>')
         # Plain-language, not a percentage that reads as a prediction. The
         # "appeal" bar is how attractive the ventures inside are (their
         # expected value), NOT a probability and NOT a predicted move.
@@ -1725,7 +1731,7 @@ def _sector_rows(model: dict) -> str:
         out.append(f"""
     <a href="#sec-{slug}"><div class="card row">
       <span class="pip" style="background:{colour};margin-top:0"></span>
-      <div class="grow"><h3>{_e(c.get('sector', ''))}  {risky_tag}</h3>
+      <div class="grow"><h3>{_e(c.get('sector', ''))}  {risky_tag} {timing_tag}</h3>
         <p class="what-sm">{_e(c.get('blurb', ''))}</p>
         <p>{_e(detail)}</p>
         {_bar("appeal", readiness, colour)}</div>

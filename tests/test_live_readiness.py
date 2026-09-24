@@ -22,11 +22,15 @@ def test_momentum_only_buys_in_a_calm_uptrend():
 def test_each_school_holds_for_its_own_period():
     holds = {c.name: c.hold_days for c in CANDIDATES}
     assert holds["momentum-breakout"] == 20
+    assert holds["hammer-in-downtrend"] == 5
+    assert holds["accumulation-divergence"] == 10
     # Capitulation holds 20 days: a pre-registered test of 5 / 10 / 20 found
     # panic rebounds take weeks (+1.04% / +0.62% / +1.09% at 20 days).
     assert holds["capitulation"] == 20
+    # The rest hold 10 days, excluding the ones with their own measured periods.
     assert all(d == 10 for n, d in holds.items()
-               if n not in ("momentum-breakout", "capitulation"))
+               if n not in ("momentum-breakout", "capitulation",
+                            "hammer-in-downtrend", "accumulation-divergence"))
 
 
 def test_trades_are_scored_at_their_real_holding_period():
