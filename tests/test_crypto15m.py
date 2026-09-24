@@ -56,7 +56,8 @@ def test_the_cost_bar_is_far_above_a_round_trip():
 def test_too_little_history_returns_nothing_rather_than_a_neutral_guess():
     """A fabricated 50% is indistinguishable from a measured one once it is in
     the ledger."""
-    assert forecast("X-USD", _bars(n=100)) is None
+    # Daily mode needs 60 bars; 40 is too few for either mode.
+    assert forecast("X-USD", _bars(n=40)) is None
     assert forecast("X-USD", None) is None
 
 
@@ -130,26 +131,15 @@ def test_min_bars_leaves_room_to_hold_out():
     assert MIN_BARS >= 200
 
 
-def test_the_fetch_window_is_one_request_per_pair():
-    """45 days of 15-minute bars is 4,320 — five Binance requests each, and at
-    a hundred pairs that is five hundred calls every quarter hour, redownloading
-    the same history. A job that takes five times longer than it needs
-    eventually overruns its window on a slow day and then alerts as a failure."""
-    import re
-    from pathlib import Path
+def test_crypto_uses_coingecko_daily_not_binance():
+    """Binance is region-blocked on the runners (403), which silently stopped
+    crypto. The model now fetches from CoinGecko daily."""
+    import inspect
 
-    from sigbot.crypto15m import MIN_BARS
-    from sigbot.providers.binance import MAX_BARS
-
-    src = (Path(__file__).resolve().parents[1] / "sigbot" / "runner.py").read_text()
-    window = re.search(r"timedelta\(days=(\d+)\)\)\.strftime\(\"%Y-%m-%d\"\)\n\n    out = \[\]",
-                       src)
-    days = int(window.group(1)) if window else 45
-
-    bars = days * 96
-    assert bars <= MAX_BARS, f"{days} days is {bars} bars, more than one request"
-    assert bars >= MIN_BARS * 2, "must still leave room to fit and hold out"
-
+    import sigbot.runner as runner
+    src = inspect.getsource(runner.run_crypto15m)
+    assert "CoinGeckoProvider" in src and "liquid_coins" in src
+    assert "BinanceProvider" not in src
 
 def test_the_pair_count_is_a_choice_not_a_limit(monkeypatch):
     """Binance allows a thousand bars a request and does not charge, so the

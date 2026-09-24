@@ -1266,33 +1266,31 @@ def run_crypto15m(messenger=None, settings=SETTINGS,
     What it does buy is breadth: a thin pair and a deep one fail differently,
     and only one of those failures is informative.
     """
-    from .crypto15m import HORIZON_BARS, MODEL_NAME, forecast, summarise
-    from .providers.binance import BinanceProvider, liquid_pairs
+    from .crypto15m import MODEL_NAME, forecast, summarise
+    from .providers.coingecko import CoinGeckoProvider, liquid_coins
 
     messenger = messenger or default_messenger()
     ledger = ShadowLedger(settings.shadow_db)
-    provider = BinanceProvider()
+    provider = CoinGeckoProvider()
 
+    # Binance (the old 15-minute source) is region-blocked on the GitHub
+    # runners (403), which silently stopped crypto on 2026-09-07. CoinGecko's
+    # free API is reachable and gives DAILY bars with volume. The 15-minute
+    # model never had an edge; the two crypto edges that hold (low-volume-drop,
+    # crowding) are daily anyway, so this loses nothing real and restores a
+    # working source. Horizon is now one day.
     try:
-        symbols = liquid_pairs(pairs)
-    except Exception as exc:  # noqa: BLE001
-        record_skip("crypto15m", "pairs", exc)
-        print(f"could not list pairs: {type(exc).__name__}: {exc}")
+        symbols = liquid_coins()
+    except Exception as exc:  # noqa: BLE001  # handled: recorded; no coins, no run
+        record_skip("crypto15m", "coins", exc)
+        print(f"could not list coins: {type(exc).__name__}: {exc}")
         return
-
-    end = (datetime.now(timezone.utc) + timedelta(minutes=15)).strftime("%Y-%m-%d")
-    # Ten days is ~960 fifteen-minute bars: one Binance request per pair, and
-    # comfortably more than the 400 the model needs to fit. Forty-five days was
-    # five requests per pair, re-downloading the same history every quarter
-    # hour — five hundred calls a run at a hundred pairs, which eventually
-    # overruns the window on a slow day and then alerts as a failure.
-    start = (datetime.now(timezone.utc) - timedelta(days=10)).strftime("%Y-%m-%d")
 
     out = []
     for symbol in symbols:
         try:
-            bars = provider.history(symbol, start, end, "15m")
-        except Exception as exc:  # noqa: BLE001
+            bars = provider.history(symbol)
+        except Exception as exc:  # noqa: BLE001  # handled: recorded; skip this coin
             record_skip("crypto15m", symbol, exc)
             continue
         result = forecast(symbol, bars)
@@ -1301,20 +1299,14 @@ def run_crypto15m(messenger=None, settings=SETTINGS,
                         RuntimeError("not enough history to fit"))
             continue
         out.append(result)
-        # Every forecast is recorded, tradeable or not. Recording only the
-        # tradeable ones would make the hit rate a measure of the gate rather
-        # than of the model.
+        # Every forecast recorded, tradeable or not, so the hit rate measures
+        # the model and not the gate. Daily horizon: 24 hours.
         ledger.record(MODEL_NAME, symbol, result.side, result.score,
-                      result.expected_move, result.entry,
-                      # Four fifteen-minute bars is one hour. The ledger keeps
-                      # whole hours, which is the finest resolution the
-                      # existing resolver works in — so the horizon is rounded
-                      # up rather than silently truncated to zero.
-                      horizon_hours=max(1, round(HORIZON_BARS * 0.25)))
+                      result.expected_move, result.entry, horizon_hours=24)
 
     ledger.log_run(MODEL_NAME, considered=len(symbols),
                    signals=sum(1 for f in out if f.tradeable),
-                   note=f"{len(out)} scored")
+                   note=f"{len(out)} scored (CoinGecko daily)")
     print(summarise(out))
 
 

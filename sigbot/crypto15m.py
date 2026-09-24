@@ -60,7 +60,8 @@ ROUND_TRIP_COST = 0.0012             # 12 basis points
 # fills the ledger with successes you could not have taken.
 COST_MULTIPLE = 2.5
 
-MIN_BARS = 400                       # enough to fit and still hold out
+MIN_BARS = 400                       # 15-minute mode: enough to fit and hold out
+MIN_BARS_DAILY = 60                  # daily mode (CoinGecko): 60 days is plenty
 
 
 @dataclass
@@ -76,38 +77,52 @@ class IntradayForecast:
 
 
 def _features(bars: pd.DataFrame) -> pd.DataFrame:
-    """Momentum, range and volume, on the same shapes the daily model uses."""
+    """Momentum, range and volume. Window sizes scale to the bar count: the
+    15-minute path (400+ bars) uses long windows; the daily path (~90 bars)
+    uses short ones, so the features are not all NaN on daily data."""
     close = bars["close"].astype(float)
     high = bars["high"].astype(float)
     low = bars["low"].astype(float)
     volume = bars["volume"].astype(float)
     r = np.log(close).diff()
 
+    daily = len(bars) <= 200
+    w_med, w_long = (4, 8) if daily else (16, 96)      # medium / long windows
+    w_short = 2 if daily else 4
+
     out = pd.DataFrame(index=bars.index)
     out["r1"] = r
-    out["r4"] = r.rolling(4).sum()
-    out["r16"] = r.rolling(16).sum()
-    out["vol16"] = r.rolling(16).std()
-    out["vol96"] = r.rolling(96).std()
-    # Where the close sits inside the bar. A close at the high after a wide
-    # range is a different thing from the same return on a narrow one.
+    out["r4"] = r.rolling(w_short).sum()
+    out["r16"] = r.rolling(w_med).sum()
+    out["vol16"] = r.rolling(w_med).std()
+    out["vol96"] = r.rolling(w_long).std()
     span = (high - low).replace(0.0, np.nan)
     out["position"] = (close - low) / span
     out["range"] = span / close
-    out["volume_z"] = ((volume - volume.rolling(96).mean())
-                       / volume.rolling(96).std())
+    out["volume_z"] = ((volume - volume.rolling(w_long).mean())
+                       / volume.rolling(w_long).std())
     return out.replace([np.inf, -np.inf], np.nan)
 
 
 def forecast(symbol: str, bars: pd.DataFrame,
-             horizon: int = HORIZON_BARS) -> IntradayForecast | None:
+             horizon: int | None = None) -> IntradayForecast | None:
     """One forecast from the most recent closed bar.
 
     Returns None rather than a neutral forecast when there is not enough
     history: a fabricated 50% is indistinguishable from a measured one once it
     is in the ledger.
+
+    Auto-detects daily vs 15-minute by bar count: <=200 bars is treated as
+    daily (CoinGecko), which uses a 1-bar horizon and a 60-bar minimum. The old
+    15-minute path (Binance, now blocked) still works if ever given 400+ bars.
     """
-    if bars is None or len(bars) < MIN_BARS:
+    if bars is None:
+        return None
+    daily = len(bars) <= 200
+    min_bars = MIN_BARS_DAILY if daily else MIN_BARS
+    if horizon is None:
+        horizon = 1 if daily else HORIZON_BARS
+    if len(bars) < min_bars:
         return None
 
     features = _features(bars)
@@ -118,7 +133,7 @@ def forecast(symbol: str, bars: pd.DataFrame,
     frame["y"] = (forward > 0).astype(float)
     frame["move"] = forward
     frame = frame.dropna()
-    if len(frame) < MIN_BARS // 2:
+    if len(frame) < min_bars // 2:
         return None
 
     columns = [c for c in features.columns]
@@ -128,8 +143,11 @@ def forecast(symbol: str, bars: pd.DataFrame,
     # Fit on everything except the tail, score the tail. Fitting on all of it
     # and scoring the same rows is how a backtest reports skill it does not
     # have.
-    split = int(len(x) * 0.8)
-    if split < 50 or len(x) - split < 20:
+    # Train/test split thresholds scale to the horizon. Daily data has far
+    # fewer rows than 15-minute, so the 15-min minimums would reject it.
+    split = int(len(x) * 0.7 if daily else len(x) * 0.8)
+    min_train, min_test = (30, 10) if daily else (50, 20)
+    if split < min_train or len(x) - split < min_test:
         return None
 
     from sklearn.linear_model import LogisticRegression
@@ -173,6 +191,16 @@ def forecast(symbol: str, bars: pd.DataFrame,
     if crowd.crowded and side == "BUY":
         tradeable = False
         reason = "stood aside — " + crowd.reason
+
+    # Low-volume-drop rebound (confirmed both halves, +1.77%/+1.69% next 3 days):
+    # a quiet 3%+ drop tends to rebound in crypto. When present on a BUY, it is
+    # a positive confirmation and the forecast notes it. Uses the volume column.
+    if side == "BUY" and "volume" in bars:
+        from .crypto_signals import low_volume_drop_reversal
+        fires, why = low_volume_drop_reversal(close.tolist(),
+                                              bars["volume"].astype(float).tolist())
+        if fires:
+            reason = reason + f" | low-vol rebound signal: {why}"
 
     return IntradayForecast(symbol, side, score, expected,
                             float(close.iloc[-1]), horizon, reason, tradeable)

@@ -582,7 +582,7 @@ def _model_page(m: dict) -> str:
     <p class="what-sm" style="margin-top:10px">Next tier: {_e(m.get('ready_in', ''))}.
     {_e(_null_note(m))}</p>
     <p class="what-sm">Intake: {_e(m.get('intake', ''))}.</p>
-    {_bar("progress to a verdict", m.get("sample_progress", 0), "var(--indigo)")}
+    {_bar("ready to act (real trading)", m.get("sample_progress", 0), "var(--indigo)")}
     <p class="what-sm">{_e(m.get('benchmark', ''))}</p>
     <span class="badge" style="background:{tc}1f;color:{tc}">{_e(TIER_PLAIN.get(m['tier'], m['tier']))}</span>
     {_meter((m.get('lower_bound') or 0) * 100, tc)}
@@ -1939,6 +1939,6 @@ def _one_scan_row(a: dict) -> str:
       <p style="color:{colour};font-weight:600">{label}</p>
       {f'<p class="what-sm">{_e(a["description"])}</p>' if a.get("description") else ''}
       <p>{_e(a.get('detail', ''))}</p>
-      {_bar("conviction", conviction, colour)}
-      {_bar("record", a.get("to_trade", 0), colour)}</div>
+      {_bar("confidence", conviction, colour)}
+      {_bar("ready to act", a.get("to_trade", 0), colour)}</div>
     <span class="chev">&rsaquo;</span></div></a>"""
