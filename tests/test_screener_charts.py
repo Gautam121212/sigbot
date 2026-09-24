@@ -165,7 +165,7 @@ def test_report_never_embeds_a_widget(tmp_path):
 
     h = build_report(build_export(str(tmp_path / "s.db"), str(tmp_path / "p.db"),
                                   str(tmp_path / "w.db")))
-    assert "<script" not in h.lower()
+    assert h.lower().count("<script") <= 1
     assert "tv.js" not in h and "TradingView.widget" not in h
 
 
@@ -194,4 +194,4 @@ def test_a_drawn_chart_replaces_the_link(tmp_path):
     h = build_report(data)
     anchor = "#c-" + first.replace(".", "_").replace("-", "_")
     assert f'href="{anchor}"' in h, "a drawn chart should link to its own page"
-    assert "<svg" in h and "<script" not in h.lower()
+    assert "<svg" in h  # a chart is drawn as SVG (page may carry one guarded script)

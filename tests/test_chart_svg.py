@@ -74,7 +74,7 @@ def test_reading_refuses_to_forecast(bars):
 
 def test_chart_block_is_script_free_and_escaped(bars):
     block = chart_block(bars, "T", '<img src=x onerror="alert(1)">')
-    assert "<script" not in block.lower()
+    assert "<script" not in block.lower()  # a chart block carries no script
     assert 'onerror="alert(1)"' not in block and "&lt;img" in block
 
 

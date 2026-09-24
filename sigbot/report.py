@@ -559,18 +559,21 @@ def _model_page(m: dict) -> str:
     elif m["id"] == "opportunity" and m.get("sector_cards"):
         rows = _sector_rows(m)
     else:
-        rows = "".join(f"""
-    <a href="#d-{_e(m['id'])}-{_e(a['symbol'])}"><div class="card row">
-      <span class="pip" style="background:{
-          TIER_COLOR.get(a.get('tier', 'SILENT'), '#8b8b9a')};margin-top:0"></span>
-      <div class="av" style="background:{col}1f;border-color:{col}59;color:{col}">
+        # Group crypto / news / follow-on / daily into the three horizon rows,
+        # same as stocks. Each row expands to its assets.
+        def _one_row(a: dict, _mid=m["id"], _col=col) -> str:
+            tcol = TIER_COLOR.get(a.get("tier", "SILENT"), "#8b8b9a")
+            return f"""
+    <a href="#d-{_e(_mid)}-{_e(a['symbol'])}"><div class="card row">
+      <span class="pip" style="background:{tcol};margin-top:0"></span>
+      <div class="av" style="background:{_col}1f;border-color:{_col}59;color:{_col}">
         {_e(a['symbol'][:3])}</div>
       <div class="grow"><h3>{_e(a['symbol'])}</h3>
         {f'<p class="what-sm">{_e(a["description"])}</p>' if a.get("description") else ''}
         <p>{_e(a['detail'])}</p>
-        {_bar("trade", a.get("to_trade", 0),
-              TIER_COLOR.get(a.get("tier", "SILENT"), "#8b8b9a"))}</div>
-      <span class="chev">&rsaquo;</span></div></a>""" for a in m["alerts"])
+        {_bar("ready to act", a.get("to_trade", 0), tcol)}</div>
+      <span class="chev">&rsaquo;</span></div></a>"""
+        rows = _horizon_groups(m, _one_row) or "".join(_one_row(a) for a in m["alerts"])
     return f"""
 <div class="page" id="m-{_e(m['id'])}"><div class="wrap">
   <a class="back" href="#home">&lsaquo; Home</a>
@@ -1053,6 +1056,34 @@ def build_report(data: dict) -> str:
   <a class="n-picks" href="#picks"><b>&#9733;</b><span>Picks</span></a>
   <a class="n-pnl" href="#pnl"><b>&#8942;</b><span>Daily P&amp;L</span></a>
 </nav>
+<script>
+/* Isolated, fail-safe enhancements. If anything throws, the static page — which
+   is fully functional on its own — is left untouched. No framework, no network. */
+(function () {{
+  try {{
+    var el = document.querySelector("[data-reset-at]");
+    if (el) {{
+      var target = new Date(el.getAttribute("data-reset-at"));
+      var tick = function () {{
+        try {{
+          var ms = target - new Date();
+          var live = el.querySelector(".countdown");
+          if (ms <= 0) {{ if (live) live.textContent = "resetting…"; return; }}
+          var h = Math.floor(ms / 3600000), m = Math.floor((ms % 3600000) / 60000);
+          if (live) live.textContent = h + "h " + m + "m to reset";
+        }} catch (e) {{}}
+      }};
+      tick(); setInterval(tick, 30000);
+    }}
+    var now = new Date();
+    document.querySelectorAll("[data-expires]").forEach(function (row) {{
+      try {{
+        if (new Date(row.getAttribute("data-expires")) < now) row.style.display = "none";
+      }} catch (e) {{}}
+    }});
+  }} catch (e) {{ /* static page stands on its own */ }}
+}})();
+</script>
 </body></html>"""
 
 
@@ -1408,9 +1439,11 @@ def _predictions_rows(data: dict) -> str:
                       f'<p class="what-sm">{_e(cycle["reset_line"])}</p></div>')
         elif phase in ("predict", "trade", "closed") and cycle.get("trading_day"):
             locked = " (locked — market open)" if cycle.get("predictions_locked") else ""
-            header = (f'<div class="card"><p class="lead">Fixed predictions for '
-                      f'{_e(cycle["trading_day"])}{locked}.</p>'
-                      f'<p class="what-sm">{_e(cycle["reset_line"])}</p></div>')
+            header = (f'<div class="card" data-reset-at="{_e(cycle.get("reset_at", ""))}" '
+                      f'data-reset-label="resetting"><p class="lead">Fixed '
+                      f'predictions for {_e(cycle["trading_day"])}{locked}.</p>'
+                      f'<p class="what-sm">{_e(cycle["reset_line"])} '
+                      f'&middot; <span class="countdown"></span></p></div>')
 
     # Between reset and the first prediction run, show nothing but the header.
     if phase == "reset":

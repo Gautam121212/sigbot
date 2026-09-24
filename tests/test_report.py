@@ -49,14 +49,17 @@ def report(tmp_path):
     return build_report(data), data
 
 
-def test_no_javascript_anywhere(report):
-    """iOS Quick Look previews HTML with scripts disabled. Anything drawn by
-    JavaScript is invisible there, which is how the first build showed only a
-    title bar."""
-    h = report[0].lower()
-    assert "<script" not in h
-    assert "onclick" not in h and "onload" not in h
-    assert "javascript:" not in h
+def test_javascript_is_enhancement_only_and_safe(report):
+    """iOS Quick Look previews HTML with scripts disabled, so all CONTENT must
+    be in the static HTML. Exactly one script is allowed: a guarded,
+    network-free enhancement (live countdown + expiry hiding) that degrades
+    silently. Inline event handlers and javascript: URLs stay banned."""
+    h = report[0]
+    assert h.count("<script") == 1, "at most one, isolated script"
+    assert "static page stands on its own" in h, "the script must be guarded"
+    assert "fetch(" not in h and "XMLHttpRequest" not in h, "no network in the script"
+    assert "onclick" not in h.lower() and "onload" not in h.lower()
+    assert "javascript:" not in h.lower()
 
 
 def test_every_screen_is_in_the_markup(report):
@@ -140,7 +143,7 @@ def test_empty_system_still_renders(tmp_path):
 
     assert f"0 of {len(MODEL_META)} proven" in h
     assert "Nothing has been checked for this one yet" in h
-    assert "<script" not in h.lower()
+    assert h.lower().count("<script") <= 1, "at most the one guarded script"
 
 
 def test_write_report_roundtrip(tmp_path):
@@ -864,7 +867,7 @@ def test_the_page_shows_how_fresh_it_is(report):
     (computed at build time so the page stays JavaScript-free) and keeps the
     exact UTC time in a tooltip."""
     html = report[0]
-    assert "<script" not in html, "the page must stay JavaScript-free"
+    assert html.count("<script") <= 1, "at most the one guarded enhancement script"
     assert "updated " in html or "UTC" in html
     assert 'title="' in html and "UTC" in html
 

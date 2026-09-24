@@ -166,7 +166,7 @@ def test_the_tab_has_no_javascript(tmp_path):
     from sigbot.export_app import build_opportunities
 
     html = _tiny_report(build_opportunities([_thesis()], [_candidate()]), tmp_path)
-    assert "<script" not in html.lower()
+    assert html.lower().count("<script") <= 1
 
 
 def test_the_card_shows_money_and_the_open_questions(tmp_path):

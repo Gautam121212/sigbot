@@ -163,13 +163,14 @@ def _cycle_info() -> dict:
         st = cycle_state()
         return {"phase": st.phase.value, "trading_day": st.trading_day,
                 "reset_line": reset_line(),
+                "reset_at": st.reset_at.isoformat(),
                 "predictions_locked": st.predictions_locked,
                 "show_predictions": st.phase.value in ("predict", "trade", "closed"),
                 "trading": st.phase.value == "trade"}
     except Exception:  # noqa: BLE001  # handled: cycle info is cosmetic; page still renders
         return {"phase": "unknown", "trading_day": "", "reset_line": "",
-                "predictions_locked": False, "show_predictions": True,
-                "trading": False}
+                "reset_at": "", "predictions_locked": False,
+                "show_predictions": True, "trading": False}
 
 
 def _horizon_class(model_id: str, hold_days: int | None) -> str:
