@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-09-24T21:33:46.479661+00:00",
+ "generated_at": "2026-09-25T04:57:43.725907+00:00",
  "sectors": [
   {
    "sector": "Agriculture",
@@ -145,7 +145,7 @@
    "sector": "Real Estate",
    "blurb": "Buying, leasing, and managing property.",
    "readiness": 0.0,
-   "breadth_signal": "",
+   "breadth_signal": "recovery-likely",
    "worth_taking": 0,
    "risky": 0,
    "risky_label": false,
