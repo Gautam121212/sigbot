@@ -73,6 +73,36 @@ def horizon_completion(db_path: str) -> list[tuple[str, str, int, int]]:
     return [(m, h, sc or 0, tot) for m, h, sc, tot in rows]
 
 
+ALL_MODELS = ("stocks", "crypto15m", "news", "daily", "contagion", "opportunity")
+
+
+def full_integrity(db_path: str) -> list[str]:
+    """Corruption + liveness for EVERY model, not just the easy ones. This is
+    the check that was missing: contagion and opportunity had never produced a
+    prediction and news carried corrupt rows, all unnoticed because only
+    stocks/crypto were ever inspected."""
+    import sqlite3
+    from contextlib import closing
+    lines = ["Full-system integrity — every model:"]
+    with closing(sqlite3.connect(db_path)) as con:
+        for m in ALL_MODELS:
+            total = con.execute("SELECT COUNT(*) FROM predictions WHERE model=?",
+                                (m,)).fetchone()[0]
+            if not total:
+                lines.append(f"  {m:<12} NO DATA — never produced a prediction")
+                continue
+            scored = con.execute("SELECT COUNT(hit) FROM predictions WHERE model=?",
+                                 (m,)).fetchone()[0]
+            bad = con.execute(
+                "SELECT COUNT(*) FROM predictions WHERE model=? AND ("
+                "(hit IS NOT NULL AND entry_price>0 AND exit_price>0 "
+                " AND ABS(exit_price/entry_price-1)>0.5) "
+                "OR entry_price IS NULL OR entry_price<=0)", (m,)).fetchone()[0]
+            flag = "  ISSUES" if bad else ""
+            lines.append(f"  {m:<12} {total} rows, {scored} scored, {bad} corrupt{flag}")
+    return lines
+
+
 def describe(db_path: str) -> str:
     lines = ["DEEP HISTORICAL CHECK — every model, every aspect", ""]
     health = model_health(db_path)
@@ -83,6 +113,8 @@ def describe(db_path: str) -> str:
         lines.append(f"  {h.model:<11} {h.scored}/{h.total} done "
                      f"({h.completion_pct:.0f}%), {t} to finish, "
                      f"hit {r} [{h.verdict}]")
+    lines.append("")
+    lines.extend(full_integrity(db_path))
     lines.append("")
     lines.append("Per-horizon completion (does each finish?):")
     for m, hz, sc, tot in horizon_completion(db_path):

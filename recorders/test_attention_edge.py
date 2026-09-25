@@ -30,10 +30,26 @@ from datetime import date, timedelta
 from pathlib import Path
 
 ARCHIVE = Path("news_archive.jsonl")
+DAILY = Path("data/attention_daily.jsonl")     # GDELT backfill (preferred)
+SIGBOT_DAILY = Path("news_daily.jsonl")        # sigbot's own rollup
 PRICES = Path("data/binance_prices.jsonl")
 
 
 def _news_per_day() -> dict:
+    # Prefer the bounded daily file (never bloats): GDELT backfill first, then
+    # sigbot's own daily rollup, then the raw archive as a last resort.
+    for src in (DAILY, SIGBOT_DAILY):
+        if src.exists():
+            out = {}
+            for ln in src.read_text().splitlines():
+                if ln.strip():
+                    try:
+                        r = json.loads(ln)
+                        out[r["date"]] = r.get("volume", r.get("count", 0))
+                    except (ValueError, KeyError):
+                        continue
+            if out:
+                return out
     if not ARCHIVE.exists():
         return {}
     counts = defaultdict(int)
@@ -44,7 +60,7 @@ def _news_per_day() -> dict:
             r = json.loads(ln)
         except json.JSONDecodeError:
             continue
-        ts = r.get("ts") or r.get("timestamp") or r.get("date") or ""
+        ts = r.get("at") or r.get("ts") or r.get("timestamp") or r.get("date") or ""
         d = str(ts)[:10]
         if len(d) == 10:
             counts[d] += 1

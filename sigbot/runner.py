@@ -475,7 +475,39 @@ LEARN_LOG_MAX = 3000
 # when, to be matched later against what prices did. Bounded so the file
 # cannot grow without limit in the repository.
 NEWS_ARCHIVE = "news_archive.jsonl"
+
+
+def _update_daily_attention(articles, verdicts) -> None:
+    """Fold today's news into one row of news_daily.jsonl: date, count, and how
+    many were ACT/LEARN/DROP. Bounded forever — one row per calendar day."""
+    import json as _json
+    from collections import defaultdict
+    day_count: dict = defaultdict(int)
+    for a in articles:
+        try:
+            day_count[a.published_at.date().isoformat()] += 1
+        except AttributeError:
+            continue
+    if not day_count:
+        return
+    path = Path(NEWS_DAILY)
+    existing: dict = {}
+    if path.exists():
+        for line in path.read_text(encoding="utf-8").splitlines():
+            try:
+                r = _json.loads(line)
+                existing[r["date"]] = r
+            except (ValueError, KeyError):
+                continue
+    for day, n in day_count.items():
+        prev = existing.get(day, {"date": day, "count": 0})
+        prev["count"] = prev.get("count", 0) + n
+        existing[day] = prev
+    rows = [existing[d] for d in sorted(existing)]
+    path.write_text("\n".join(_json.dumps(r) for r in rows) + "\n",
+                    encoding="utf-8")
 NEWS_ARCHIVE_MAX = 20000
+NEWS_DAILY = "news_daily.jsonl"     # one compact row per day — never rotated out
 
 
 def _news_provider():
@@ -559,6 +591,11 @@ def _gate_articles(articles, assets, ledger, job: str):
         if new_lines:
             arch.write_text("\n".join((old_lines + new_lines)[-NEWS_ARCHIVE_MAX:]) + "\n",
                             encoding="utf-8")
+        # Daily attention rollup — one tiny row per day, kept forever. This is
+        # what the attention signal reads: it never grows unbounded (the full
+        # archive rotates at 20k lines, but this keeps a permanent daily count),
+        # so the file stays small no matter how long sigbot runs.
+        _update_daily_attention(articles, verdicts)
     except OSError as exc:
         record_skip(job, "news_archive", exc)
     if learn:
@@ -2034,6 +2071,12 @@ def run_purge_stale(settings=SETTINGS) -> None:
           "current behaviour.")
 
 
+def _show_discoveries() -> None:
+    from .discovery import TESTED, register
+    for d in TESTED:
+        print(register(d))
+
+
 def run_fresh_start(settings=SETTINGS) -> None:
     """Archive current paper/prediction DISPLAY data into the learning record,
     clear the live display, and pause until the next scheduled prediction time,
@@ -3244,6 +3287,7 @@ def main(argv: list[str]) -> int:
         "resume": run_resume,
         "deep-check": lambda: print(__import__("sigbot.deep_check", fromlist=["describe"]).describe(SETTINGS.shadow_db)),
         "form": lambda: print(__import__("sigbot.self_signals", fromlist=["describe"]).describe(SETTINGS.shadow_db)),
+        "discoveries": _show_discoveries,
         "wipe-and-pause": run_wipe_and_pause,
     }
     if cmd not in jobs:

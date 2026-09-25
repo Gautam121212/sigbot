@@ -41,3 +41,19 @@ def test_describe_names_every_aspect(tmp_path):
     assert "Completion, timing, and edge" in out
     assert "Per-horizon completion" in out
     assert "crypto15m" in out and "stocks" in out
+
+
+def test_full_integrity_covers_every_model(tmp_path):
+    """The check that was missing: it must report on ALL models, flagging
+    ones that never produced a prediction and corrupt rows."""
+    from sigbot.deep_check import full_integrity
+    from sigbot.shadow import ShadowLedger
+    db = str(tmp_path / "s.db")
+    led = ShadowLedger(db)
+    # Only stocks has data; the rest must show NO DATA.
+    pid = led.record("stocks", "AAPL", "BUY", 0.6, 0.02, 100.0)
+    led.resolve(pid, 103.0)
+    lines = "\n".join(full_integrity(db))
+    assert "stocks" in lines
+    assert "contagion" in lines and "NO DATA" in lines
+    assert "opportunity" in lines
