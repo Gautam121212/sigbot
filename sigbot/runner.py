@@ -2688,6 +2688,39 @@ def run_sizing(settings=SETTINGS) -> None:
           f"of capital  ({s.reason})")
 
 
+def run_harvest_risky(settings=SETTINGS) -> None:
+    """Feed the risk loop from resolved RISKY predictions (score<0.55) so it
+    actually learns which risky bets pay — the loop was empty because nothing
+    fed it. Each resolved risky prediction becomes a risky-bet record with its
+    realised outcome, so the risk model can finally learn a pattern.
+    """
+    import sqlite3
+    from contextlib import closing
+
+    from .risk_learning import record_risky_bet
+    logged = 0
+    with closing(sqlite3.connect(settings.shadow_db)) as con:
+        # Resolved, low-confidence predictions — the risky ones that actually
+        # have an outcome to learn from. Cap at a recent window so the loop
+        # reflects current behaviour, not ancient history.
+        rows = con.execute(
+            "SELECT model, symbol, score, hit, realised_ret FROM predictions "
+            "WHERE hit IS NOT NULL AND score < 0.55 AND realised_ret IS NOT NULL "
+            "ORDER BY resolve_after DESC LIMIT 500").fetchall()
+    for model, symbol, score, hit, ret in rows:
+        # outcome_multiple: the realised return as a multiple of risk. A risky
+        # bet risks ~1 unit; the return in units is the realised_ret scaled.
+        outcome = float(ret) * 10 if ret is not None else None   # ~10x leverage view
+        record_risky_bet(
+            model, f"low-confidence:{symbol}", downside_capped=True,
+            amount_risked_pct=0.5,      # risky bets are half-sized
+            outcome_multiple=round(outcome, 3) if outcome is not None else None,
+            note=f"score {score:.2f}, {'won' if hit else 'lost'}")
+        logged += 1
+    print(f"Harvested {logged} resolved risky prediction(s) into the risk loop.")
+    print("The risk model can now learn which risky bets actually pay.")
+
+
 def run_risk_loop(settings=SETTINGS) -> None:
     """What the risk loop has learned: which risks, sized small, have paid."""
     from .risk_learning import describe
@@ -3282,6 +3315,7 @@ def main(argv: list[str]) -> int:
         "reset": run_reset,
         "reset-all": lambda: run_reset(full=True),
         "fresh-start": run_fresh_start,
+        "harvest-risky": run_harvest_risky,
         "purge-stale": run_purge_stale,
         "halt": run_halt,
         "resume": run_resume,

@@ -61,6 +61,18 @@ MACRO_PATTERNS = re.compile(
     r"rate cut|rate hike|default|bailout|embargo|tariff\w*|nationalis\w+|"
     r"property (price|market)|real estate (price|market))\b", re.I
 )
+# The category that was missing entirely — real business opportunities: a new
+# market opening, government incentives, a regulatory door, a sector inflection,
+# or fresh capital forming. This is what a person hunting ventures looks for,
+# and the model ignored all of it.
+OPPORTUNITY_PATTERNS = re.compile(
+    r"\b(incentive\w*|subsid\w+|free zone|tax (break|holiday|exempt\w*)|"
+    r"opens? (a |the )?\$?\d|deregulat\w+|liberalis\w+|"
+    r"(new|opens?) (market|sector|regulation|rules?|licen[sc]e)|"
+    r"raises? \$\d|funding round|series [a-e]\b|grant\w*|"
+    r"manufacturing (push|incentive|hub)|boom|surge|"
+    r"government (scheme|programme|program|initiative))\b", re.I
+)
 
 
 @dataclass
@@ -100,6 +112,23 @@ class ThesisCard:
 
 
 DEFAULT_CHECKS = {
+    "opportunity": (
+        [
+            "the opening is real and dated, not a vague announcement of intent",
+            "a person or firm could actually access it (not closed to outsiders)",
+            "the window is early — the crowd has not already priced it in",
+        ],
+        [
+            "the incentive or rule is announced but not yet in force, with no date",
+            "access requires scale, licences or local ties the reader lacks",
+            "the sector already re-rated before the story was published",
+        ],
+        [
+            "how many others are already moving on the same opening",
+            "the true cost and time to actually participate",
+            "whether the policy survives the next political cycle",
+        ],
+    ),
     "ipo": (
         [
             "the business was already profitable, or has a credible dated path to it",
@@ -167,6 +196,8 @@ class OpportunityModel:
                 category = "ipo"
             elif MACRO_PATTERNS.search(text):
                 category = "macro"
+            elif OPPORTUNITY_PATTERNS.search(text):
+                category = "opportunity"
             if category is None:
                 continue
 
