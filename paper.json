@@ -1,13 +1,13 @@
 {
-  "generated_at": "2026-09-25T17:12:12.040141+00:00",
+  "generated_at": "2026-09-25T17:47:10.460832+00:00",
   "starting_cash": 100000.0,
-  "equity": 111603.92485227529,
-  "total_pnl": 11603.92485227529,
-  "total_return": 0.11603924852275282,
-  "total_costs": 2699.250666875926,
-  "trades": 573,
-  "wins": 376,
-  "win_rate": 0.6561954624781849,
+  "equity": 111405.58389812971,
+  "total_pnl": 11405.583898129713,
+  "total_return": 0.11405583898129712,
+  "total_costs": 2709.2931958971167,
+  "trades": 576,
+  "wins": 377,
+  "win_rate": 0.6545138888888888,
   "max_drawdown": 0.008176048395351621,
   "skipped_no_price": 0,
   "by_model": {
@@ -26,61 +26,22 @@
       "win_rate": 0.7272727272727273
     },
     "news": {
-      "trades": 64,
-      "pnl": 561.2105618858924,
-      "wins": 40,
-      "costs": 213.1513986443609,
-      "win_rate": 0.625
+      "trades": 67,
+      "pnl": 362.86960774032275,
+      "wins": 41,
+      "costs": 223.19392766555146,
+      "win_rate": 0.6119402985074627
     }
   },
-  "verdict": "Following every signal would have returned +11.60% over 573 round trips, after paying 2,699 in costs. Worst peak-to-trough fall along the way: 0.8%.",
+  "verdict": "Following every signal would have returned +11.41% over 576 round trips, after paying 2,709 in costs. Worst peak-to-trough fall along the way: 0.8%.",
   "gated_models": [
     "contagion",
     "news",
     "stocks"
   ],
-  "benchmark_return": 0.11603924852275282,
-  "benchmark_trades": 573,
+  "benchmark_return": 0.11405583898129712,
+  "benchmark_trades": 576,
   "recent_trades": [
-    {
-      "prediction_id": 11662,
-      "model": "news",
-      "symbol": "MS",
-      "side": "SELL",
-      "entry_price": 204.96499633789062,
-      "exit_price": 199.77000427246094,
-      "size": 2219.820866415509,
-      "gross_ret": 0.025345752485783413,
-      "cost": 3.3297312996232638,
-      "pnl": 52.93329894332152,
-      "opened_at": "2026-09-21T15:52:50.166014+00:00"
-    },
-    {
-      "prediction_id": 11663,
-      "model": "news",
-      "symbol": "NOW",
-      "side": "SELL",
-      "entry_price": 137.19000244140625,
-      "exit_price": 136.30999755859375,
-      "size": 2220.879532394375,
-      "gross_ret": 0.006414497172914202,
-      "cost": 3.3313192985915627,
-      "pnl": 10.91450618333517,
-      "opened_at": "2026-09-21T15:52:50.352197+00:00"
-    },
-    {
-      "prediction_id": 11664,
-      "model": "news",
-      "symbol": "MS",
-      "side": "SELL",
-      "entry_price": 206.55499267578125,
-      "exit_price": 200.17999267578125,
-      "size": 2221.097822518042,
-      "gross_ret": 0.030863451507107897,
-      "cost": 3.331646733777063,
-      "pnl": 65.21909820405146,
-      "opened_at": "2026-09-21T19:18:19.401305+00:00"
-    },
     {
       "prediction_id": 11665,
       "model": "news",
@@ -366,6 +327,45 @@
       "cost": 3.34697139444299,
       "pnl": 38.21170417562774,
       "opened_at": "2026-09-24T17:08:38.934307+00:00"
+    },
+    {
+      "prediction_id": 11923,
+      "model": "news",
+      "symbol": "OPEN",
+      "side": "BUY",
+      "entry_price": 2.569000005722046,
+      "exit_price": 2.5999999046325684,
+      "size": 2232.0784970455056,
+      "gross_ret": 0.012066912744832736,
+      "cost": 3.3481177455682585,
+      "pnl": 23.58617871789725,
+      "opened_at": "2026-09-24T17:08:45.807612+00:00"
+    },
+    {
+      "prediction_id": 11924,
+      "model": "news",
+      "symbol": "U",
+      "side": "BUY",
+      "entry_price": 43.6349983215332,
+      "exit_price": 41.59000015258789,
+      "size": 2232.550220619864,
+      "gross_ret": -0.04686600773709981,
+      "cost": 3.348825330929796,
+      "pnl": -107.97954124396423,
+      "opened_at": "2026-09-24T17:08:46.046980+00:00"
+    },
+    {
+      "prediction_id": 11925,
+      "model": "news",
+      "symbol": "U",
+      "side": "BUY",
+      "entry_price": 43.7599983215332,
+      "exit_price": 41.59000015258789,
+      "size": 2230.3906297949843,
+      "gross_ret": -0.049588625506813866,
+      "cost": 3.3455859446924765,
+      "pnl": -113.94759161950267,
+      "opened_at": "2026-09-24T17:17:25.964393+00:00"
     }
   ],
   "days": [
@@ -514,15 +514,54 @@
           "cost": 3.34697139444299,
           "pnl": 38.21170417562774,
           "opened_at": "2026-09-24T17:08:38.934307+00:00"
+        },
+        {
+          "prediction_id": 11923,
+          "model": "news",
+          "symbol": "OPEN",
+          "side": "BUY",
+          "entry_price": 2.569000005722046,
+          "exit_price": 2.5999999046325684,
+          "size": 2232.0784970455056,
+          "gross_ret": 0.012066912744832736,
+          "cost": 3.3481177455682585,
+          "pnl": 23.58617871789725,
+          "opened_at": "2026-09-24T17:08:45.807612+00:00"
+        },
+        {
+          "prediction_id": 11924,
+          "model": "news",
+          "symbol": "U",
+          "side": "BUY",
+          "entry_price": 43.6349983215332,
+          "exit_price": 41.59000015258789,
+          "size": 2232.550220619864,
+          "gross_ret": -0.04686600773709981,
+          "cost": 3.348825330929796,
+          "pnl": -107.97954124396423,
+          "opened_at": "2026-09-24T17:08:46.046980+00:00"
+        },
+        {
+          "prediction_id": 11925,
+          "model": "news",
+          "symbol": "U",
+          "side": "BUY",
+          "entry_price": 43.7599983215332,
+          "exit_price": 41.59000015258789,
+          "size": 2230.3906297949843,
+          "gross_ret": -0.049588625506813866,
+          "cost": 3.3455859446924765,
+          "pnl": -113.94759161950267,
+          "opened_at": "2026-09-24T17:17:25.964393+00:00"
         }
       ],
-      "pnl": 345.73392656314957,
-      "wins": 9,
-      "losses": 2,
-      "costs": 36.775650268760344,
+      "pnl": 147.3929724175799,
+      "wins": 10,
+      "losses": 4,
+      "costs": 46.818179289950876,
       "opening": 111258.19092571216,
-      "closing": 111603.9248522753,
-      "pct": 0.31074918950821195
+      "closing": 111405.58389812974,
+      "pct": 0.13247831120676334
     },
     {
       "date": "2026-09-23",

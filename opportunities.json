@@ -1,22 +1,5 @@
 [
  {
-  "title": "New US Iranian",
-  "kind": "Market thesis",
-  "colour": "#ffd93d",
-  "verdict": "Reported at 70% sourcing strength. Enough to be worth reading, not enough to lean on. This model has never been scored against outcomes.",
-  "summary": "New US sanctions shut down Iranian flights - reuters.com",
-  "answered": [],
-  "unanswered": [
-   "the asset is genuinely priced lower in real terms, not just in a depreciating local currency",
-   "there is a liquid, legal exit available to a non-resident",
-   "the dislocation has a plausible resolution path with a timeframe"
-  ],
-  "money": "Not stated. A market thesis says nothing about what acting on it would cost you.",
-  "sources": [
-   "reuters.com (2026-09-24)"
-  ]
- },
- {
   "title": "Hungary US Russian",
   "kind": "Market thesis",
   "colour": "#ffd93d",
@@ -65,23 +48,6 @@
   "money": "Not stated. A market thesis says nothing about what acting on it would cost you.",
   "sources": [
    "reuters.com (2026-09-24)"
-  ]
- },
- {
-  "title": "EXCLUSIVE: How Chinese US",
-  "kind": "Market thesis",
-  "colour": "#ffd93d",
-  "verdict": "Reported at 70% sourcing strength. Enough to be worth reading, not enough to lean on. This model has never been scored against outcomes.",
-  "summary": "EXCLUSIVE: How firms linked to sanctioned Chinese cotton giant sell clothes to US - reuters.com",
-  "answered": [],
-  "unanswered": [
-   "the asset is genuinely priced lower in real terms, not just in a depreciating local currency",
-   "there is a liquid, legal exit available to a non-resident",
-   "the dislocation has a plausible resolution path with a timeframe"
-  ],
-  "money": "Not stated. A market thesis says nothing about what acting on it would cost you.",
-  "sources": [
-   "reuters.com (2026-09-25)"
   ]
  },
  {
@@ -238,6 +204,23 @@
   ]
  },
  {
+  "title": "EXCLUSIVE: How Chinese US",
+  "kind": "Market thesis",
+  "colour": "#ffd93d",
+  "verdict": "Reported at 70% sourcing strength. Enough to be worth reading, not enough to lean on. This model has never been scored against outcomes.",
+  "summary": "EXCLUSIVE: How firms linked to sanctioned Chinese cotton giant sell clothes to US - reuters.com",
+  "answered": [],
+  "unanswered": [
+   "the asset is genuinely priced lower in real terms, not just in a depreciating local currency",
+   "there is a liquid, legal exit available to a non-resident",
+   "the dislocation has a plausible resolution path with a timeframe"
+  ],
+  "money": "Not stated. A market thesis says nothing about what acting on it would cost you.",
+  "sources": [
+   "reuters.com (2026-09-25)"
+  ]
+ },
+ {
   "title": "India's JSW One IPO",
   "kind": "IPO \u2014 dates unknown",
   "colour": "#8b8b9a",
@@ -272,7 +255,6 @@
   ],
   "money": "0 of a possible 0 points on the ten tests the coverage could answer.",
   "sources": [
-   "Moneycontrol.com (2026-09-25)",
    "Moneycontrol.com (2026-09-25)"
   ]
  },
@@ -351,6 +333,25 @@
   ]
  },
  {
+  "title": "Adroit Industries IPO GMP",
+  "kind": "IPO \u2014 dates unknown",
+  "colour": "#8b8b9a",
+  "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 0 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
+  "summary": "Adroit Industries IPO booked 177x on final day of bidding: GMP rises to 28% - Moneycontrol.com",
+  "answered": [],
+  "unanswered": [
+   "Does reporting say it makes money?",
+   "Is revenue growing?",
+   "Does the money go into the business?",
+   "Is the price being called reasonable?",
+   "Did serious institutions take an allocation?"
+  ],
+  "money": "0 of a possible 0 points on the ten tests the coverage could answer.",
+  "sources": [
+   "Moneycontrol.com (2026-09-25)"
+  ]
+ },
+ {
   "title": "Goldman Sachs buys stake in Firstcry brand parent owner Brainbees Solutions | Check price, quantity traded",
   "kind": "New listing",
   "colour": "#8b8b9a",
@@ -410,7 +411,45 @@
   ]
  },
  {
+  "title": "EXCLUSIVE: SK Hynix's Solidigm weighs",
+  "kind": "New listing",
+  "colour": "#8b8b9a",
+  "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 0 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
+  "summary": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live.",
+  "money": "0 of a possible 0 points on the ten tests the coverage could answer",
+  "answered": [],
+  "unanswered": [
+   "Does reporting say it makes money?",
+   "Is revenue growing?",
+   "Does the money go into the business?",
+   "Is the price being called reasonable?",
+   "Did serious institutions take an allocation?"
+  ],
+  "sources": [
+   "reuters.com"
+  ]
+ },
+ {
   "title": "India's JSW One",
+  "kind": "New listing",
+  "colour": "#8b8b9a",
+  "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 0 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
+  "summary": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live.",
+  "money": "0 of a possible 0 points on the ten tests the coverage could answer",
+  "answered": [],
+  "unanswered": [
+   "Does reporting say it makes money?",
+   "Is revenue growing?",
+   "Does the money go into the business?",
+   "Is the price being called reasonable?",
+   "Did serious institutions take an allocation?"
+  ],
+  "sources": [
+   "reuters.com"
+  ]
+ },
+ {
+  "title": "Brookfield-backed Avaada Electro starts roadshows for $793 million India",
   "kind": "New listing",
   "colour": "#8b8b9a",
   "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 0 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
@@ -772,25 +811,6 @@
   ]
  },
  {
-  "title": "Nityas Gems and Jewellery Ltd",
-  "kind": "New listing",
-  "colour": "#8b8b9a",
-  "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 0 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
-  "summary": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live.",
-  "money": "0 of a possible 0 points on the ten tests the coverage could answer",
-  "answered": [],
-  "unanswered": [
-   "Does reporting say it makes money?",
-   "Is revenue growing?",
-   "Does the money go into the business?",
-   "Is the price being called reasonable?",
-   "Did serious institutions take an allocation?"
-  ],
-  "sources": [
-   "Moneycontrol.com"
-  ]
- },
- {
   "title": "Moneyview",
   "kind": "New listing",
   "colour": "#8b8b9a",
@@ -831,15 +851,13 @@
   ]
  },
  {
-  "title": "A-One Steels India",
+  "title": "German Green Steel",
   "kind": "New listing",
   "colour": "#8b8b9a",
-  "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 10 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
+  "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 0 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
   "summary": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live.",
-  "money": "10 of a possible 10 points on the ten tests the coverage could answer",
-  "answered": [
-   "Is the book filling?"
-  ],
+  "money": "0 of a possible 0 points on the ten tests the coverage could answer",
+  "answered": [],
   "unanswered": [
    "Does reporting say it makes money?",
    "Is revenue growing?",
@@ -1069,25 +1087,6 @@
   ]
  },
  {
-  "title": "IPO GMP Today: Moneyview Leads A-One Steels After Day 2 Bidd",
-  "kind": "New listing",
-  "colour": "#8b8b9a",
-  "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 0 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
-  "summary": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live.",
-  "money": "0 of a possible 0 points on the ten tests the coverage could answer",
-  "answered": [],
-  "unanswered": [
-   "Does reporting say it makes money?",
-   "Is revenue growing?",
-   "Does the money go into the business?",
-   "Is the price being called reasonable?",
-   "Did serious institutions take an allocation?"
-  ],
-  "sources": [
-   "ndtvprofit.com"
-  ]
- },
- {
   "title": "FX Multitech",
   "kind": "New listing",
   "colour": "#8b8b9a",
@@ -1107,7 +1106,7 @@
   ]
  },
  {
-  "title": "Pooja Logistics",
+  "title": "IPO GMP Today: Moneyview Leads A-One Steels After Day 2 Bidd",
   "kind": "New listing",
   "colour": "#8b8b9a",
   "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 0 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
@@ -1122,7 +1121,7 @@
    "Did serious institutions take an allocation?"
   ],
   "sources": [
-   "Moneycontrol.com"
+   "NDTV Profit"
   ]
  },
  {
@@ -1161,27 +1160,6 @@
   ],
   "sources": [
    "Business Standard"
-  ]
- },
- {
-  "title": "German Green Steel",
-  "kind": "New listing",
-  "colour": "#8b8b9a",
-  "verdict": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 12 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
-  "summary": "The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live.",
-  "money": "12 of a possible 12 points on the ten tests the coverage could answer",
-  "answered": [
-   "Does the money go into the business?"
-  ],
-  "unanswered": [
-   "Does reporting say it makes money?",
-   "Is revenue growing?",
-   "Is the price being called reasonable?",
-   "Did serious institutions take an allocation?",
-   "Is the book filling?"
-  ],
-  "sources": [
-   "IPOs/FPOs-Markets-Economic Times"
   ]
  },
  {
@@ -1281,27 +1259,6 @@
    "Does the money go into the business?",
    "Is the price being called reasonable?",
    "Did serious institutions take an allocation?"
-  ],
-  "sources": [
-   "IPOs/FPOs-Markets-Economic Times"
-  ]
- },
- {
-  "title": "Snapdeal parent AceVector raises Rs 189 crore from anchors; Negen, Singularity among top investors",
-  "kind": "New listing",
-  "colour": "#8b8b9a",
-  "verdict": "Only 10 points' worth of the ten tests could be answered from the coverage. That is too little to say anything \u2014 it is a gap in reporting, not a judgement on the company.",
-  "summary": "Open since 25 Sep.",
-  "money": "10 of a possible 10 points on the ten tests the coverage could answer",
-  "answered": [
-   "Did serious institutions take an allocation?"
-  ],
-  "unanswered": [
-   "Does reporting say it makes money?",
-   "Is revenue growing?",
-   "Does the money go into the business?",
-   "Is the price being called reasonable?",
-   "Is the book filling?"
   ],
   "sources": [
    "IPOs/FPOs-Markets-Economic Times"
