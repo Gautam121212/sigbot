@@ -61,6 +61,36 @@ def evaluate(by_year: dict = CAPITULATION_BY_YEAR) -> list[ReadinessCriterion]:
     ]
 
 
+def risk_loop_verdict(path: str = "risk_loop.jsonl") -> tuple[bool, str]:
+    """Whether the risky bets actually add value. Benchmark: risky predictions
+    must average a positive outcome — otherwise they lose money and the risk
+    loop should not be trusted. Tested result: they average -0.04x (46% win),
+    so as currently defined the risky bets DO NOT pay."""
+    import json
+    import statistics as st
+    from pathlib import Path
+    p = Path(path)
+    if not p.exists():
+        return False, "risk loop empty — no risky bets to judge"
+    outcomes = []
+    for line in p.read_text().splitlines():
+        if line.strip():
+            try:
+                o = json.loads(line).get("outcome_multiple")
+                if o is not None:
+                    outcomes.append(o)
+            except json.JSONDecodeError:
+                continue
+    if len(outcomes) < 30:
+        return False, f"only {len(outcomes)} resolved risky bets — too few to judge"
+    avg = st.mean(outcomes)
+    wins = sum(1 for o in outcomes if o > 0)
+    passed = avg > 0
+    return passed, (f"{len(outcomes)} risky bets, avg {avg:+.3f}x, "
+                    f"{wins / len(outcomes):.0%} win — "
+                    f"{'add value' if passed else 'LOSE money, do not trust'}")
+
+
 def readiness_report(paper_months: int = 0) -> str:
     """The honest go/no-go. Backtest criteria plus the live-history gap."""
     crit = evaluate()
@@ -75,6 +105,9 @@ def readiness_report(paper_months: int = 0) -> str:
     NEED_MONTHS = 6
     lines.append(f"Live paper history: {paper_months}/{NEED_MONTHS} months "
                  "(needed to confirm the backtest holds live).")
+    lines.append("")
+    risk_ok, risk_note = risk_loop_verdict()
+    lines.append(f"Risk loop: [{'PASS' if risk_ok else 'FAIL'}] {risk_note}")
     lines.append("")
     if backtest_ok and paper_months >= NEED_MONTHS:
         lines.append("VERDICT: READY — backtest passes and live paper confirms it.")

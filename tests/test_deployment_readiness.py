@@ -28,3 +28,32 @@ def test_zero_paper_history_is_not_yet_even_if_backtest_passes():
 def test_full_history_and_passing_backtest_is_ready():
     report = readiness_report(paper_months=6)
     assert "READY" in report
+
+
+def test_risk_loop_verdict_catches_losing_bets(tmp_path):
+    """The risk loop benchmark: if risky bets lose money, it must say so."""
+    import json
+    from sigbot.deployment_readiness import risk_loop_verdict
+    f = tmp_path / "risk.jsonl"
+    # 40 bets averaging negative
+    f.write_text("\n".join(json.dumps({"outcome_multiple": -0.1}) for _ in range(40)))
+    ok, note = risk_loop_verdict(str(f))
+    assert not ok and "LOSE" in note
+
+
+def test_risk_loop_verdict_passes_winning_bets(tmp_path):
+    import json
+    from sigbot.deployment_readiness import risk_loop_verdict
+    f = tmp_path / "risk.jsonl"
+    f.write_text("\n".join(json.dumps({"outcome_multiple": 0.2}) for _ in range(40)))
+    ok, note = risk_loop_verdict(str(f))
+    assert ok and "add value" in note
+
+
+def test_risk_loop_too_few_bets_is_not_judged(tmp_path):
+    import json
+    from sigbot.deployment_readiness import risk_loop_verdict
+    f = tmp_path / "risk.jsonl"
+    f.write_text("\n".join(json.dumps({"outcome_multiple": 0.2}) for _ in range(5)))
+    ok, note = risk_loop_verdict(str(f))
+    assert not ok and "too few" in note
