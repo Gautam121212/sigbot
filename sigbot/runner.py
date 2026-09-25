@@ -3322,6 +3322,7 @@ def main(argv: list[str]) -> int:
         "deep-check": lambda: print(__import__("sigbot.deep_check", fromlist=["describe"]).describe(SETTINGS.shadow_db)),
         "form": lambda: print(__import__("sigbot.self_signals", fromlist=["describe"]).describe(SETTINGS.shadow_db)),
         "readiness": lambda: print(__import__("sigbot.deployment_readiness", fromlist=["readiness_report"]).readiness_report()),
+        "dollars": lambda: print(__import__("sigbot.dollar_view", fromlist=["describe"]).describe(SETTINGS.shadow_db)),
         "discoveries": _show_discoveries,
         "wipe-and-pause": run_wipe_and_pause,
     }
