@@ -1929,6 +1929,53 @@ def run_wipe_and_pause(settings=SETTINGS) -> None:
     print(f"Paused until {reset_at.isoformat()}. Everything starts from zero then.")
 
 
+# Per-model criteria for a STALE prediction — one made by a model version that
+# no longer exists, so it must not seed the current model's learning.
+STALE_RULES = {
+    # Crypto switched from Binance 15-minute to CoinGecko daily: any short-
+    # horizon crypto row is from the dead system.
+    "crypto15m": "(julianday(resolve_after) - julianday(created_at)) * 24 < 6",
+    # News: rows with a negative score are from before the score-as-confidence
+    # fix (the old signed-impact scoring).
+    "news": "score < 0",
+}
+
+
+def run_purge_stale(settings=SETTINGS) -> None:
+    """Remove predictions made by now-replaced model versions, per model.
+
+    The models have changed (crypto: Binance 15m -> CoinGecko daily; news:
+    signed score -> confidence; stocks: regime policy added). Predictions from
+    the old versions must not seed the new models' learning — that poisons the
+    root. This removes them by explicit per-model criteria, keeping everything
+    the CURRENT models would actually produce. Backs up first.
+    """
+    import shutil
+    import sqlite3
+    from contextlib import closing
+    from datetime import datetime, timezone
+    from pathlib import Path
+
+    stamp = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S")
+    if Path(settings.shadow_db).exists():
+        shutil.copy(settings.shadow_db, f"{settings.shadow_db}.{stamp}.bak")
+        print(f"Backed up ledger to {settings.shadow_db}.{stamp}.bak")
+
+    with closing(sqlite3.connect(settings.shadow_db)) as con:
+        for model, rule in STALE_RULES.items():
+            n = con.execute(f"SELECT COUNT(*) FROM predictions WHERE model=? "
+                            f"AND ({rule})", (model,)).fetchone()[0]
+            con.execute(f"DELETE FROM predictions WHERE model=? AND ({rule})",
+                        (model,))
+            print(f"  {model}: removed {n} stale prediction(s) from the old model version")
+        con.commit()
+        remaining = con.execute("SELECT COUNT(*) FROM predictions").fetchone()[0]
+    print(f"Learning root cleaned. {remaining} prediction(s) remain — all from "
+          "the current models.")
+    print("The models will rebuild their record from here, on their real "
+          "current behaviour.")
+
+
 def run_fresh_start(settings=SETTINGS) -> None:
     """Archive current paper/prediction DISPLAY data into the learning record,
     clear the live display, and pause until the next scheduled prediction time,
@@ -3127,6 +3174,7 @@ def main(argv: list[str]) -> int:
         "reset": run_reset,
         "reset-all": lambda: run_reset(full=True),
         "fresh-start": run_fresh_start,
+        "purge-stale": run_purge_stale,
         "deep-check": lambda: print(__import__("sigbot.deep_check", fromlist=["describe"]).describe(SETTINGS.shadow_db)),
         "form": lambda: print(__import__("sigbot.self_signals", fromlist=["describe"]).describe(SETTINGS.shadow_db)),
         "wipe-and-pause": run_wipe_and_pause,
