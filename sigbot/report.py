@@ -425,6 +425,23 @@ SIGNAL_WINDOW_DAYS = {
 }
 
 
+def _about_card(model: dict, a: dict) -> str:
+    """Item 2: a prominent card with what this asset/company IS, plus the news
+    source when the model is news — so the info is not buried or truncated."""
+    desc = a.get("description", "")
+    source = a.get("source", "")
+    parts = []
+    if desc:
+        parts.append(f'<p>{_e(desc)}</p>')
+    if model.get("id") == "news" and source:
+        parts.append(f'<p class="what-sm">Latest signal from: {_e(source)}</p>')
+    if not parts:
+        # Even with no stored description, name what the row is so it is never blank.
+        parts.append(f'<p class="what-sm">{_e(a.get("symbol", ""))} — no stored '
+                     'description yet; the record below is what is known.</p>')
+    return f'<div class="card"><h4>About {_e(a.get("symbol", ""))}</h4>{"".join(parts)}</div>'
+
+
 def _prediction_time_labels(a: dict) -> str:
     """The three time labels for a prediction (item 7): when it was made, the
     predicted move, and when its result is due."""
@@ -529,6 +546,7 @@ def _detail(model: dict, a: dict) -> str:
     <div class="sub">{_e(sym)} &middot; {_e(model['name'])}</div>
     {f'<p class="what">{_e(a["description"])}</p>' if a.get("description") else ''}</div>
   <p class="lead">{_e(reason.capitalize())}.</p>
+  {_about_card(model, a)}
   {_signal_window(model['id'], model.get('generated_at', '')) if sig.startswith(('BUY','SELL')) else ''}
   {_prediction_time_labels(a)}
 

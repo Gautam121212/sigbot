@@ -3127,6 +3127,7 @@ def main(argv: list[str]) -> int:
         "reset": run_reset,
         "reset-all": lambda: run_reset(full=True),
         "fresh-start": run_fresh_start,
+        "deep-check": lambda: print(__import__("sigbot.deep_check", fromlist=["describe"]).describe(SETTINGS.shadow_db)),
         "wipe-and-pause": run_wipe_and_pause,
     }
     if cmd not in jobs:

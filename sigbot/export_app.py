@@ -137,6 +137,25 @@ MIN_DISPLAY_CHECKS = 5
 _SETUP_HOLD = {"hammer-in-downtrend": 5, "capitulation": 20, "momentum-breakout": 20}
 
 
+def _latest_source(ledger, model_id: str, symbol: str) -> str:
+    """The source of a news row's latest prediction (item 2), from the payload."""
+    if model_id != "news":
+        return ""
+    import json
+    import sqlite3
+    from contextlib import closing
+    try:
+        with closing(sqlite3.connect(ledger.path)) as con:
+            row = con.execute("SELECT payload FROM predictions WHERE model='news' "
+                              "AND symbol=? ORDER BY created_at DESC LIMIT 1",
+                              (symbol,)).fetchone()
+        if row and row[0]:
+            return json.loads(row[0]).get("source", "")
+    except (sqlite3.Error, ValueError, TypeError):
+        pass
+    return ""
+
+
 def _prediction_times(ledger, model_id: str, symbol: str) -> dict:
     """The latest prediction's made-at and result-due times, for the row's time
     labels (item 7). Empty strings if unreadable."""
@@ -556,6 +575,7 @@ def build_export(db_path: str = "shadow.db", patterns_path: str = "patterns.db",
              "side": _dominant_side(ledger, model_id, sym),
              "horizon": _horizon_class(model_id, _row_hold_days(ledger, model_id, sym)),
              **_prediction_times(ledger, model_id, sym),
+             "source": _latest_source(ledger, model_id, sym),
              # How the wrong ones went wrong. Already in the ledger; without
              # it the page can say a call missed but never why, which is the
              # only part a person can learn from.
