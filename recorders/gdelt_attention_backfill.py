@@ -33,15 +33,23 @@ def _fetch(query: str, mode: str) -> dict:
     params = urllib.parse.urlencode({
         "query": query, "mode": mode, "format": "json", "timespan": "24m"})
     url = f"{API}?{params}"
-    for attempt in range(5):
+    for attempt in range(6):
         try:
-            req = urllib.request.Request(url, headers={"User-Agent": "sigbot/1.0"})
+            req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 sigbot/1.0"})
             with urllib.request.urlopen(req, timeout=30) as r:
-                return json.loads(r.read())
+                body = r.read()
+            if not body.strip():
+                raise ValueError("empty response")
+            return json.loads(body)
         except Exception as exc:  # noqa: BLE001
-            wait = 6 * (attempt + 1)
+            wait = 15 * (attempt + 1)   # GDELT throttles hard; wait longer
             print(f"  GDELT busy ({str(exc)[:40]}), retrying in {wait}s...")
             time.sleep(wait)
+    print("\nGDELT stayed rate-limited. This is common — it throttles far below")
+    print("its documented cap. Two options:")
+    print("  1. Wait 10-15 min and re-run (the limit resets).")
+    print("  2. Skip the backfill: sigbot's own news_daily.jsonl accumulates one")
+    print("     row/day as it runs, so the attention signal builds naturally.")
     return {}
 
 

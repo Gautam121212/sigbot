@@ -38,7 +38,7 @@ from sigbot.shadow import ShadowLedger
 @pytest.fixture
 def report(tmp_path):
     led = ShadowLedger(tmp_path / "s.db")
-    for model, sym, p, n in [("contagion", "AVGO", 0.67, 210),
+    for model, sym, p, n in [("stocks", "AVGO", 0.67, 210),
                              ("news", "NVDA", 0.55, 40),
                              # Stocks replaced Daily outlook as the model
                              # that covers individual stocks.
@@ -91,7 +91,7 @@ def test_strong_record_calls_buy_and_weak_one_holds(report):
     # The wording now covers both readings — "BUY — or HOLD if already in" —
     # because the system does not know what anyone owns, and a bare "BUY" left
     # a holder unsure whether to add, keep or sell.
-    strong = _page(h, "d-contagion-AVGO")
+    strong = _page(h, "d-stocks-AVGO")
     assert "BUY" in strong and "HOLD if already in" in strong
 
     thin = _page(h, "d-stocks-SPY")

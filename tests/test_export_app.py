@@ -17,7 +17,7 @@ from tests.conftest import write_records
 @pytest.fixture
 def seeded(tmp_path):
     led = ShadowLedger(tmp_path / "s.db")
-    write_records(led, "contagion", "AVGO", 120, 2 / 3)
+    write_records(led, "stocks", "AVGO", 120, 2 / 3)
     # Three paths, not two. `build_export`'s third argument defaults to
     # "watchlist.db" in the current directory, so a two-argument call left a
     # real 100-asset board in the project folder — and `run_screen --apply`
@@ -76,7 +76,7 @@ def test_headline_says_so_when_nothing_is_proven(tmp_path):
 
 def test_real_record_produces_a_tier_and_a_floor(seeded):
     d = build_export(*seeded)
-    m = next(x for x in d["models"] if x["id"] == "contagion")
+    m = next(x for x in d["models"] if x["id"] == "stocks")
     assert m["resolved"] == 120
     assert 0 < m["lower_bound"] <= m["hit_rate"] <= 1
     assert m["tier"] in ("WATCH", "CAUTION", "TRADE")

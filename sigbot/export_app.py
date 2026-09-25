@@ -81,14 +81,15 @@ MODEL_META = {
     "stocks": ("Stocks & funds",
                "Scans every stock and fund, and shows only the ones worth a look"),
     "crypto15m": ("Crypto", "Direction on the most traded pairs, every 3 hours"),
-    "contagion": ("Follow-on moves",
-                  "Which stocks react after a large move in a market leader"),
     "opportunity": ("Opportunities", "Investments and business gaps, rated on evidence"),
 }
 
 # Retired from the site, kept in the ledger. Their records still exist and
 # can still be diagnosed; they are simply not shown as models of their own.
-RETIRED_MODELS = ("daily", "setups")
+# contagion (follow-on) retired: 6+ edge tests showed it is pure beta, not
+# skill — it never predicted anything the market wasn't already doing. Removed
+# from the site; its ledger history remains for diagnosis.
+RETIRED_MODELS = ("daily", "setups", "contagion")
 
 
 @dataclass
@@ -115,6 +116,7 @@ class ModelView:
     sample_progress: float = 0.0
     proven_progress: float = 0.0
     ready_count: int = 0
+    ready_total: int = 0
     benchmark: str = ""
     intake: str = ""
     badge: str = ""
@@ -622,7 +624,8 @@ def build_export(db_path: str = "shadow.db", patterns_path: str = "patterns.db",
             target_checks=target,
             sample_progress=round(progress, 1),
             proven_progress=round(proven_progress, 1),
-            ready_count=ready,
+            ready_count=min(ready, 5),
+            ready_total=ready,
             benchmark=benchmark,
             intake=intake,
             badge=horizon_for(model_id).badge,
