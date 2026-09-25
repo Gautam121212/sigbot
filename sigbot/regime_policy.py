@@ -34,7 +34,8 @@ from __future__ import annotations
 #   momentum      : positive ONLY in up/calm
 #   confirmed-surprise (news): +0.87% down/volatile, fades in calm
 STOCK_POLICY: dict[str, frozenset[str]] = {
-    "down/volatile": frozenset({"capitulation", "hammer-in-downtrend",
+    "down/volatile": frozenset({"capitulation", "panic-capitulation",
+                                "hammer-in-downtrend",
                                 "accumulation-divergence", "oversold-money-holding",
                                 "hard-down-day", "extreme-williams",
                                 "stretched-below-trend"}),

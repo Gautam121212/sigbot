@@ -36,22 +36,18 @@ def test_proven_needs_consistency_AND_a_real_edge():
         "accurate, consistent, and still worse than doing nothing")
 
 
-def test_nothing_currently_ships_as_proven():
-    """The honest state after the money test. Deep-oversold wins 54.3% against
-    51.1% across three eras and still earns +0.599% a trade where holding
-    earns +0.659% — the extra accuracy is bought with exactly enough extra
-    downside to more than cancel it. An empty proven tier is the correct
-    output, not a bug to design around."""
-    from sigbot.scan import CANDIDATES
+def test_panic_capitulation_is_the_first_proven_signal():
+    """Panic-capitulation is the first genuinely PROVEN signal. Measured in
+    ABSOLUTE terms (not relative to a fast-rebounding index, which is what made
+    it look broken), it wins 71-79% every era with a +3-7% 5-day move. The
+    others stay RISKY."""
+    from sigbot.scan import CANDIDATES, PROVEN
 
-    assert all(tier_of(c) == RISKY for c in CANDIDATES)
-    # Capitulation beats the index within its regime in all three periods,
-    # measured beyond the index over the same days — the first candidate to.
-    # It stays RISKY: a second-round finding whose evidence clusters on panic
-    # days. Nothing else beats holding.
-    # Signals confirmed to beat the index within their regime, in all periods.
+    proven = {c.name for c in CANDIDATES if tier_of(c) == PROVEN}
+    assert proven == {"panic-capitulation"}, "panic-capitulation is proven"
+    # The signals confirmed to beat holding in their regime across all periods.
     assert set(c.name for c in CANDIDATES if c.beats_holding) == {
-        "capitulation", "hammer-in-downtrend"}
+        "capitulation", "hammer-in-downtrend", "panic-capitulation"}
 
 
 def test_conviction_is_mostly_era_consistency():

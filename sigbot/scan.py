@@ -146,6 +146,25 @@ def _capitulation(row: dict) -> bool:
     return w is not None and w < -90 and row.get("index_regime") == "down/volatile"
 
 
+def _panic_capitulation(row: dict) -> bool:
+    """Deep capitulation while the decline is ACCELERATING — the biggest, fastest
+    rebound of all. Measured ABSOLUTE 5-day return: +7.1% / +6.4% / +3.4% across
+    2009-15 / 2016-20 / 2021+, winning 79% / 73% / 71% of the time. It looked
+    like it "broke" after 2021 only when measured against a fast-rebounding
+    index; in absolute terms it holds strongly every period. Held 5 days, not 20,
+    because the modern rebound is faster and shallower.
+
+    COLLISION GUARD: requires the acceleration flag, so it is a strict subset of
+    _capitulation's rows — the resolver's proven-first + name tiebreak picks one.
+    """
+    w = row.get("willr_14")
+    if w is None or w >= -90 or row.get("index_regime") != "down/volatile":
+        return False
+    # accelerating decline: recent vol well above its 60-day level, or deep
+    # 60-day drawdown. The market is still falling hard, not calming.
+    return bool(row.get("index_accelerating"))
+
+
 def _accumulation_divergence(row: dict) -> bool:
     """Price down over 10 days but OBV (volume) rising — quiet accumulation.
     Worth +0.29% in normal times, but it INVERTS in a crisis (2023 banks
@@ -250,6 +269,15 @@ CANDIDATES: tuple[Candidate, ...] = (
         # test that demoted the washout setup. Same bar, same verdict.
         pooled_edge_pp=2.5, pooled_n=15175, eras_positive=3,
         beats_holding=False, payoff_ratio=1.25, style="momentum", hold_days=20),
+    Candidate(
+        name="panic-capitulation", side="BUY",
+        plain=("Extreme selling in a stock while the whole market is not just "
+               "falling but ACCELERATING down — the deepest panic. This has "
+               "given the biggest, fastest rebounds: about +7% / +6% / +3% over "
+               "5 days across the eras, winning roughly three times in four."),
+        condition=_panic_capitulation,
+        pooled_edge_pp=5.6, pooled_n=11075, eras_positive=3,
+        beats_holding=True, payoff_ratio=1.4, style="reversion", hold_days=5),
     Candidate(
         name="hammer-in-downtrend", side="BUY",
         plain=("A hammer candlestick — a day that fell hard then closed back "

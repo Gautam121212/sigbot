@@ -244,6 +244,27 @@ def _hammer_flag(bars) -> float:
         return 0.0
 
 
+def _index_accelerating() -> bool:
+    """Is the index decline ACCELERATING — recent volatility well above its
+    60-day level, or a deep 60-day drawdown? Marks the deepest panic, where the
+    panic-capitulation rebound is biggest. Best-effort from SPY daily bars."""
+    try:
+        from .providers.market import YahooProvider
+        from datetime import datetime, timedelta, timezone
+        end = (datetime.now(timezone.utc) + timedelta(days=1)).strftime("%Y-%m-%d")
+        start = (datetime.now(timezone.utc) - timedelta(days=120)).strftime("%Y-%m-%d")
+        bars = YahooProvider().history("SPY", start, end)
+        if len(bars) < 60:
+            return False
+        rets = bars["close"].pct_change().dropna()
+        vol20 = rets.tail(20).std()
+        vol60 = rets.tail(60).std()
+        mom60 = float(bars["close"].iloc[-1] / bars["close"].iloc[-60] - 1)
+        return bool(vol20 > vol60 * 1.8 or mom60 < -0.15)
+    except Exception:  # noqa: BLE001  # handled: unknown -> not accelerating
+        return False
+
+
 def market_regime(closes) -> str | None:
     """"up" or "down" (index vs its 200-day average) / "calm" or "volatile"
     (20-day volatility vs its own long-run median) — the split under which
@@ -2829,6 +2850,7 @@ def run_stocks(settings=SETTINGS) -> None:
                 "sma_50": float(bars["close"].tail(50).mean()),
                 "index_up": index_up,
                 "index_regime": index_regime,
+                "index_accelerating": _index_accelerating(),
                 # The high of the PREVIOUS year, excluding today, so a close
                 # at a new high can register as one.
                 "hi52": (float(bars["high"].iloc[-253:-1].max())
