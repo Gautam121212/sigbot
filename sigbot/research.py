@@ -197,6 +197,19 @@ ROUND_9 = (
     Result("Follow-on laggard catch-up", 4.1, -2.4, -1.1, (0.13, -0.06, -0.04)),
 )
 
+# Round 10 — sigbot-ONLY edges from its own multi-model ledger. Nothing here
+# can exist in another system, because no other system keeps a per-model scored
+# history. Tested: cross-model confluence (2+ models agreeing hit 50.9% vs 46%,
+# but tiny n=17); model accuracy-momentum (a model's own form persisting).
+ROUND_10_BATCH = 2
+ROUND_10 = (
+    # Daily model's form persists: hot->51-54%, cold->43%, both halves (+2.2,
+    # +11.0). ADOPTED as a sizing multiplier for the daily model only.
+    Result("Daily accuracy-momentum (own form persists)", 3.0, 2.2, 11.0, (8.0, 2.2, 11.0)),
+    # Crypto accuracy-momentum: flips (-3.5 then +4.5). Not adopted.
+    Result("Crypto accuracy-momentum", 0.5, -3.5, 4.5, (2.3, -3.5, 4.5)),
+)
+
 # Written down BEFORE testing, so their results cannot shape their wording.
 PENDING = (
     "Wire the confirmed-surprise indicator into the live news model once "
