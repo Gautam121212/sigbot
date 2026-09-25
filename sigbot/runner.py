@@ -1941,6 +1941,64 @@ STALE_RULES = {
 }
 
 
+HARD_PAUSE_MARKER = "HALTED.txt"
+
+
+def is_halted() -> bool:
+    """A hard halt with NO auto-resume — stays off until `resume` is run.
+    Separate from the daily-cycle pause (which lifts on schedule)."""
+    from pathlib import Path
+    return Path(HARD_PAUSE_MARKER).exists()
+
+
+def run_halt(settings=SETTINGS) -> None:
+    """Stop EVERYTHING and wipe the loop clean, until `resume` is run.
+
+    Backs up the ledger, deletes every prediction (start fresh), clears the
+    paper display, and writes a hard-halt marker with no expiry. Nothing is
+    forecast or traded until you explicitly run `resume`. Use this to rebuild
+    the models with confidence that every prediction from here is correct.
+    """
+    import json
+    import shutil
+    import sqlite3
+    from contextlib import closing
+    from datetime import datetime, timezone
+    from pathlib import Path
+
+    stamp = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S")
+    if Path(settings.shadow_db).exists():
+        shutil.copy(settings.shadow_db, f"{settings.shadow_db}.{stamp}.bak")
+        print(f"Backed up ledger to {settings.shadow_db}.{stamp}.bak")
+    with closing(sqlite3.connect(settings.shadow_db)) as con:
+        n = con.execute("SELECT COUNT(*) FROM predictions").fetchone()[0]
+        con.execute("DELETE FROM predictions")
+        con.commit()
+    print(f"Wiped {n} prediction(s). The ledger is empty.")
+    for f in ("paper.json",):
+        if Path(f).exists():
+            shutil.copy(f, f"{f}.{stamp}.bak")
+            Path(f).write_text(json.dumps({"days": [], "starting_cash": 100000,
+                "equity": 100000, "total_return": 0.0, "total_costs": 0.0,
+                "by_model": {}, "verdict": "Halted — rebuilding from scratch."}))
+    Path(HARD_PAUSE_MARKER).write_text(
+        f"Halted {datetime.now(timezone.utc).isoformat()}. "
+        "Run `python -m sigbot.runner resume` to restart.")
+    print("HALTED. Nothing will be forecast or traded until you run:")
+    print("  python -m sigbot.runner resume")
+
+
+def run_resume(settings=SETTINGS) -> None:
+    """Lift the hard halt and let the models run again."""
+    from pathlib import Path
+    m = Path(HARD_PAUSE_MARKER)
+    if m.exists():
+        m.unlink()
+        print("Resumed. The models will forecast and trade on the next run.")
+    else:
+        print("Not halted — nothing to resume.")
+
+
 def run_purge_stale(settings=SETTINGS) -> None:
     """Remove predictions made by now-replaced model versions, per model.
 
@@ -2215,6 +2273,10 @@ def run_priority(settings=SETTINGS, budget_minutes: float = 20.0,
     # Stocks, contagion and profiles read daily bars: running them every three
     # hours repeats the same work eight times a day on 675 names. They stay on
     # the weekday daily tick in the workflow (step 4 of WORKFLOW_CHANGE.md).
+    if is_halted():
+        print("HALTED — run `python -m sigbot.runner resume` to restart. "
+              "Nothing forecast or traded.")
+        return
     paused, until = is_paused()
     if paused:
         print(f"All models paused until {until}. Nothing forecast or traded.")
@@ -3121,6 +3183,9 @@ def run_paper() -> None:
     network — so this job cannot place an order even by accident, and it
     produces the same answer on any machine given the same ledger.
     """
+    if is_halted():
+        print("HALTED — paper trading off until `resume`.")
+        return
     paused, until = is_paused()
     if paused:
         print(f"Paper trading paused until {until}. No trades placed.")
@@ -3175,6 +3240,8 @@ def main(argv: list[str]) -> int:
         "reset-all": lambda: run_reset(full=True),
         "fresh-start": run_fresh_start,
         "purge-stale": run_purge_stale,
+        "halt": run_halt,
+        "resume": run_resume,
         "deep-check": lambda: print(__import__("sigbot.deep_check", fromlist=["describe"]).describe(SETTINGS.shadow_db)),
         "form": lambda: print(__import__("sigbot.self_signals", fromlist=["describe"]).describe(SETTINGS.shadow_db)),
         "wipe-and-pause": run_wipe_and_pause,
