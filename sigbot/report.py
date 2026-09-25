@@ -607,14 +607,10 @@ def _model_page(m: dict) -> str:
     <span class="hbadge" style="color:{_e(m.get('badge_colour', 'var(--faint)'))};
       border-color:{_e(m.get('badge_colour', 'var(--line)'))}33">
       {_e(m.get('badge', ''))} · {_e(m.get('window', ''))}</span>
-    <p class="what-sm" style="margin-top:10px">Next tier: {_e(m.get('ready_in', ''))}.
-    {_e(_null_note(m))}</p>
-    <p class="what-sm">Intake: {_e(m.get('intake', ''))}.</p>
-    {_bar("ready to act (real trading)", m.get("sample_progress", 0), "var(--indigo)")}
-    <p class="what-sm">{_e(m.get('benchmark', ''))}</p>
-    <span class="badge" style="background:{tc}1f;color:{tc}">{_e(TIER_PLAIN.get(m['tier'], m['tier']))}</span>
-    {_meter((m.get('lower_bound') or 0) * 100, tc)}
-    <p>{_e(m['status_line'])}</p>
+    <p class="what-sm" style="margin-top:10px">{_e(m.get('intake', ''))}.</p>
+    <p class="what-sm" style="margin-top:6px">{m.get('ready_count', 0)} of 5 names
+    ready to trade — the model is proven once 5 have a clear, tradeable action.</p>
+    {_bar("proven", m.get("proven_progress", 0), "var(--green)")}
     <p class="what-sm">{_e((f"{m.get('made', 0):,} forecast(s) recorded, waiting to be scored. "
                             if m.get('made') and not m.get('resolved') else "")
                            + (m.get('last_run') or
@@ -1084,6 +1080,7 @@ def build_report(data: dict) -> str:
   (intra-day, short-term, long-term).</p>
   {_predictions_rows(data)}
 </div></div>
+{_prediction_pages(data)}
 <div class="page" id="picks"><div class="wrap">
   <div class="top"><span class="brand">Suggested picks</span>
     <span class="stamp">{_e(_picks_stamp(data))}</span></div>
@@ -1095,6 +1092,7 @@ def build_report(data: dict) -> str:
   here is a place to look, not a call to act, and every one of them also
   appears on the board with its own record.</p>
 </div></div>
+{_pick_pages(data)}
 <div class="page" id="pnl"><div class="wrap">
   <div class="top"><span class="brand">Daily P&amp;L</span>
     <span class="stamp">{_e(_pnl_stamp(data))}</span></div>
@@ -1549,23 +1547,90 @@ def _predictions_rows(data: dict) -> str:
         # Pass/fail checker: how many of this model's shown names are proven vs risky.
         passed = sum(1 for a in alerts if a.get("scan_tier") == "PROVEN"
                      or (a.get("lower") or 0) > (a.get("null") or 0.5))
-        failed = n_rows - passed
         colour = "var(--green)" if n_rows else "var(--faint)"
         title = MODEL_TITLES.get(mid, mid.title())
-        checker = (f'<span class="badge" style="background:#2ecc7122;color:#2ecc71">'
-                   f'{passed} passing</span> '
-                   f'<span class="badge" style="background:#e5484d22;color:#e5484d">'
-                   f'{failed} not yet</span>' if n_rows else "")
+        # Right / total predictions, shown on the right of the row (item 3).
+        right_total = f'<span class="what-sm" style="float:right">{passed}/{n_rows} right</span>' if n_rows else ""
         detail = (f"{n_rows} name(s), {scored:,} scored"
                   if n_rows else f"{scored:,} scored — nothing clears the bar yet")
         out.append(f"""
-  <a href="#m-{_e(mid)}"><div class="card row">
+  <a href="#pred-{_e(mid)}"><div class="card row">
     <span class="pip" style="background:{colour};margin-top:0"></span>
-    <div class="grow"><h3>{_e(title)}  {checker}</h3>
+    <div class="grow"><h3>{_e(title)} {right_total}</h3>
       <p class="what-sm">{_e(m.get('subtitle', ''))}</p>
       <p>{_e(detail)}</p></div>
     <span class="chev">&rsaquo;</span></div></a>""")
     return "".join(out)
+
+
+def _prediction_pages(data: dict) -> str:
+    """A dedicated page per model (item 3): three horizon rows (intra-day /
+    short-term / long-term) linking to sub-pages of predictions sorted by
+    confidence. Separate from the model page."""
+    from .daily_cycle import horizon_lead_line
+    MODEL_TITLES = {"stocks": "Stocks & funds", "crypto15m": "Crypto",
+                    "news": "News", "contagion": "Follow-on moves",
+                    "daily": "Daily outlook", "opportunity": "Opportunities"}
+    HZ = (("intra-day", "Held less than a day"),
+          ("short-term", "Held days to a few weeks"),
+          ("long-term", "Held weeks to months"))
+    pages = []
+    for m in data.get("models", []):
+        mid = m.get("id", "")
+        title = MODEL_TITLES.get(mid, mid.title())
+        alerts = m.get("alerts", [])
+        by_h: dict = {h: [] for h, _ in HZ}
+        for a in alerts:
+            by_h.setdefault(a.get("horizon", "short-term"), []).append(a)
+        # The model's prediction landing: three horizon rows.
+        rows = []
+        for h, blurb in HZ:
+            items = by_h.get(h, [])
+            n = len(items)
+            lead = horizon_lead_line(h)
+            col = "var(--green)" if n else "var(--faint)"
+            if n:
+                rows.append(f"""
+  <a href="#predh-{_e(mid)}-{h}"><div class="card row">
+    <span class="pip" style="background:{col};margin-top:0"></span>
+    <div class="grow"><h3>{h.replace('-', ' ').title()} <span class="what-sm">({n})</span></h3>
+      <p class="what-sm">{blurb} &middot; {_e(lead)}</p></div>
+    <span class="chev">&rsaquo;</span></div></a>""")
+            else:
+                rows.append(f"""
+  <div class="card row" style="opacity:.45">
+    <span class="pip" style="background:var(--faint);margin-top:0"></span>
+    <div class="grow"><h3>{h.replace('-', ' ').title()} <span class="what-sm">(0)</span></h3>
+      <p class="what-sm">{blurb} &middot; {_e(lead)}</p></div>
+  </div>""")
+        pages.append(f"""
+<div class="page" id="pred-{_e(mid)}"><div class="wrap">
+  <a class="back" href="#predictions">&lsaquo; Predictions</a>
+  <div class="card"><h1>{_e(title)}</h1>
+    <p class="what-sm">Predictions grouped by how long they are held.</p></div>
+  {"".join(rows)}
+</div></div>""")
+        # A sub-page per horizon, predictions sorted by confidence.
+        for h, blurb in HZ:
+            items = by_h.get(h, [])
+            if not items:
+                continue
+            items = sorted(items, key=lambda a: -(a.get("conviction") or a.get("lower") or 0))
+            body = "".join(f"""
+  <a href="#d-{_e(mid)}-{_e(a['symbol'])}"><div class="card row">
+    <span class="pip" style="background:{'var(--green)' if a.get('scan_tier') == 'PROVEN' or (a.get('lower') or 0) > (a.get('null') or 0.5) else 'var(--faint)'};margin-top:0"></span>
+    <div class="grow"><h3>{_e(a['symbol'])}</h3>
+      <p>{_e(a.get('detail', ''))}</p>
+      {f'<p class="what-sm">made {_e(a.get("made_at", ""))} · result {_e(a.get("result_at", ""))}</p>' if a.get("made_at") else ''}</div>
+    <span class="chev">&rsaquo;</span></div></a>""" for a in items)
+            pages.append(f"""
+<div class="page" id="predh-{_e(mid)}-{h}"><div class="wrap">
+  <a class="back" href="#pred-{_e(mid)}">&lsaquo; {_e(title)}</a>
+  <div class="card"><h1>{h.replace('-', ' ').title()}</h1>
+    <p class="what-sm">{blurb} &middot; sorted by confidence.</p></div>
+  {body}
+</div></div>""")
+    return "".join(pages)
 
 
 def _picks_rows(data: dict) -> str:
@@ -1574,8 +1639,6 @@ def _picks_rows(data: dict) -> str:
     # trade on a symbol the model no longer lists, and a link to a page that
     # was never rendered is a dead end on the one page meant to send you
     # somewhere useful.
-    pages = {f"{m['id']}-{a['symbol']}"
-             for m in data.get("models", []) for a in (m.get("alerts") or [])}
     if not picks:
         return ('<div class="card"><p>No name has a profitable paper record '
                 'yet. That is the expected state while the models are still '
@@ -1592,7 +1655,35 @@ def _picks_rows(data: dict) -> str:
     for row in picks:
         by_model[row.get("model", "other")].append(row)
 
-    sections = []
+    # Item 4: a landing of MODEL rows; clicking a model opens its picks page.
+    out = []
+    for model in sorted(by_model):
+        n = len(by_model[model])
+        out.append(f"""
+  <a href="#picks-{_e(model)}"><div class="card row">
+    <span class="pip" style="background:var(--green);margin-top:0"></span>
+    <div class="grow"><h3>{_e(MODEL_TITLES.get(model, model.title()))}
+      <span class="what-sm" style="float:right">{n} pick(s)</span></h3>
+      <p class="what-sm">Names this model has paid on in paper.</p></div>
+    <span class="chev">&rsaquo;</span></div></a>""")
+    return "".join(out)
+
+
+def _pick_pages(data: dict) -> str:
+    """One page per model listing its paper-profitable picks (item 4)."""
+    picks = _paper_by_symbol(data)
+    if not picks:
+        return ""
+    from collections import defaultdict
+    MODEL_TITLES = {"stocks": "Stocks & funds", "crypto15m": "Crypto",
+                    "news": "News", "contagion": "Follow-on moves",
+                    "daily": "Daily outlook", "opportunity": "Opportunities"}
+    pages_avail = {f"{m['id']}-{a['symbol']}"
+                   for m in data.get("models", []) for a in (m.get("alerts") or [])}
+    by_model = defaultdict(list)
+    for row in picks:
+        by_model[row.get("model", "other")].append(row)
+    out = []
     for model in sorted(by_model):
         rows_out = []
         for row in by_model[model]:
@@ -1602,18 +1693,21 @@ def _picks_rows(data: dict) -> str:
             body = f"""<div class="card row">
     <span class="pip" style="background:{colour};margin-top:0"></span>
     <div class="grow"><h3>{_e(row['symbol'])}</h3>
-      <p>Worth a look: paper trading made {row['pnl']:+,.0f} on this name
-      across {row['trades']:,} trade(s), {row['win_rate'] * 100:.0f}% of them
-      in profit.</p>
+      <p>Paper trading made {row['pnl']:+,.0f} across {row['trades']:,}
+      trade(s), {row['win_rate'] * 100:.0f}% in profit.</p>
       {_bar("conf", conf, colour)}</div>
     <span class="chev">&rsaquo;</span></div>"""
             key = f"{row['model']}-{row['symbol']}"
             rows_out.append(f'<a href="#d-{_e(key)}">{body}</a>'
-                            if key in pages else body)
-        sections.append(f'<h3 style="margin-top:14px">'
-                        f'{_e(MODEL_TITLES.get(model, model.title()))}</h3>'
-                        + "".join(rows_out))
-    return "".join(sections)
+                            if key in pages_avail else body)
+        out.append(f"""
+<div class="page" id="picks-{_e(model)}"><div class="wrap">
+  <a class="back" href="#picks">&lsaquo; Suggested picks</a>
+  <div class="card"><h1>{_e(MODEL_TITLES.get(model, model.title()))}</h1>
+    <p class="what-sm">Names this model has paid on in paper, best first.</p></div>
+  {"".join(rows_out)}
+</div></div>""")
+    return "".join(out)
 
 
 def _board_progress(asset: dict) -> tuple[float, float]:

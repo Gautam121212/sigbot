@@ -113,6 +113,8 @@ class ModelView:
     ready_in: str = ""
     target_checks: int = 0
     sample_progress: float = 0.0
+    proven_progress: float = 0.0
+    ready_count: int = 0
     benchmark: str = ""
     intake: str = ""
     badge: str = ""
@@ -562,6 +564,13 @@ def build_export(db_path: str = "shadow.db", patterns_path: str = "patterns.db",
                 key=lambda kv: (-kv[1][2], -kv[1][0]))
             for t, _, _ in [ledger.tier(model_id, sym)]
         ]
+        # Progress toward "proven": a model is proven once at least 5 of its
+        # names are ready to trade (green tier with a clear action). This is
+        # the single bar the model page shows (item 2).
+        ready = sum(1 for a in alerts
+                    if a.get("scan_tier") == "PROVEN"
+                    or (a.get("lower") or 0) > (a.get("null") or 0.5))
+        proven_progress = min(100.0, ready / 5.0 * 100.0)
         all_alerts.extend(alerts)
 
         models.append(ModelView(
@@ -570,6 +579,8 @@ def build_export(db_path: str = "shadow.db", patterns_path: str = "patterns.db",
             ready_in=ready_in,
             target_checks=target,
             sample_progress=round(progress, 1),
+            proven_progress=round(proven_progress, 1),
+            ready_count=ready,
             benchmark=benchmark,
             intake=intake,
             badge=horizon_for(model_id).badge,

@@ -40,6 +40,12 @@ ANCHOR_TZ = ZoneInfo("Asia/Kolkata")
 RESET_LOCAL = time(16, 30)      # 16:30 IST — one hour after NSE close
 
 
+# How long before the market opens each horizon's predictions are made.
+# Long-term needs the most lead (12h), intra-day the least (1h) — a fresh
+# intra-day call an hour before open is more current than one made overnight.
+PREDICTION_LEAD_HOURS = {"long-term": 12, "short-term": 6, "intra-day": 1}
+
+
 class Phase(str, Enum):
     RESET = "reset"          # just reset; pages blank until predictions run
     PREDICT = "predict"      # predictions being made for the next session
@@ -107,6 +113,27 @@ def cycle_state(when: datetime | None = None) -> CycleState:
 
     return CycleState(phase=phase, trading_day=trading_day, reset_at=reset_at,
                       next_open=open_utc, predictions_locked=locked)
+
+
+def prediction_times(when: datetime | None = None) -> dict[str, datetime]:
+    """When each horizon's predictions are made for the next session: 12h / 6h /
+    1h before the next open. Returned in UTC, keyed by horizon."""
+    from datetime import timedelta
+    now = _now(when)
+    open_utc = next_open(ANCHOR, now)
+    return {h: open_utc - timedelta(hours=lead)
+            for h, lead in PREDICTION_LEAD_HOURS.items()}
+
+
+def horizon_lead_line(horizon: str, when: datetime | None = None) -> str:
+    """A page label: when this horizon's predictions are made and the gap to open."""
+    lead = PREDICTION_LEAD_HOURS.get(horizon, 6)
+    times = prediction_times(when)
+    t = times.get(horizon)
+    if t is None:
+        return ""
+    local = t.astimezone(ANCHOR_TZ)
+    return f"made {lead}h before open · {local:%d %b %H:%M} IST"
 
 
 def should_show_predictions(when: datetime | None = None) -> bool:

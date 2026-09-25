@@ -1866,6 +1866,134 @@ def _backtest_summary(results, skipped) -> str:
     return "\n".join(lines)
 
 
+PAUSE_MARKER = "PAUSED_UNTIL.txt"
+
+
+def is_paused() -> tuple[bool, str]:
+    """Whether prediction/paper placement is paused. The marker file holds an
+    ISO datetime; once now passes it, the pause lifts automatically. This is how
+    the model is turned OFF now and starts cleanly at the scheduled time."""
+    from datetime import datetime, timezone
+    from pathlib import Path
+    m = Path(PAUSE_MARKER)
+    if not m.exists():
+        return False, ""
+    try:
+        until = datetime.fromisoformat(m.read_text().strip())
+        if until.tzinfo is None:
+            until = until.replace(tzinfo=timezone.utc)
+        if datetime.now(timezone.utc) >= until:
+            return False, ""     # the pause has expired; run normally
+        return True, until.isoformat()
+    except (OSError, ValueError):
+        return True, "until the marker is removed"
+
+
+def run_wipe_and_pause(settings=SETTINGS) -> None:
+    """Remove EVERY prediction and pause — the nuclear "start from nothing"
+    option. Backs up first. Use when you want a completely clean ledger, not
+    just corrupt rows removed. Guarded by SIGBOT_CONFIRM_RESET=yes."""
+    import os
+    import shutil
+    import sqlite3
+    from contextlib import closing
+    from datetime import datetime, timezone
+    from pathlib import Path
+
+    if os.environ.get("SIGBOT_CONFIRM_RESET") != "yes":
+        print("Refusing to wipe the entire ledger without confirmation.\n"
+              "  This deletes ALL predictions (the learning record) and cannot "
+              "be undone.\n  To proceed:  SIGBOT_CONFIRM_RESET=yes "
+              "python -m sigbot.runner wipe-and-pause")
+        return
+    stamp = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S")
+    if Path(settings.shadow_db).exists():
+        shutil.copy(settings.shadow_db, f"{settings.shadow_db}.{stamp}.bak")
+        print(f"Backed up to {settings.shadow_db}.{stamp}.bak")
+    with closing(sqlite3.connect(settings.shadow_db)) as con:
+        n = con.execute("SELECT COUNT(*) FROM predictions").fetchone()[0]
+        con.execute("DELETE FROM predictions")
+        con.commit()
+    print(f"Wiped {n} predictions. The ledger is empty.")
+    # Clear paper and pause, same as fresh-start.
+    import json as _json
+    for f in ("paper.json",):
+        if Path(f).exists():
+            shutil.copy(f, f"{f}.{stamp}.bak")
+            Path(f).write_text(_json.dumps({"days": [], "starting_cash": 100000,
+                "equity": 100000, "total_return": 0.0, "total_costs": 0.0,
+                "by_model": {}, "verdict": "Wiped clean — starts on the next cycle."}))
+    from .daily_cycle import cycle_state
+    reset_at = cycle_state().reset_at
+    Path(PAUSE_MARKER).write_text(reset_at.isoformat())
+    print(f"Paused until {reset_at.isoformat()}. Everything starts from zero then.")
+
+
+def run_fresh_start(settings=SETTINGS) -> None:
+    """Archive current paper/prediction DISPLAY data into the learning record,
+    clear the live display, and pause until the next scheduled prediction time,
+    so the account starts clean tomorrow on the proper schedule.
+
+    The scored predictions stay in the ledger (they ARE the learning record) —
+    only the paper display state and any corrupt rows are cleared. A pause
+    marker is written for the next daily-cycle reset so nothing new is placed
+    until then.
+    """
+    import json
+    import shutil
+    import sqlite3
+    from contextlib import closing
+    from datetime import datetime, timezone
+    from pathlib import Path
+
+    from .daily_cycle import cycle_state
+
+    # 1. Back up, always.
+    stamp = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S")
+    if Path(settings.shadow_db).exists():
+        shutil.copy(settings.shadow_db, f"{settings.shadow_db}.{stamp}.bak")
+        print(f"Backed up ledger to {settings.shadow_db}.{stamp}.bak")
+
+    # 2. Remove CORRUPT rows — impossible one-bar moves (bad price data like the
+    #    U-USD +/-90% artifact). These pollute the paper P&L.
+    CORRUPT = (
+        # impossible single-bar move — bad price data, not a real trade
+        "(hit IS NOT NULL AND entry_price > 0 AND exit_price > 0 "
+        " AND ABS(exit_price / entry_price - 1) > 0.5)"
+        # no entry price — can never be scored, meaningless
+        " OR entry_price IS NULL OR entry_price <= 0"
+        # micro-prices where float rounding fabricates huge moves
+        " OR (entry_price > 0 AND entry_price < 0.00001)"
+        # resolved but no exit — a broken score
+        " OR (hit IS NOT NULL AND (exit_price IS NULL OR exit_price <= 0))"
+    )
+    with closing(sqlite3.connect(settings.shadow_db)) as con:
+        bad = con.execute(f"SELECT COUNT(*) FROM predictions WHERE {CORRUPT}").fetchone()[0]
+        con.execute(f"DELETE FROM predictions WHERE {CORRUPT}")
+        con.commit()
+    print(f"Removed {bad} corrupt row(s): impossible moves, missing prices, "
+          "micro-price artifacts, broken scores.")
+
+    # 3. Clear the paper DISPLAY state (the days list / today view). The scored
+    #    predictions remain as the learning record.
+    for f in ("paper.json",):
+        pth = Path(f)
+        if pth.exists():
+            shutil.copy(f, f"{f}.{stamp}.bak")
+            pth.write_text(json.dumps({"days": [], "starting_cash": 100000,
+                                       "equity": 100000, "total_return": 0.0,
+                                       "total_costs": 0.0, "by_model": {},
+                                       "verdict": "Fresh start — begins on the "
+                                       "next scheduled prediction cycle."}))
+    print("Cleared paper display; scored predictions kept as the learning record.")
+
+    # 4. Pause until the next daily-cycle reset (predictions resume then).
+    reset_at = cycle_state().reset_at
+    Path(PAUSE_MARKER).write_text(reset_at.isoformat())
+    print(f"Paused until {reset_at.isoformat()} — the next prediction cycle.")
+    print("The model is OFF now and will start clean at that time.")
+
+
 def run_reset(settings=SETTINGS, full: bool = False) -> None:
     """Clear what is genuinely wrong, keep what is genuinely evidence.
 
@@ -2040,6 +2168,11 @@ def run_priority(settings=SETTINGS, budget_minutes: float = 20.0,
     # Stocks, contagion and profiles read daily bars: running them every three
     # hours repeats the same work eight times a day on 675 names. They stay on
     # the weekday daily tick in the workflow (step 4 of WORKFLOW_CHANGE.md).
+    paused, until = is_paused()
+    if paused:
+        print(f"All models paused until {until}. Nothing forecast or traded.")
+        return
+
     jobs = ["resolve", "news", "opportunity", "crypto15m"]
     queue = plan(jobs, verdicts, budget_seconds=budget_minutes * 60)
     print(describe(queue))
@@ -2941,6 +3074,10 @@ def run_paper() -> None:
     network — so this job cannot place an order even by accident, and it
     produces the same answer on any machine given the same ledger.
     """
+    paused, until = is_paused()
+    if paused:
+        print(f"Paper trading paused until {until}. No trades placed.")
+        return
     from . import paper
 
     # Only models that earned the right to be traded. Replaying every
@@ -2989,6 +3126,8 @@ def main(argv: list[str]) -> int:
         "sizing": run_sizing,
         "reset": run_reset,
         "reset-all": lambda: run_reset(full=True),
+        "fresh-start": run_fresh_start,
+        "wipe-and-pause": run_wipe_and_pause,
     }
     if cmd not in jobs:
         print(f"usage: python -m sigbot.runner [{'|'.join(jobs)}]")

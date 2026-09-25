@@ -485,11 +485,11 @@ def test_a_fresh_asset_is_near_neither_bar():
     assert ready == 0.0 and drop == 0.0
 
 
-def test_model_pages_say_when_the_next_tier_arrives(board):
+def test_model_pages_show_one_proven_bar(board):
+    """Item 2: the two watch/trade + status blocks are gone; one bar shows how
+    far the model is from proven (5 tradeable names)."""
     html = board[0]
-    assert "Next tier:" in html
-    assert "Chance scores" in html, (
-        "the page must name the real null, not leave 50% implied")
+    assert "ready to trade" in html and "proven" in html.lower()
 
 
 def test_top_picks_shows_wins_but_the_record_keeps_everything(report):
@@ -914,7 +914,7 @@ def test_predictions_page_lists_every_model(report):
     rows = _predictions_rows({"models": [
         {"id": "stocks", "subtitle": "x", "alerts": [{}], "resolved": 10},
         {"id": "crypto15m", "subtitle": "y", "alerts": [], "resolved": 5}]})
-    assert 'href="#m-stocks"' in rows and 'href="#m-crypto15m"' in rows
+    assert 'href="#pred-stocks"' in rows and 'href="#pred-crypto15m"' in rows
 
 
 def test_top_picks_are_grouped_by_model(report):
