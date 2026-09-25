@@ -191,6 +191,28 @@ def _benchmark_info(paper: dict) -> list[dict]:
         return []
 
 
+def _predictions_today(ledger) -> int:
+    """Predictions made since the last daily reset (item 6: daily, resets daily)."""
+    import sqlite3
+    from contextlib import closing
+    from datetime import datetime, timezone
+    try:
+        from .daily_cycle import cycle_state
+        # Count since the most recent reset (reset_at minus a day if reset_at is future).
+        from datetime import timedelta
+        reset_at = cycle_state().reset_at
+        since = reset_at - timedelta(days=1)
+        now = datetime.now(timezone.utc)
+        if since > now:
+            since = since - timedelta(days=1)
+        with closing(sqlite3.connect(ledger.path)) as con:
+            return con.execute(
+                "SELECT COUNT(*) FROM predictions WHERE created_at >= ?",
+                (since.isoformat(),)).fetchone()[0]
+    except Exception:  # noqa: BLE001  # handled: cosmetic count; 0 on error
+        return 0
+
+
 def _cycle_info() -> dict:
     """The daily-cycle phase for the Predictions and Paper pages."""
     try:
@@ -635,6 +657,7 @@ def build_export(db_path: str = "shadow.db", patterns_path: str = "patterns.db",
             "models_total": len(models),
             "models_alertable": alertable,
             "observations_total": sum(m.resolved for m in models),
+            "predictions_today": _predictions_today(ledger),
             "confirmed_patterns": len(patterns.get("confirmed", [])),
             "message": (
                 f"{alertable} of {len(models)} models have earned the right to alert."

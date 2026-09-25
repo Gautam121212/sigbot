@@ -173,6 +173,7 @@ a{color:inherit;text-decoration:none}
   align-items:center;justify-content:center;font-weight:700;font-size:16px;
   border:1px solid}
 .chev{color:var(--faint);font-size:20px}
+.rt{color:var(--dim);font-size:13px;white-space:nowrap;margin-left:auto;padding-left:10px}
 details.horizon{margin:0 0 6px}
 details.horizon>summary{cursor:pointer;list-style:none}
 details.horizon>summary::-webkit-details-marker{display:none}
@@ -261,7 +262,7 @@ nav a span{display:block;font-size:11px}
 .hero .call{min-height:285px;display:flex;flex-direction:column;justify-content:center}
 .hero .stat{min-height:285px;justify-content:center;
   background:linear-gradient(150deg,#121a24,#0e141c)}
-.hero .stat::before{content:"LIVE RECORD";display:block;margin-bottom:28px;
+.hero .stat::before{content:"TODAY";display:block;margin-bottom:28px;
   color:var(--faint);font-size:10px;font-weight:750;letter-spacing:.12em}
 .hero .stat .num{font-size:clamp(42px,5vw,62px);line-height:1;letter-spacing:-.045em}
 .sig{font-size:42px}
@@ -296,7 +297,16 @@ nav a span{display:block;font-size:11px}
   text-transform:uppercase;letter-spacing:.08em}
 @media(max-width:420px){.stats{gap:7px}
   .stats .stat{min-height:90px;padding:13px 10px}
-  .stats .stat b{font-size:20px}}
+  .stats .stat b{font-size:20px}
+  .card.row{padding:13px 14px;gap:10px}
+  .rt{font-size:11px;padding-left:6px}
+  .num{font-size:26px}
+  h1{font-size:24px}
+  .lead{font-size:14.5px}}
+/* iPad / tablet portrait: keep cards comfortable, not stretched */
+@media(min-width:600px) and (max-width:900px){
+  .wrap{padding:24px 20px 56px}
+  .card.row{padding:16px 20px}}
 .dualbar{display:flex;align-items:center;gap:8px;margin-top:5px;
   font-size:10px;color:var(--faint);letter-spacing:.03em}
 .dualbar span:first-child{min-width:34px;text-transform:uppercase}
@@ -730,13 +740,9 @@ def build_report(data: dict) -> str:
         border-color:{ACCENT.get(m['accent'], '#00d4aa')}59;
         color:{ACCENT.get(m['accent'], '#00d4aa')}">{_e(m['name'][0])}</div>
       <div class="grow"><h3>{_e(m['name'])}</h3><p>{_e(m['subtitle'])}</p>
-        <span class="hbadge" style="color:{_e(m.get('badge_colour', 'var(--faint)'))};
-          border-color:{_e(m.get('badge_colour', 'var(--line)'))}33">
-          {_e(m.get('badge', ''))} · {_e(m.get('window', ''))}</span>
-        <p class="what-sm" style="margin:6px 0 0">{_e(m.get('ready_in', ''))}</p>
-        <span class="badge" style="background:{TIER_COLOR.get(m['tier'])}1f;
-          color:{TIER_COLOR.get(m['tier'])};margin-top:5px">
-          {_e(TIER_PLAIN.get(m['tier'], m['tier']))}</span></div>
+        <p class="what-sm" style="margin:8px 0 2px">{m.get('ready_count', 0)} of 5
+        ready — how close to placing real-money trades.</p>
+        {_bar("to real money", m.get("proven_progress", 0), "var(--green)")}</div>
       <span class="chev">&rsaquo;</span></div></a>""" for m in data["models"])
 
     empty = ('<div class="card"><p>Nothing checked yet. Come back once the '
@@ -973,11 +979,11 @@ def build_report(data: dict) -> str:
       <div class="meter"><i style="width:{max((proven / max(total, 1)) * 100, 2):.0f}%"></i></div>
       <p class="what-sm">{h['observations_total']:,} predictions checked so far. Each one
       only counts once we know how it turned out.</p></div>
-    <div class="card stat"><p class="what-sm">Verified predictions</p>
-      <div class="statrow"><span class="num">{h['observations_total']:,}</span>
-        <span class="live">Live</span></div>
-      <p class="what-sm" style="margin-top:auto">{proven} / {total} proven ·
-      counted only after the outcome is known</p></div>
+    <div class="card stat"><p class="what-sm">Daily predictions</p>
+      <div class="statrow"><span class="num">{h.get('predictions_today', 0):,}</span>
+        <span class="live">Today</span></div>
+      <p class="what-sm" style="margin-top:auto">Made since the last reset ·
+      resets each day. {proven} / {total} models proven.</p></div>
   </div>
   <div class="sechead">
     <div><h2 style="margin:0">What it watches</h2>
@@ -1517,48 +1523,30 @@ def _predictions_rows(data: dict) -> str:
     MODEL_TITLES = {"stocks": "Stocks & funds", "crypto15m": "Crypto",
                     "news": "News", "contagion": "Follow-on moves",
                     "daily": "Daily outlook", "opportunity": "Opportunities"}
-    cycle = data.get("cycle", {})
-
-    # The cycle header: reset time, which day these are for, and the phase.
-    phase = cycle.get("phase", "")
-    header = ""
-    if cycle.get("reset_line"):
-        if phase == "reset":
-            header = (f'<div class="card"><p class="lead">Reset — no predictions '
-                      f'yet. New forecasts for the next session appear shortly.</p>'
-                      f'<p class="what-sm">{_e(cycle["reset_line"])}</p></div>')
-        elif phase in ("predict", "trade", "closed") and cycle.get("trading_day"):
-            header = (f'<div class="card" data-reset-at="{_e(cycle.get("reset_at", ""))}" '
-                      f'data-reset-label="resetting"><p class="lead">Fixed '
-                      f'predictions for {_e(cycle["trading_day"])}.</p>'
-                      f'<p class="what-sm">{_e(cycle["reset_line"])} '
-                      f'&middot; <span class="countdown"></span></p></div>')
-
-    # Between reset and the first prediction run, show nothing but the header.
-    if phase == "reset":
-        return header
-
-    out = [header] if header else []
+    # Item 1: the "Fixed predictions" banner is removed — no longer useful.
+    out = []
     for m in data.get("models", []):
         mid = m.get("id", "")
-        alerts = m.get("alerts", [])
-        n_rows = len(alerts)
+        # Item 1: predictions page shows EVERY prediction made, not only the
+        # 5+-check ones the board filters to. `made` is the raw count.
+        made = m.get("made", 0) or m.get("resolved", 0)
+        # right/total from scored predictions (how many the model got right).
         scored = m.get("resolved", 0)
-        # Pass/fail checker: how many of this model's shown names are proven vs risky.
-        passed = sum(1 for a in alerts if a.get("scan_tier") == "PROVEN"
-                     or (a.get("lower") or 0) > (a.get("null") or 0.5))
-        colour = "var(--green)" if n_rows else "var(--faint)"
+        right = int(round((m.get("hit_rate") or 0) * scored)) if scored else 0
+        colour = "var(--green)" if made else "var(--faint)"
         title = MODEL_TITLES.get(mid, mid.title())
-        # Right / total predictions, shown on the right of the row (item 3).
-        right_total = f'<span class="what-sm" style="float:right">{passed}/{n_rows} right</span>' if n_rows else ""
-        detail = (f"{n_rows} name(s), {scored:,} scored"
-                  if n_rows else f"{scored:,} scored — nothing clears the bar yet")
+        # Item 1: the count sits at the FAR RIGHT of the row.
+        right_total = (f'<span class="rt">{right}/{scored} right</span>'
+                       if scored else '<span class="rt">—</span>')
+        # Item 1: just the number of predictions made, no "nothing clears the bar".
+        detail = f"{made:,} prediction(s) made"
         out.append(f"""
   <a href="#pred-{_e(mid)}"><div class="card row">
     <span class="pip" style="background:{colour};margin-top:0"></span>
-    <div class="grow"><h3>{_e(title)} {right_total}</h3>
+    <div class="grow"><h3>{_e(title)}</h3>
       <p class="what-sm">{_e(m.get('subtitle', ''))}</p>
       <p>{_e(detail)}</p></div>
+    {right_total}
     <span class="chev">&rsaquo;</span></div></a>""")
     return "".join(out)
 
