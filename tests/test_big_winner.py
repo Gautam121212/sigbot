@@ -63,3 +63,21 @@ def test_ideas_scanner_catches_real_opportunities():
     assert len(cards) >= 2, "real opportunities produce cards"
     # controls should not dominate — at most the 2 real ones fire cleanly
     assert all(c.category == "opportunity" for c in cards)
+
+
+def test_moonshot_setup_needs_strong_trend_and_hypervolatility():
+    from sigbot.big_winner import moonshot_setup
+    m = moonshot_setup(adx=60, atr_pct=0.12)      # ADX>50 + ATR>10%
+    assert m.is_precursor
+    assert m.tail_30x_prob >= 0.07                # ~7% moonshot rate
+
+
+def test_moonshot_rejects_weak_trend():
+    from sigbot.big_winner import moonshot_setup
+    assert not moonshot_setup(adx=30, atr_pct=0.12).is_precursor   # ADX too low
+    assert not moonshot_setup(adx=60, atr_pct=0.05).is_precursor   # not volatile enough
+
+
+def test_moonshot_handles_missing_data():
+    from sigbot.big_winner import moonshot_setup
+    assert not moonshot_setup(None, 0.12).is_precursor

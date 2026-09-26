@@ -43,6 +43,17 @@ MIN_ATR_PCT = 0.08         # high volatility: ATR at least 8% of price
 MIN_MOMENTUM = 0.10        # already rising: +10% over prior 20 days
 MIN_VOLUME = 1.5           # volume at least 1.5x its 20-day average
 
+# The deeper pass found a STRONGER moonshot signal: strong trend (ADX>50) +
+# hypervolatile (ATR>10%). Measured across eras:
+#   50%+ in 20 days: 8.2% / 4.5% / 11.0%
+#   100%+ in 60 days (MOONSHOT): 4.3% / 4.5% / 12.4% -- positive every era.
+# It is NOT the coiled spring (0.14%, dead) or breakouts (2.78%, weak) -- it is
+# explosive existing volatility riding a strong directional trend.
+MOONSHOT_ADX = 50.0
+MOONSHOT_ATR = 0.10
+P_MOONSHOT_100 = 0.07      # ~7% chance of a 100%+ move in 60 days (era-averaged)
+P_MOONSHOT_50 = 0.08
+
 
 @dataclass(frozen=True)
 class BigWinnerRead:
@@ -104,3 +115,20 @@ def is_news_blowup(abs_surprise_pct: float | None) -> bool:
     """A news blowup candidate: a huge surprise (25%+) with 3x the base odds of
     a big move. Sized tiny like any blowup bet, direction from the surprise sign."""
     return news_big_mover_prob(abs_surprise_pct) >= 0.15
+
+
+def moonshot_setup(adx: float | None, atr_pct: float | None) -> BigWinnerRead:
+    """The strongest tail signal: a strong trend (ADX>50) that is hypervolatile
+    (ATR>10%). ~7% chance of a 100%+ move in 60 days — the true moonshot profile.
+    Direction-blind, tiny size, the very-risky tier's best bet."""
+    if adx is None or atr_pct is None:
+        return BigWinnerRead(False, 0.0, 0.0, 0.0, "not enough data")
+    if adx > MOONSHOT_ADX and atr_pct > MOONSHOT_ATR:
+        return BigWinnerRead(
+            True, P_MOONSHOT_50, P_MOONSHOT_100,
+            round(P_MOONSHOT_100 / 0.01, 0),
+            f"MOONSHOT SETUP — strong trend (ADX {adx:.0f}) + hypervolatile "
+            f"(ATR {atr_pct:.0%}); {P_MOONSHOT_100:.0%} chance of a 100%+ move "
+            "in 60 days. Tiny lottery size, the very-risky tier's best bet.")
+    return BigWinnerRead(False, 0.0, 0.0, 0.0,
+                         "not a moonshot: needs ADX>50 AND ATR>10%")
