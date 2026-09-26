@@ -2092,6 +2092,32 @@ def run_purge_stale(settings=SETTINGS) -> None:
           "current behaviour.")
 
 
+def _show_power_law() -> None:
+    from .power_law import plan
+    for n in (5, 10, 20, 30, 50):
+        print(plan(n).note)
+
+
+def _run_full_simulation() -> None:
+    """Full-system paper simulation from $100k, per model, on the real per-year
+    backtest data. Shows honest dollar growth with realistic position limits."""
+    from .full_simulation import describe, simulate_model
+    STOCKS = {2009: (1593, 4.86), 2011: (1562, 9.44), 2018: (1535, 5.63),
+              2019: (75, 8.58), 2020: (3472, 6.63), 2022: (2743, 3.13),
+              2025: (95, 9.98)}
+    NEWS = {2009: (368, 1.31), 2010: (333, -0.34), 2011: (313, -1.46),
+            2012: (260, 0.32), 2013: (308, 0.75), 2014: (322, 0.43),
+            2015: (389, 0.39), 2016: (425, 1.26), 2017: (490, -0.03),
+            2018: (575, -0.05), 2019: (571, -0.1), 2020: (831, 0.92),
+            2021: (937, 0.62), 2022: (843, 0.91), 2023: (862, -0.06),
+            2024: (990, 0.55), 2025: (1000, 0.52), 2026: (905, 0.54)}
+    print(describe({"STOCKS (panic-capitulation)": simulate_model(STOCKS),
+                    "NEWS (confirmed-surprise)": simulate_model(NEWS)}))
+    print("CRYPTO: no directional edge — direction is a coin flip (~0% return).")
+    print("        Its edge is MAGNITUDE (sizing), not direction.")
+    print("IDEAS/VENTURES: forward-looking opportunity flags, no price backtest.")
+
+
 def _show_discoveries() -> None:
     from .discovery import TESTED, register
     for d in TESTED:
@@ -3345,6 +3371,8 @@ def main(argv: list[str]) -> int:
         "form": lambda: print(__import__("sigbot.self_signals", fromlist=["describe"]).describe(SETTINGS.shadow_db)),
         "readiness": lambda: print(__import__("sigbot.deployment_readiness", fromlist=["readiness_report"]).readiness_report()),
         "dollars": lambda: print(__import__("sigbot.dollar_view", fromlist=["describe"]).describe(SETTINGS.shadow_db)),
+        "simulate": _run_full_simulation,
+        "power-law": _show_power_law,
         "discoveries": _show_discoveries,
         "wipe-and-pause": run_wipe_and_pause,
     }
