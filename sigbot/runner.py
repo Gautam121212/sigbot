@@ -3426,6 +3426,7 @@ def main(argv: list[str]) -> int:
         "blowup": _show_blowup,
         "execution": lambda: print(__import__("sigbot.execution", fromlist=["describe"]).describe()),
         "grand-sim": lambda: print(__import__("sigbot.grand_simulation", fromlist=["describe"]).describe()),
+        "paper-run": lambda: print(__import__("sigbot.historical_paper_run", fromlist=["describe"]).describe()),
         "big-winner": _show_big_winner,
         "grades": _show_grades,
         "ideas-signal": lambda: print("Ideas structural signal (from 8-K catalysts):\n"
