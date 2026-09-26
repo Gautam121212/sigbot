@@ -3428,6 +3428,12 @@ def main(argv: list[str]) -> int:
         "grand-sim": lambda: print(__import__("sigbot.grand_simulation", fromlist=["describe"]).describe()),
         "big-winner": _show_big_winner,
         "grades": _show_grades,
+        "venture-signal": lambda: print("Venture structural signal (from fundamentals):\n"
+            "  Revenue growth predicts doubling: hypergrowth 40%+ -> 8.6% double,\n"
+            "  fast 5.8%, modest 3.4%. And the counterintuitive part:\n"
+            "  cash-burning hypergrowth doubles MORE (11%) than profitable (5.5%).\n"
+            "  The outlier profile = hypergrowth + not-yet-profitable, sized tiny\n"
+            "  across 20+ bets (the power-law portfolio)."),
         "crypto-structural": lambda: print("Crypto STRUCTURAL edge (via crypto.com perps):\n"
             "  The basis (perp vs spot) is a positioning signal, not a price call.\n"
             "  Large positive basis = crowded longs -> reverts down (SELL).\n"
