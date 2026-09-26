@@ -3428,6 +3428,12 @@ def main(argv: list[str]) -> int:
         "grand-sim": lambda: print(__import__("sigbot.grand_simulation", fromlist=["describe"]).describe()),
         "big-winner": _show_big_winner,
         "grades": _show_grades,
+        "crypto-structural": lambda: print("Crypto STRUCTURAL edge (via crypto.com perps):\n"
+            "  The basis (perp vs spot) is a positioning signal, not a price call.\n"
+            "  Large positive basis = crowded longs -> reverts down (SELL).\n"
+            "  Large negative basis = crowded shorts -> squeezes up (BUY).\n"
+            "  Only liquid setups (OI>5000, spread<0.5%) count.\n"
+            "  Run recorders/crypto_structural_recorder.py to bank history, then backtest."),
         "news-mechanism": lambda: print("Oversold-into-beat: a 5%+ beat drifts ~3.4% when the stock\nwas oversold (RSI<35) vs ~2.0% otherwise — confirmed all 3 periods.\nMechanism: beaten-down stocks are under-owned; a beat forces\ninstitutions to reposition, creating multi-day drift."),
         "discoveries": _show_discoveries,
         "wipe-and-pause": run_wipe_and_pause,
