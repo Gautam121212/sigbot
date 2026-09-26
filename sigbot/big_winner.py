@@ -82,3 +82,25 @@ def big_winner_setup(atr_pct: float | None, momentum_20: float | None,
         missing.append("no volume confirmation")
     return BigWinnerRead(False, 0.0, 0.0, 0.0,
                          "not a precursor: " + "; ".join(missing))
+
+
+# News blowup flag — surprise SIZE predicts the chance of a big move.
+# Measured (US stocks 2015+): small surprise 5.2%, medium 7.7%, huge 16.8%
+# produce a 10%+ move in 5 days. A huge surprise triples the odds.
+NEWS_BIG_MOVE_RATE = ((25.0, 0.168), (5.0, 0.077), (0.0, 0.052))
+
+
+def news_big_mover_prob(abs_surprise_pct: float | None) -> float:
+    """Chance of a 10%+ move in 5 days from an earnings surprise's SIZE."""
+    if abs_surprise_pct is None:
+        return 0.052
+    for threshold, rate in NEWS_BIG_MOVE_RATE:
+        if abs_surprise_pct >= threshold:
+            return rate
+    return 0.052
+
+
+def is_news_blowup(abs_surprise_pct: float | None) -> bool:
+    """A news blowup candidate: a huge surprise (25%+) with 3x the base odds of
+    a big move. Sized tiny like any blowup bet, direction from the surprise sign."""
+    return news_big_mover_prob(abs_surprise_pct) >= 0.15

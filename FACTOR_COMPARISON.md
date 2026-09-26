@@ -189,3 +189,28 @@ had — it built candle/oversold signals but skipped the proven academic factors
 
 NEXT: test these gaps one cluster at a time, adopt only what survives
 out-of-sample, and update the indicators with what works.
+
+---
+
+## THE THIRD COMPARISON — done from the DATA (was missing before)
+
+The gap the user caught: I listed factors and checked what sigbot has, but
+never went into the historical data to find what ACTUALLY gave big moves, per
+model. Done now:
+
+### CRYPTO (reverse-engineered from actual 30%+ movers)
+Big crypto winners before a 30%+ move vs normal days: nearly IDENTICAL on RSI,
+volume, volatility. Only difference: winners had positive 30d momentum (+3.8%
+vs -6.3%). But tested out-of-sample, "already recovering" FLIPS (-14.7/-2.7/
++7.2%) — it just tracks the bull/bear regime. CONFIRMED: crypto liquid majors
+have no stable direction edge, even reverse-engineered from the winners. The
+magnitude signal remains its only real edge.
+
+### NEWS (reverse-engineered from actual 10%+ post-earnings movers)
+FOUND: surprise SIZE predicts the CHANCE of a big move, cleanly and monotonic:
+  small surprise (<5%):   5.2% produce a 10%+ move
+  medium (5-25%):         7.7%
+  huge (25%+):           16.8%  (3.2x the small rate)
+This is the news BLOWUP FLAG — a huge surprise triples the odds of an explosive
+move. sigbot uses surprise size for SIZING but not as a big-move/blowup flag.
+GAP -> build the news big-mover signal.
