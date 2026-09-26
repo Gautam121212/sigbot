@@ -2092,6 +2092,17 @@ def run_purge_stale(settings=SETTINGS) -> None:
           "current behaviour.")
 
 
+def _show_blowup() -> None:
+    from .blowup import P_DOWN_30, P_UP_30, P_UP_50
+    print("BLOWUP MODEL — asymmetric-explosive setups (from bull-run precursors)")
+    print("  Setup: volatility compression + breakout + volume surge")
+    print("  Measured tail probabilities vs normal (US stocks 2010-2026):")
+    print(f"    +30% in 60d: {P_UP_30:.0%} (vs 6.8% normal, 1.6x)")
+    print(f"    +50% in 60d: {P_UP_50:.0%} (vs 2.3% normal)")
+    print(f"    -30% in 60d: {P_DOWN_30:.0%} (upside tail beats downside)")
+    print("  A direction-blind lottery ticket: tiny size, huge tail, many bets.")
+
+
 def _show_power_law() -> None:
     from .power_law import plan
     for n in (5, 10, 20, 30, 50):
@@ -3373,6 +3384,7 @@ def main(argv: list[str]) -> int:
         "dollars": lambda: print(__import__("sigbot.dollar_view", fromlist=["describe"]).describe(SETTINGS.shadow_db)),
         "simulate": _run_full_simulation,
         "power-law": _show_power_law,
+        "blowup": _show_blowup,
         "discoveries": _show_discoveries,
         "wipe-and-pause": run_wipe_and_pause,
     }
