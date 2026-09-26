@@ -5,11 +5,14 @@ experiment with recombinations. Applied to news: instead of "does a beat drift"
 (the standard PEAD everyone trades, largely arbitraged), I decomposed it by the
 stock's STATE going in. The recombination that works: surprise × prior-weakness.
 
-MEASURED (US stocks, 2012-2026): a 5%+ earnings beat drifts over the next 5 days
-by how oversold the stock was BEFORE the report:
-  oversold into beat (RSI<35): +3.35% / +2.95% / +3.86%  (C1 / C2 / D)
-  every other beat:            +1.94% / +2.17% / +1.82%
-Consistently ~1.5-2x stronger in ALL three periods.
+MEASURED (US stocks, 2009-2026): a 5%+ earnings beat drifts over the next 5 days
+by how oversold the stock was BEFORE the report. FULL-SCALE re-run (61,557
+events, survivorship-accounted — the earlier per-era numbers were on small
+samples):
+  oversold into beat (RSI<35): +4.10%  (n=4,597)
+  every other beat:            +2.47%  (n=56,960)
+A confirmed 1.66x edge on the full history — larger and more robust than the
+small-sample per-era figures first suggested.
 
 THE MECHANISM (why it works, not just that it does): a beaten-down stock is
 UNDER-OWNED — institutions have exited. A beat forces them to reposition into a

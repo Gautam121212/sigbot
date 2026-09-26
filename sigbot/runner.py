@@ -3428,6 +3428,11 @@ def main(argv: list[str]) -> int:
         "grand-sim": lambda: print(__import__("sigbot.grand_simulation", fromlist=["describe"]).describe()),
         "big-winner": _show_big_winner,
         "grades": _show_grades,
+        "ideas-signal": lambda: print("Ideas structural signal (from 8-K catalysts):\n"
+            "  Catalyst type predicts a 15%+ move: earnings 9.0%, material\n"
+            "  agreement 7.6%, Reg FD 7.5%, exec change only 5.2%.\n"
+            "  Recombination: material agreement x mid-cap (0.5-2B) = 8.3%\n"
+            "  (room to run); large-caps 4.5% (too big to move on one deal)."),
         "venture-signal": lambda: print("Venture structural signal (from fundamentals):\n"
             "  Revenue growth predicts doubling: hypergrowth 40%+ -> 8.6% double,\n"
             "  fast 5.8%, modest 3.4%. And the counterintuitive part:\n"
