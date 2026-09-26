@@ -35,6 +35,11 @@ DOUBLE_RATE = {"hypergrowth": 0.086, "fast": 0.058, "modest": 0.034}
 HYPERGROWTH_BURNING_DOUBLE = 0.11    # ~11% across eras
 HYPERGROWTH_PROFITABLE_DOUBLE = 0.055
 
+# The fuller research pass found hypergrowth + HIGH GROSS MARGIN (software-like
+# economics) is the best profile: 9.4% double-rate, vs 8.6% hypergrowth-alone.
+# Quality metrics (Piotroski 8-9, high ROIC) predict LESS doubling (3.1%, 4.4%)
+# — safe quality is the wrong signal for outliers.
+HIGH_GROSS_MARGIN = 0.60   # keeps most of each revenue dollar
 HYPERGROWTH = 0.40         # 40%+ YoY revenue growth
 FAST_GROWTH = 0.15
 PROFITABLE_MARGIN = 0.10   # operating margin above this = already mature
@@ -49,10 +54,20 @@ class VentureSignal:
 
 
 def venture_signal(revenue_growth_yoy: float | None,
-                   operating_margin: float | None) -> VentureSignal:
-    """The venture structural read: does this company have the outlier profile?"""
+                   operating_margin: float | None,
+                   gross_margin: float | None = None) -> VentureSignal:
+    """The venture structural read: does this company have the outlier profile?
+
+    Strongest profile (fuller pass): hypergrowth + high gross margin (9.4%).
+    """
     if revenue_growth_yoy is None:
         return VentureSignal(False, 0.0, "unknown", "no growth data")
+    if (revenue_growth_yoy >= HYPERGROWTH and gross_margin is not None
+            and gross_margin >= HIGH_GROSS_MARGIN):
+        return VentureSignal(
+            True, 0.094, "hypergrowth high-margin",
+            f"{revenue_growth_yoy:.0%} growth + {gross_margin:.0%} gross margin — "
+            "software-like economics, the strongest outlier profile (9.4% double-rate)")
     if revenue_growth_yoy < FAST_GROWTH:
         return VentureSignal(False, DOUBLE_RATE["modest"], "slow",
                              "growth too slow for an outlier bet")

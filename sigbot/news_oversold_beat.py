@@ -9,10 +9,15 @@ MEASURED (US stocks, 2009-2026): a 5%+ earnings beat drifts over the next 5 days
 by how oversold the stock was BEFORE the report. FULL-SCALE re-run (61,557
 events, survivorship-accounted — the earlier per-era numbers were on small
 samples):
-  oversold into beat (RSI<35): +4.10%  (n=4,597)
-  every other beat:            +2.47%  (n=56,960)
-A confirmed 1.66x edge on the full history — larger and more robust than the
-small-sample per-era figures first suggested.
+  oversold into beat (RSI<35):       +4.10%  (n=4,597)
+  every other beat:                  +2.47%  (n=56,960)
+  BIG beat (>20%) + oversold:        +5.45%  (the fuller pass — extreme beat
+                                             sharpens it further)
+A confirmed 1.66x-2.2x edge on the full history.
+
+The fuller pass also found a SHORT signal (news_miss_short below): a big miss
+(<-10%) on an OVERBOUGHT stock (RSI>65) drops -3.93% over 5 days — sigbot's
+first short signal, from an overextended stock disappointing.
 
 THE MECHANISM (why it works, not just that it does): a beaten-down stock is
 UNDER-OWNED — institutions have exited. A beat forces them to reposition into a
@@ -28,7 +33,10 @@ OVERSOLD_BEAT_DRIFT = {"C1": 3.35, "C2": 2.95, "D": 3.86}
 OTHER_BEAT_DRIFT = {"C1": 1.94, "C2": 2.17, "D": 1.82}
 
 BEAT_THRESHOLD = 5.0        # surprise % to count as a real beat
+BIG_BEAT = 20.0            # an extreme beat — sharpens the drift to +5.45%
 OVERSOLD_RSI = 35.0        # the stock was beaten-down going in
+BIG_MISS = -10.0          # a big miss
+OVERBOUGHT_RSI = 65.0     # overextended going in — the short setup
 
 
 def is_oversold_beat(surprise_pct: float | None, pre_rsi: float | None) -> bool:
@@ -47,3 +55,19 @@ def expected_drift(surprise_pct: float | None, pre_rsi: float | None) -> float:
     if pre_rsi is not None and pre_rsi < OVERSOLD_RSI:
         return round(avg_oversold, 2)      # ~3.4%
     return round(avg_other, 2)             # ~2.0%
+
+
+def news_miss_short(surprise_pct: float | None, pre_rsi: float | None) -> bool:
+    """A SHORT setup: a big miss on an overbought stock. Measured -3.93% over 5
+    days on the full history — sigbot's first short signal. An overextended
+    stock that disappoints falls hard as the crowd exits."""
+    if surprise_pct is None or pre_rsi is None:
+        return False
+    return surprise_pct <= BIG_MISS and pre_rsi > OVERBOUGHT_RSI
+
+
+def is_big_beat_oversold(surprise_pct: float | None, pre_rsi: float | None) -> bool:
+    """The strongest drift setup: a BIG beat (>20%) on an oversold stock (+5.45%)."""
+    if surprise_pct is None or pre_rsi is None:
+        return False
+    return surprise_pct >= BIG_BEAT and pre_rsi < OVERSOLD_RSI

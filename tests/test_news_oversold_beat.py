@@ -23,3 +23,18 @@ def test_oversold_beat_expects_bigger_drift():
 
 def test_no_beat_no_drift():
     assert expected_drift(2, 30) == 0.0
+
+
+def test_big_beat_oversold_is_the_strongest_setup():
+    from sigbot.news_oversold_beat import is_big_beat_oversold
+    assert is_big_beat_oversold(surprise_pct=25, pre_rsi=30)   # big beat + oversold
+    assert not is_big_beat_oversold(surprise_pct=8, pre_rsi=30)  # only a normal beat
+
+
+def test_news_miss_short_is_a_short_signal():
+    from sigbot.news_oversold_beat import news_miss_short
+    # big miss on an overbought stock -> short
+    assert news_miss_short(surprise_pct=-15, pre_rsi=70)
+    # a small miss, or an oversold stock -> not a short
+    assert not news_miss_short(surprise_pct=-3, pre_rsi=70)
+    assert not news_miss_short(surprise_pct=-15, pre_rsi=40)

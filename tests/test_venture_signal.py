@@ -31,3 +31,11 @@ def test_growth_predicts_doubling_monotonically():
     fast = venture_signal(0.25, 0.05).double_probability
     slow = venture_signal(0.05, 0.10).double_probability
     assert hyper > fast > slow
+
+
+def test_hypergrowth_high_margin_is_the_top_profile():
+    """The fuller pass: hypergrowth + high gross margin is the strongest (9.4%)."""
+    s = venture_signal(revenue_growth_yoy=0.60, operating_margin=-0.10,
+                       gross_margin=0.70)
+    assert s.profile == "hypergrowth high-margin"
+    assert s.double_probability > 0.09
