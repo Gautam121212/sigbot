@@ -2092,6 +2092,18 @@ def run_purge_stale(settings=SETTINGS) -> None:
           "current behaviour.")
 
 
+def _show_big_winner() -> None:
+    from .big_winner import BASE_50X, P_30X, P_50X
+    print("BIG-WINNER PRECURSOR — reverse-engineered from actual 50%+ movers")
+    print("  The winners were NOT oversold. Before exploding they had:")
+    print("    high volatility (ATR ~10%) + already rising (+12%) + volume")
+    print(f"  Tail rates: {P_50X:.0%} produce +50%, {P_30X:.0%} produce +30% (20d)")
+    print(f"    vs {BASE_50X:.1%} base rate -> {P_50X / BASE_50X:.0f}x lift")
+    print("  WHY existing indicators miss it: oversold/capitulation look for")
+    print("  WEAKNESS; big winners come from STRENGTH + volatility. Opposite place.")
+    print("  Asymmetric-tail bet: tiny size, let winners run, cut losers fast.")
+
+
 def _show_blowup() -> None:
     from .blowup import P_DOWN_30, P_UP_30, P_UP_50
     print("BLOWUP MODEL — asymmetric-explosive setups (from bull-run precursors)")
@@ -3387,6 +3399,7 @@ def main(argv: list[str]) -> int:
         "blowup": _show_blowup,
         "execution": lambda: print(__import__("sigbot.execution", fromlist=["describe"]).describe()),
         "grand-sim": lambda: print(__import__("sigbot.grand_simulation", fromlist=["describe"]).describe()),
+        "big-winner": _show_big_winner,
         "discoveries": _show_discoveries,
         "wipe-and-pause": run_wipe_and_pause,
     }
