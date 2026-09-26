@@ -3385,6 +3385,7 @@ def main(argv: list[str]) -> int:
         "simulate": _run_full_simulation,
         "power-law": _show_power_law,
         "blowup": _show_blowup,
+        "execution": lambda: print(__import__("sigbot.execution", fromlist=["describe"]).describe()),
         "discoveries": _show_discoveries,
         "wipe-and-pause": run_wipe_and_pause,
     }
