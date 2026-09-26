@@ -211,6 +211,21 @@ def _open_book(ledger) -> tuple[int, dict[str, int]]:
     return n, sectors
 
 
+def _down_day_streak(bars) -> int:
+    """How many consecutive down days at the latest bar (for the Connors
+    pullback signal). 0 if the last day was up."""
+    if "close" not in bars or len(bars) < 4:
+        return 0
+    closes = bars["close"].tolist()
+    streak = 0
+    for i in range(len(closes) - 1, 0, -1):
+        if closes[i] < closes[i - 1]:
+            streak += 1
+        else:
+            break
+    return streak
+
+
 def _obv_rising(bars) -> bool | None:
     """True if on-balance volume is higher than 10 bars ago — buyers flowing in."""
     if "volume" not in bars or "close" not in bars or len(bars) < 12:
@@ -2913,6 +2928,7 @@ def run_stocks(settings=SETTINGS) -> None:
                                      if len(bars) > 11 else None),
                 "obv_rising": _obv_rising(bars),
                 "cdl_hammer": _hammer_flag(bars),
+                "consecutive_down_days": _down_day_streak(bars),
                 "volume": float(bars["volume"].iloc[-1]) if "volume" in bars else None,
                 "volume_ma_20": (float(bars["volume"].tail(20).mean())
                                  if "volume" in bars else None),

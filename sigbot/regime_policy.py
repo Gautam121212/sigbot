@@ -41,7 +41,7 @@ STOCK_POLICY: dict[str, frozenset[str]] = {
                                 "stretched-below-trend"}),
     "up/volatile": frozenset({"hammer-in-downtrend", "accumulation-divergence"}),
     "down/calm": frozenset({"accumulation-divergence"}),
-    "up/calm": frozenset({"momentum-breakout"}),
+    "up/calm": frozenset({"momentum-breakout", "pullback-in-uptrend"}),
 }
 
 # Crypto signals by regime (crypto has no index; its own trend/vol is the regime).

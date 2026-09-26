@@ -146,6 +146,25 @@ def _capitulation(row: dict) -> bool:
     return w is not None and w < -90 and row.get("index_regime") == "down/volatile"
 
 
+def _pullback_in_uptrend(row: dict) -> bool:
+    """Three consecutive down days while the stock is ABOVE its 200-day MA — a
+    pullback in an uptrend (the Connors mean-reversion edge). This fills a real
+    gap: every other sigbot signal buys WEAKNESS in a DOWNtrend; this buys the
+    dip in a RISING stock. Confirmed positive in 15 of 17 years (2010-2026),
+    51-62% win, +0.4% over 5 days — only negative in the two bear years.
+
+    COLLISION GUARD: requires close > 200MA (uptrend), which is mutually
+    exclusive with the capitulation family (all require a down/volatile regime
+    or price below trend). No overlap by construction.
+    """
+    close = row.get("close")
+    sma_200 = row.get("sma_200")
+    down_days = row.get("consecutive_down_days")
+    if close is None or sma_200 is None or down_days is None:
+        return False
+    return close > sma_200 and down_days >= 3
+
+
 def _panic_capitulation(row: dict) -> bool:
     """Deep capitulation while the decline is ACCELERATING — the biggest, fastest
     rebound of all. Measured ABSOLUTE 5-day return: +7.1% / +6.4% / +3.4% across
@@ -255,6 +274,14 @@ CANDIDATES: tuple[Candidate, ...] = (
         # +0.15%, about nothing after costs; at 5 days it lost. Panic
         # rebounds take weeks.
         beats_holding=True, payoff_ratio=1.1, style="reversion", hold_days=20),
+    Candidate(
+        name="pullback-in-uptrend", side="BUY",
+        plain=("Three down days in a row while the stock is still above its "
+               "long-term uptrend — a healthy pullback in a rising name, which "
+               "tends to bounce. Positive in 15 of the last 17 years."),
+        condition=_pullback_in_uptrend,
+        pooled_edge_pp=0.45, pooled_n=200000, eras_positive=3,
+        beats_holding=False, payoff_ratio=1.1, style="reversion", hold_days=5),
     Candidate(
         name="momentum-breakout", side="BUY",
         plain=("A leading stock breaking out to a new one-year high, in an "

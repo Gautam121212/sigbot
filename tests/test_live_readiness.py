@@ -31,7 +31,7 @@ def test_each_school_holds_for_its_own_period():
     assert all(d == 10 for n, d in holds.items()
                if n not in ("momentum-breakout", "capitulation",
                             "hammer-in-downtrend", "accumulation-divergence",
-                            "panic-capitulation"))
+                            "panic-capitulation", "pullback-in-uptrend"))
 
 
 def test_trades_are_scored_at_their_real_holding_period():
