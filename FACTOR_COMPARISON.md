@@ -214,3 +214,34 @@ FOUND: surprise SIZE predicts the CHANCE of a big move, cleanly and monotonic:
 This is the news BLOWUP FLAG — a huge surprise triples the odds of an explosive
 move. sigbot uses surprise size for SIZING but not as a big-move/blowup flag.
 GAP -> build the news big-mover signal.
+
+---
+
+## PROFESSIONAL RETURN BENCHMARKS — the yardstick (was missing entirely)
+
+The gap: sigbot had no reference for what returns pros consider good/exceptional,
+so "+5%/yr" was un-judgeable. From hedge-fund/quant/crypto-fund/VC data:
+
+CORE (systematic equity, market-neutral):
+  hedge funds ~10.7%/yr long-run · quant funds 10-17% · sweet spot 15-25% at
+  Sharpe 1.5-2 · Sharpe 1.0 beats 95% of funds, 1.5+ is elite (Renaissance).
+  Thresholds: <8% worthless, 8-15% decent, 15-25% good, 25%+ exceptional.
+
+RISKY (aggressive systematic, crypto quant):
+  30-50%/yr achievable but with 30%+ volatility · crypto quant Sharpe ~1.5.
+  Thresholds: <15% worthless (must beat core to justify risk), 30% good, 50%+ exceptional.
+
+VERY-RISKY (venture/blowup):
+  VC top-quartile 15-27% net IRR at FUND level · 1-3 of 20-30 bets drive 50-80%
+  of returns · blowup range -40% to +1,111%, judged on the TAIL not the average.
+  Thresholds: 8% decent, 15% good, 27%+ exceptional.
+
+MODEL GRADES (sigbot vs these benchmarks, on $100k):
+  STOCKS panic-capitulation: +32%/yr -> EXCEPTIONAL (but optimistic backtest)
+  VENTURES power-law:        +20% IRR -> GOOD (competitive with VC)
+  BLOWUP big-winner tail:    +15%    -> GOOD (for the tier)
+  NEWS confirmed-surprise:   +2.3%   -> WORTHLESS (below the 8% floor)
+  CRYPTO magnitude only:     ~0%     -> WORTHLESS (no direction edge)
+
+ACTION: news and crypto are below the professional floor -> need real edges or
+retirement; stocks/ventures/blowup are competitive. `runner grades` shows this.

@@ -2107,6 +2107,17 @@ def run_purge_stale(settings=SETTINGS) -> None:
           "current behaviour.")
 
 
+def _show_grades() -> None:
+    from .pro_benchmarks import describe
+    print(describe({
+        "STOCKS (panic-capitulation)": (0.32, "core"),
+        "NEWS (confirmed-surprise)": (0.023, "core"),
+        "BLOWUP (big-winner tail)": (0.15, "very-risky"),
+        "CRYPTO (magnitude only)": (0.0, "risky"),
+        "VENTURES (power-law)": (0.20, "very-risky"),
+    }))
+
+
 def _show_big_winner() -> None:
     from .big_winner import BASE_50X, P_30X, P_50X
     print("BIG-WINNER PRECURSOR — reverse-engineered from actual 50%+ movers")
@@ -3416,6 +3427,7 @@ def main(argv: list[str]) -> int:
         "execution": lambda: print(__import__("sigbot.execution", fromlist=["describe"]).describe()),
         "grand-sim": lambda: print(__import__("sigbot.grand_simulation", fromlist=["describe"]).describe()),
         "big-winner": _show_big_winner,
+        "grades": _show_grades,
         "discoveries": _show_discoveries,
         "wipe-and-pause": run_wipe_and_pause,
     }
