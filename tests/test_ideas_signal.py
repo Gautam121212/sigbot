@@ -28,3 +28,26 @@ def test_midcap_beats_largecap_for_material_agreements():
     mid = idea_strength("material_agreement", 1e9).big_move_prob
     large = idea_strength("material_agreement", 5e9).big_move_prob
     assert mid > large
+
+
+def test_healthcare_deal_is_strongest_sector():
+    from sigbot.ideas_signal import idea_strength_full
+    hc = idea_strength_full("material_agreement", 1e9, "Health Care")
+    fin = idea_strength_full("material_agreement", 1e9, "Financials")
+    assert hc.big_move_prob > fin.big_move_prob
+    assert hc.strong and not fin.strong
+
+
+def test_stacked_catalyst_adds_strength():
+    from sigbot.ideas_signal import idea_strength_full
+    single = idea_strength_full("material_agreement", 1e9, "Information Technology")
+    stacked = idea_strength_full("material_agreement", 1e9, "Information Technology",
+                                 stacked=True)
+    assert stacked.big_move_prob > single.big_move_prob
+
+
+def test_large_cap_still_trimmed_in_strong_sector():
+    from sigbot.ideas_signal import idea_strength_full
+    mid = idea_strength_full("material_agreement", 1e9, "Health Care")
+    large = idea_strength_full("material_agreement", 5e9, "Health Care")
+    assert large.big_move_prob < mid.big_move_prob

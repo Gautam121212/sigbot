@@ -38,6 +38,20 @@ CATALYST_STRENGTH = {
 # Size multiplier for material agreements (mid-cap is the sweet spot).
 SIZE_BIG_MOVE = {"small": 0.068, "mid": 0.083, "large": 0.045}
 
+# The deeper pass: SECTOR matters enormously for material-agreement catalysts.
+# Health Care deals move stocks 12.4%; Financials only 2.8%.
+SECTOR_BIG_MOVE = {
+    "Health Care": 0.124, "Communication Services": 0.094, "Real Estate": 0.093,
+    "Information Technology": 0.091, "Energy": 0.089, "Materials": 0.077,
+    "Industrials": 0.075, "Consumer Discretionary": 0.059, "Utilities": 0.052,
+    "Consumer Staples": 0.048, "Financials": 0.028,
+}
+# And STACKED catalysts beat single ones:
+#   material agreement + earnings same period: 9.8%
+#   Reg FD + material agreement (guided deal):  9.3%
+#   single material agreement:                  7.8%
+STACKED_CATALYST_BONUS = 0.020    # ~+2pp when a deal coincides with earnings/guidance
+
 
 @dataclass(frozen=True)
 class IdeaStrength:
@@ -76,6 +90,35 @@ def idea_strength(catalyst: str, market_cap: float | None = None) -> IdeaStrengt
                 f"({prob:.0%} chance of a 15%+ move)")
     else:
         note = f"{catalyst} on a {size}-cap — a moderate opportunity"
+    return IdeaStrength(catalyst, round(prob, 3), strong, note)
+
+
+def idea_strength_full(catalyst: str, market_cap: float | None = None,
+                       sector: str | None = None, stacked: bool = False
+                       ) -> IdeaStrength:
+    """The full three-layer read: catalyst type x size x sector, plus stacking.
+
+    From the deeper pass: a Health-Care material agreement on a mid-cap with a
+    coinciding earnings/guidance catalyst is the strongest opportunity (~14%);
+    a Financials deal on a large-cap is noise (~3%).
+    """
+    base = idea_strength(catalyst, market_cap)
+    prob = base.big_move_prob
+    # Sector layer (strongest signal for material agreements).
+    if catalyst == "material_agreement" and sector in SECTOR_BIG_MOVE:
+        prob = SECTOR_BIG_MOVE[sector]
+        # size still trims large-caps
+        if market_cap is not None and market_cap >= 2e9:
+            prob *= 0.6
+    # Stacking layer.
+    if stacked:
+        prob += STACKED_CATALYST_BONUS
+    strong = prob >= 0.09
+    note = (f"{catalyst}"
+            + (f" in {sector}" if sector else "")
+            + (" + stacked catalyst" if stacked else "")
+            + f" — {prob:.0%} chance of a 15%+ move"
+            + (" (strong)" if strong else ""))
     return IdeaStrength(catalyst, round(prob, 3), strong, note)
 
 
