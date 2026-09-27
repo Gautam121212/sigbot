@@ -25,10 +25,11 @@ WHY IT IS A REAL GAP: funds can't trade $10-100M coins (too small to move size),
 retail gambles them without the turnover filter, and the top-coin models ignore
 them entirely. The turnover signal sits in the blind spot of all three.
 
-CAVEAT: the finding is a snapshot (current turnover vs recent performance). It
-must be validated FORWARD on the fetched history (turnover today -> return over
-the next N days) before it is trusted — reverse-causation is the risk. The
-small_cap_turnover_edge below is the signal; validate it on banked data first.
+*** FORWARD TEST RESULT: FAILED. *** The snapshot +26% was reverse-causation.
+Tested properly (turnover at time T -> return over the NEXT 14 days), high
+turnover gives -3.8% vs -1.9% baseline — it INVERTS. Coins that already pumped
+have high volume; turnover does not PREDICT, it DESCRIBES the past. This module
+is kept as a documented dead-end, NOT a live edge. See CRYPTO_PLAYBOOK.md.
 """
 from __future__ import annotations
 
