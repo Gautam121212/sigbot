@@ -3444,6 +3444,8 @@ def main(argv: list[str]) -> int:
             "  Crypto runs ONLY risky+very-risky (no stable direction edge)."),
         "tier-dist": lambda: print(__import__("sigbot.tier_distribution", fromlist=["describe"]).describe()),
         "per-model-run": lambda: print(__import__("sigbot.per_model_run", fromlist=["describe"]).describe()),
+        "pro-alloc": lambda: print(__import__("sigbot.pro_allocation", fromlist=["describe"]).describe()),
+        "final-run": lambda: print(__import__("sigbot.final_run", fromlist=["describe"]).describe()),
         "deep-edges-2": lambda: print("Deep edges (ventures/ideas, run 2):\n"
             "  CRYPTO: all free-price decompositions FAILED forward (no edge).\n"
             "  VENTURES: sustained-inflection transfers (margin+growth accel +\n"
