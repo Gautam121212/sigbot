@@ -9,7 +9,7 @@ def test_high_magnitude_plus_lean_produces_a_small_bet():
                          mom20=0.35, direction_lean=lean, crypto=True)
     assert bet is not None
     assert bet.side == "BUY"
-    assert 0 < bet.size_pct <= 1.0          # small, capped
+    assert 0 < bet.size_pct <= 4.0          # small, capped
     assert bet.expected_move_pct > 6        # a meaningfully big potential move
 
 
@@ -46,7 +46,7 @@ def test_news_risky_bet_needs_a_big_surprise():
     # big surprise + direction -> a bet sized to the move
     bet = news_risky_bet("NVDA", 45.0, "BUY")
     assert bet is not None and bet.side == "BUY"
-    assert bet.expected_move_pct >= 7 and bet.size_pct <= 1.0
+    assert bet.expected_move_pct >= 7 and bet.size_pct <= 4.0
 
 
 def test_news_magnitude_is_monotonic():
@@ -58,7 +58,7 @@ def test_venture_needs_asymmetry_and_positive_ev():
     from sigbot.risky_bets import venture_risky_bet
     # capped downside + big upside + positive EV -> a bet
     bet = venture_risky_bet("Dubai property", 8.0, True, 1.5)
-    assert bet is not None and bet.size_pct <= 1.0
+    assert bet is not None and bet.size_pct <= 4.0
     # uncapped downside -> no bet
     assert venture_risky_bet("risky", 8.0, False, 1.5) is None
     # small upside -> no bet

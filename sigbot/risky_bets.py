@@ -8,7 +8,8 @@ The logic:
   - Magnitude says how big the move could be (regime-independent, direction-blind).
   - A direction hint (the model's own weak lean) picks a side.
   - Together they define a SMALL bet: big potential move + a direction lean =
-    a lottery ticket sized to the potential, never more than 1% of capital.
+    a bet sized to the potential and conviction, up to 4% of capital (a real
+    sleeve, not a rounding error — the old 0.25-1% made these contribute nothing).
 
 This is deliberately separate from the proven signals. Proven signals (like
 panic-capitulation) get real size; these risky bets get tiny size because the
@@ -27,7 +28,7 @@ class RiskyBet:
     asset: str
     side: str                   # "BUY" / "SELL" — the weak direction lean
     expected_move_pct: float    # how big the move could be
-    size_pct: float             # % of capital (small, capped at 1%)
+    size_pct: float             # % of capital (meaningful, capped at 4%)
     rationale: str
 
 
@@ -78,7 +79,7 @@ def news_risky_bet(symbol: str, abs_surprise_pct: float | None,
     move = news_magnitude(abs_surprise_pct)
     if move < 0.06 or direction not in ("BUY", "SELL"):
         return None                 # only bet on surprises big enough to matter
-    size = 0.5 if move >= 0.075 else 0.25
+    size = 3.0 if move >= 0.075 else 1.5
     return RiskyBet(
         asset=symbol, side=direction, expected_move_pct=round(move * 100, 1),
         size_pct=size,
@@ -97,7 +98,7 @@ def venture_risky_bet(name: str, upside_multiple: float | None,
     if ev_multiple is None or ev_multiple <= 0:
         return None                 # and positive expected value
     # Bigger upside -> a slightly bigger (still tiny) barbell bet.
-    size = 1.0 if upside_multiple >= 10 else 0.5
+    size = 3.0 if upside_multiple >= 10 else 1.5
     return RiskyBet(
         asset=name, side="BUY", expected_move_pct=round(upside_multiple * 100, 0),
         size_pct=size,
@@ -111,7 +112,7 @@ def idea_risky_bet(title: str, checks_passed: int, checks_total: int,
     worth a small speculative position. 'Magnitude' is thesis conviction."""
     if checks_total < 1 or checks_passed < checks_total:
         return None                 # only fully-checked ideas get a bet
-    size = 0.5 if checks_total >= 3 else 0.25
+    size = 2.0 if checks_total >= 3 else 1.0
     return RiskyBet(
         asset=title[:40], side=direction, expected_move_pct=0.0,
         size_pct=size,

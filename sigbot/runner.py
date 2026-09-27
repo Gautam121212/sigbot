@@ -3440,6 +3440,12 @@ def main(argv: list[str]) -> int:
             "  cash-burning hypergrowth doubles MORE (11%) than profitable (5.5%).\n"
             "  The outlier profile = hypergrowth + not-yet-profitable, sized tiny\n"
             "  across 20+ bets (the power-law portfolio)."),
+        "crypto-moves": lambda: print("Crypto move-detection engine (new angle):\n"
+            "  Scans volume, volatility, news-attention, and basis for the\n"
+            "  PRECURSORS of a big move — not constant polling. When 2+ stack\n"
+            "  (volume spike + volatility expansion + attention surge + basis\n"
+            "  shift), a move is imminent (direction uncertain, sized as a\n"
+            "  volatility bet). Reads banked hourly data; the recorder feeds it."),
         "crypto-structural": lambda: print("Crypto STRUCTURAL edge (via crypto.com perps):\n"
             "  The basis (perp vs spot) is a positioning signal, not a price call.\n"
             "  Large positive basis = crowded longs -> reverts down (SELL).\n"

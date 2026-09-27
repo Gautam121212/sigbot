@@ -67,7 +67,9 @@ def magnitude(atr_pct: float | None, volume_ratio: float | None,
     expected = base * mult
     # Speculative sizing: bigger potential move -> a slightly bigger (still tiny)
     # lottery-ticket bet. Capped low because direction is unknown.
-    bet = {0: 0.0, 1: 0.0, 2: 0.25, 3: 0.5, 4: 1.0}[flags]  # % of capital
+    # Meaningful sizing (the tiny 0.25-1% made these contribute nothing). A real
+    # asymmetric edge with capped downside earns a real bet: 1.5-4% by conviction.
+    bet = {0: 0.0, 1: 1.0, 2: 2.0, 3: 3.0, 4: 4.0}[flags]  # % of capital
     note = (f"{flags}/4 big-move flags ({', '.join(reasons)}) — "
             f"~{expected * 100:.0f}% expected move" if flags else "no big-move flags")
     return MagnitudeRead(flags, round(expected, 3), bet, note)
