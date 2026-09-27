@@ -33,3 +33,30 @@ def test_describe_shows_both_models():
     out = describe()
     assert "STOCKS" in out and "VENTURES" in out
     assert "why:" in out
+
+
+def test_all_five_models_have_two_per_tier():
+    from sigbot.market_gap_edges import (
+        CRYPTO_EDGES, IDEA_EDGES, NEWS_EDGES)
+    for edges in (CRYPTO_EDGES, NEWS_EDGES, IDEA_EDGES):
+        for tier in ("stable", "risky", "very-risky"):
+            assert len(edges_by_tier(edges, tier)) == 2
+
+
+def test_news_short_signal_present():
+    from sigbot.market_gap_edges import NEWS_EDGES
+    vr = edges_by_tier(NEWS_EDGES, "very-risky")
+    assert any("SHORT" in e.name for e in vr)
+
+
+def test_crypto_small_cap_edges_in_very_risky():
+    from sigbot.market_gap_edges import CRYPTO_EDGES
+    vr = edges_by_tier(CRYPTO_EDGES, "very-risky")
+    assert any("turnover" in e.name for e in vr)
+    assert any("ignition" in e.name for e in vr)
+
+
+def test_describe_shows_all_five_models():
+    out = describe()
+    for m in ("STOCKS", "VENTURES", "CRYPTO", "NEWS", "IDEAS"):
+        assert m in out

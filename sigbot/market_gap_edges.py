@@ -105,7 +105,9 @@ def edges_by_tier(edges: list[GapEdge], tier: str) -> list[GapEdge]:
 
 def describe() -> str:
     lines = ["MARKET-GAP EDGES — 2 per tier (stocks + ventures)", ""]
-    for model, edges in (("STOCKS", STOCK_EDGES), ("VENTURES", VENTURE_EDGES)):
+    for model, edges in (("STOCKS", STOCK_EDGES), ("VENTURES", VENTURE_EDGES),
+                         ("CRYPTO", CRYPTO_EDGES), ("NEWS", NEWS_EDGES),
+                         ("IDEAS", IDEA_EDGES)):
         lines.append(f"═══ {model} ═══")
         for tier in ("stable", "risky", "very-risky"):
             lines.append(f"  [{tier}]")
@@ -114,3 +116,67 @@ def describe() -> str:
                 lines.append(f"      why: {e.mechanic}")
         lines.append("")
     return "\n".join(lines)
+
+
+CRYPTO_EDGES = [
+    GapEdge("large-cap dip revert", "stable",
+            "a liquid >$1B coin overshoots down on fear, mean-reverts",
+            "+11% median 30d (thin — validate fwd)"),
+    GapEdge("large-cap liquid hold", "stable",
+            "steady high-volume large coin — institutional holding base",
+            "+43% median 30d (snapshot)"),
+    GapEdge("mid-cap momentum", "risky",
+            "a $100M-1B coin catching a trend before it is widely held",
+            "96% up, +35% median 30d (snapshot — validate fwd)"),
+    GapEdge("mid-cap turnover surge", "risky",
+            "turnover spiking = money rotating in at mid-cap size",
+            "88% up, +35% median 30d"),
+    GapEdge("small-cap turnover", "very-risky",
+            "a $10-100M coin being discovered — too small for funds",
+            "+22% median 30d, 88% up"),
+    GapEdge("small-cap ignition", "very-risky",
+            "a small coin that just ran 30%+ in a week — momentum igniting",
+            "+56.8% median 30d, 92% up (snapshot — validate fwd)"),
+]
+
+NEWS_EDGES = [
+    GapEdge("small-beat drift", "stable",
+            "a modest beat drifts as the market digests it slowly",
+            "+0.26%/5d"),
+    GapEdge("beat + already-strong", "stable",
+            "a beat on a healthy stock (RSI 50-70) continues",
+            "+0.30%/5d"),
+    GapEdge("oversold-into-beat", "risky",
+            "a beaten-down stock beats — under-owned, forces repositioning",
+            "+3.96%/5d"),
+    GapEdge("beat + volume surge", "risky",
+            "a beat confirmed by 2x volume — real buyers entering",
+            "+0.47%/5d"),
+    GapEdge("big-beat oversold", "very-risky",
+            "an extreme beat (>20%) on an oversold stock — violent re-rating",
+            "+5.29%/5d"),
+    GapEdge("big-miss overbought (SHORT)", "very-risky",
+            "a big miss on an overextended stock drops hard as the crowd exits",
+            "-3.89%/5d (short)"),
+]
+
+IDEA_EDGES = [
+    GapEdge("earnings large-cap", "stable",
+            "a big-cap earnings 8-K — reliable, well-covered catalyst",
+            "28.7% move 5%+ in 10d"),
+    GapEdge("other-event large-cap", "stable",
+            "a large-cap material 8.01 event (buyback, ruling) — steady",
+            "21.7% move 5%+"),
+    GapEdge("material agreement mid-cap", "risky",
+            "a partnership/contract on a mid-cap with room to run",
+            "9.0% move 15%+"),
+    GapEdge("Reg-FD guidance mid-cap", "risky",
+            "a guided disclosure on a mid-cap — pre-announced catalyst",
+            "9.7% move 15%+"),
+    GapEdge("healthcare deal small-cap", "very-risky",
+            "a biotech partnership on a small-cap — huge asymmetric catalyst",
+            "15.0% move 15%+"),
+    GapEdge("material agreement small-cap", "very-risky",
+            "a deal on a small-cap — the highest-variance opportunity",
+            "12.8% move 15%+"),
+]
