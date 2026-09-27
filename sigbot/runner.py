@@ -3435,6 +3435,7 @@ def main(argv: list[str]) -> int:
         "forward-test": lambda: print(__import__("sigbot.forward_test", fromlist=["describe"]).describe()),
         "verdict": lambda: print(__import__("sigbot.concentrated_strategy", fromlist=["verdict"]).verdict()),
         "regime-alloc": lambda: print(__import__("sigbot.regime_tier_allocation", fromlist=["describe"]).describe()),
+        "novelty": lambda: print(__import__("sigbot.novelty_check", fromlist=["describe"]).describe()),
         "turnover-edge": lambda: print("Small-cap turnover edge (the crypto market gap):\n"
             "  Market structure: mega caps efficient (no edge); small caps a\n"
             "  graveyard (median -54%/yr, 13% die) — but 5% double.\n"
