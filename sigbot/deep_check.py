@@ -30,7 +30,8 @@ class ModelHealth:
 
 
 def _horizon_of(hours: float) -> str:
-    return "intra-day" if hours <= 3 else "short-term" if hours <= 360 else "long-term"
+    # Two horizons only (no intra-day): short-term <= 30 days, else long-term.
+    return "short-term" if hours <= 720 else "long-term"
 
 
 def model_health(db_path: str) -> list[ModelHealth]:

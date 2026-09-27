@@ -185,15 +185,10 @@ def test_every_model_has_an_accent_and_a_mechanism():
                                       "explanation of what it does"
 
 
-def test_the_intraday_model_appears_on_the_home_page():
-    """It recorded thousands of forecasts, filled Learned and Missed, and never
-    appeared on the home page — the one model producing most of the evidence
-    was the one you could not see."""
-    from sigbot.export_app import MODEL_META
+def test_the_intraday_model_is_retired():
+    """Intra-day was removed — only short-term and long-term horizons remain.
+    crypto15m (the 15-minute model) is retired; crypto's real edge is the
+    multi-day coiled-spring, not intra-day (which failed forward-testing)."""
+    from sigbot.export_app import RETIRED_MODELS
 
-    assert "crypto15m" in MODEL_META
-    # The ledger id stays crypto15m so the record is continuous. The horizon
-    # moved from the name to the description when the site was cut to five
-    # models, so the page still says how often it runs.
-    assert MODEL_META["crypto15m"][0] == "Crypto"
-    assert "3 hours" in MODEL_META["crypto15m"][1]
+    assert "crypto15m" in RETIRED_MODELS

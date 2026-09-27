@@ -40,10 +40,18 @@ ANCHOR_TZ = ZoneInfo("Asia/Kolkata")
 RESET_LOCAL = time(16, 30)      # 16:30 IST — one hour after NSE close
 
 
-# How long before the market opens each horizon's predictions are made.
-# Long-term needs the most lead (12h), intra-day the least (1h) — a fresh
-# intra-day call an hour before open is more current than one made overnight.
-PREDICTION_LEAD_HOURS = {"long-term": 12, "short-term": 6, "intra-day": 1}
+# How long before the market opens each horizon's predictions are made and then
+# LOCKED (no changes after this) until they resolve into results/trades. Two
+# horizons only — no intra-day. Long-term is forecast further out (needs more
+# lead and holds longer); short-term is forecast closer to the session.
+#   long-term  — predictions made 12h before open, then locked; hold 30+ days.
+#   short-term — predictions made 6h before open, then locked; hold up to 30 days.
+PREDICTION_LEAD_HOURS = {"long-term": 12, "short-term": 6}
+
+# Once made, predictions are LOCKED this long before open — after the lock they
+# cannot change; they can only resolve into a result or a trade. The lock is the
+# lead time itself: a prediction made 6h before open is fixed from that moment.
+LOCK_BEFORE_OPEN_HOURS = {"long-term": 12, "short-term": 6}
 
 
 class Phase(str, Enum):

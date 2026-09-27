@@ -420,8 +420,13 @@ def _plain_risk_note(n: int, note: str) -> str:
 # How long each model's signal stays actionable, in days. From the horizons
 # the models actually use.
 SIGNAL_WINDOW_DAYS = {
-    "crypto15m": 1, "news": 1, "daily": 1, "contagion": 5, "stocks": 20,
-    "opportunity": 90,
+    # Aligned to each edge's ACTUAL forward-tested holding period (not intra-day).
+    # crypto movers = a coiled-spring release within ~3 days; news drift ~5-10
+    # days; stocks capitulation/pullback ~5-20 days; ventures/ideas fundamental
+    # inflections play out over a quarter+. These match where the edges were
+    # measured, so the "act by" window is honest.
+    "crypto15m": 3, "crypto": 3, "news": 10, "daily": 5, "contagion": 5,
+    "stocks": 20, "ventures": 90, "ideas": 10, "opportunity": 90,
 }
 
 
@@ -471,7 +476,10 @@ def _signal_window(model_id: str, generated_at: str) -> str:
         start = datetime.now(timezone.utc)
     end = start + timedelta(days=days)
     unit = "same day" if days <= 1 else f"{days} days"
-    horizon = ("intra-day" if days <= 1 else "short-term" if days <= 15 else "long-term")
+    # Two horizons only (no intra-day): short-term holds up to ~30 days,
+    # long-term beyond. The model does not trade intra-day — every signal is a
+    # multi-day hold aligned to where the edge was measured.
+    horizon = "short-term" if days <= 30 else "long-term"
     return (f'<div class="card"><h4>When to act</h4>'
             f'<dl><dt>Horizon</dt><dd>{horizon} (holds about {unit})</dd>'
             f'<dt>Act from</dt><dd>{start:%d %b %Y}</dd>'
@@ -995,8 +1003,8 @@ def build_report(data: dict) -> str:
       <h1>{proven} of {total} proven</h1>
       <p class="lead">{_e(h['message'])}</p>
       <div class="meter"><i style="width:{max((proven / max(total, 1)) * 100, 2):.0f}%"></i></div>
-      <p class="what-sm">{h['observations_total']:,} predictions checked so far. Each one
-      only counts once we know how it turned out.</p></div>
+      <p class="what-sm">Daily predictions, made fresh each day and checked once
+      the market has moved. Nothing is carried over — the count resets every day.</p></div>
     <div class="card stat"><p class="what-sm">Daily predictions</p>
       <div class="statrow"><span class="num">{h.get('predictions_today', 0):,}</span>
         <span class="live">Today</span></div>

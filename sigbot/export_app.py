@@ -80,7 +80,7 @@ MODEL_META = {
     "news": ("News scanner", "Scores stories for whether they move an asset"),
     "stocks": ("Stocks & funds",
                "Scans every stock and fund, and shows only the ones worth a look"),
-    "crypto15m": ("Crypto", "Direction on the most traded pairs, every 3 hours"),
+    "crypto15m": ("Crypto", "Coiled-spring setups on the most traded pairs (multi-day)"),
     "opportunity": ("Opportunities", "Investments and business gaps, rated on evidence"),
 }
 
@@ -89,7 +89,7 @@ MODEL_META = {
 # contagion (follow-on) retired: 6+ edge tests showed it is pure beta, not
 # skill — it never predicted anything the market wasn't already doing. Removed
 # from the site; its ledger history remains for diagnosis.
-RETIRED_MODELS = ("daily", "setups", "contagion")
+RETIRED_MODELS = ("daily", "setups", "contagion", "crypto15m")
 
 
 @dataclass
@@ -257,11 +257,13 @@ def _horizon_class(model_id: str, hold_days: int | None) -> str:
     Stocks use the firing signal's own hold period; the other models use their
     fixed horizon. This is the classifier the page groups rows under.
     """
+    # Two horizons only — no intra-day. Everything is a multi-day hold.
     if hold_days is not None:
-        return ("intra-day" if hold_days <= 1
-                else "short-term" if hold_days <= 15 else "long-term")
-    return {"crypto15m": "intra-day", "news": "intra-day", "daily": "intra-day",
+        return "short-term" if hold_days <= 30 else "long-term"
+    return {"crypto15m": "short-term", "crypto": "short-term",
+            "news": "short-term", "daily": "short-term",
             "contagion": "short-term", "opportunity": "long-term",
+            "ventures": "long-term", "ideas": "short-term",
             "stocks": "short-term"}.get(model_id, "short-term")
 
 def _status_line(tier: Tier, n: int, rate: float | None, need: int | None) -> str:
