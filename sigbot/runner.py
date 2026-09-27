@@ -3429,6 +3429,7 @@ def main(argv: list[str]) -> int:
         "paper-run": lambda: print(__import__("sigbot.historical_paper_run", fromlist=["describe"]).describe()),
         "unified": lambda: print(__import__("sigbot.unified_account", fromlist=["describe"]).describe()),
         "tiered-edges": lambda: print(__import__("sigbot.tiered_edges", fromlist=["describe"]).describe()),
+        "gap-edges": lambda: print(__import__("sigbot.market_gap_edges", fromlist=["describe"]).describe()),
         "turnover-edge": lambda: print("Small-cap turnover edge (the crypto market gap):\n"
             "  Market structure: mega caps efficient (no edge); small caps a\n"
             "  graveyard (median -54%/yr, 13% die) — but 5% double.\n"
