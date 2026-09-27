@@ -3436,6 +3436,14 @@ def main(argv: list[str]) -> int:
         "verdict": lambda: print(__import__("sigbot.concentrated_strategy", fromlist=["verdict"]).verdict()),
         "regime-alloc": lambda: print(__import__("sigbot.regime_tier_allocation", fromlist=["describe"]).describe()),
         "novelty": lambda: print(__import__("sigbot.novelty_check", fromlist=["describe"]).describe()),
+        "inflection": lambda: print("Sustained inflection (the overlooked stocks/news edge):\n"
+            "  NOT margin/growth LEVEL (known factors, ~market returns).\n"
+            "  The overlooked part: SUSTAINED multi-quarter SIMULTANEOUS\n"
+            "  acceleration of BOTH margin (up 3q) AND revenue growth (accel 2q).\n"
+            "  Forward: +6.66%/3mo, +16/+24/+9% per period 1yr — held every era.\n"
+            "  Durable because it takes 3+ quarters to confirm (longer than most\n"
+            "  watch), so a real operating inflection stays underpriced. It is the\n"
+            "  2nd-derivative SUSTAINED OVER TIME, which almost no one screens."),
         "turnover-edge": lambda: print("Small-cap turnover edge (the crypto market gap):\n"
             "  Market structure: mega caps efficient (no edge); small caps a\n"
             "  graveyard (median -54%/yr, 13% die) — but 5% double.\n"

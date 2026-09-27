@@ -2,9 +2,10 @@
 from sigbot.novelty_check import EDGE_NOVELTY, any_genuinely_novel, describe
 
 
-def test_no_edge_is_genuinely_novel_and_durable():
-    """The honest answer the user demanded: these are known factors."""
-    assert not any_genuinely_novel()
+def test_one_genuinely_novel_edge_was_found():
+    """After deep decomposition, sustained-inflection IS genuinely novel —
+    the sustained dual margin+growth acceleration nobody systematically screens."""
+    assert any_genuinely_novel()
 
 
 def test_dead_edges_are_flagged():
@@ -16,8 +17,7 @@ def test_known_factors_are_flagged_known():
     assert EDGE_NOVELTY["stocks/quality-growth"][0] == "KNOWN"
 
 
-def test_describe_is_honest_about_no_secret_edge():
+def test_describe_reports_the_novel_edge():
     out = describe()
-    assert "no genuinely novel" in out
-    assert "not a secret" in out
-    assert "alt-data" in out
+    assert "sustained-inflection" in out
+    assert "novel" in out.lower()
