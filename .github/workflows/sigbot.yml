@@ -1,23 +1,24 @@
 # Sigbot autonomous run — everything happens on GitHub, nothing on your Mac.
 #
-# This runs the models on a schedule (GitHub's servers), records predictions,
-# resolves the ones whose window closed, rebuilds the site, and commits the
-# result back to the repo. GitHub Pages then serves the updated site. You never
-# open a terminal.
+# Every 3 hours GitHub's servers: run the models (record predictions), resolve
+# the ones whose window closed, rebuild the site, commit the ledger back, and
+# publish the site to GitHub Pages. You never open a terminal.
 #
-# Schedule: every 3 hours. The daily models (stocks, ventures, ideas) only fire
-# their once-a-day work when due; the frequent jobs (resolve, publish) keep the
-# site current. Adjust the cron below to taste.
+# One job does the whole thing. The site output (app/public) is gitignored and
+# rebuilt fresh each run, so it is uploaded to Pages directly from this job —
+# NOT re-checked-out from git (where it does not exist). That was the bug: a
+# separate deploy job checked out a clean repo and app/public was not there.
 name: sigbot
 
 on:
   schedule:
-    - cron: "0 */3 * * *"      # every 3 hours (UTC)
+    - cron: "0 */3 * * *"      # every 3 hours (UTC) — fully automatic
   workflow_dispatch: {}         # also run on demand from the Actions tab
 
-# Let the workflow commit the updated ledger + site back to the repo.
 permissions:
-  contents: write
+  contents: write               # commit the ledger back
+  pages: write                  # publish to Pages
+  id-token: write               # Pages deploy auth
 
 # Never run two ticks at once — they would fight over the commit.
 concurrency:
@@ -25,9 +26,12 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  tick:
+  run:
     runs-on: ubuntu-latest
     timeout-minutes: 25
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Check out the repo
         uses: actions/checkout@v4
@@ -40,8 +44,6 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          # Install the project's deps. Prefer requirements.txt; fall back to
-          # the core libraries the runners need.
           if [ -f requirements.txt ]; then
             pip install -r requirements.txt
           else
@@ -50,12 +52,11 @@ jobs:
 
       - name: Run one coordinator tick (record, resolve, publish)
         env:
-          # SEC EDGAR wants a real contact; set SEC_UA in repo secrets/variables.
           SEC_UA: ${{ vars.SEC_UA || 'sigbot research sigbot@dripxwear.com' }}
         run: |
           python -m sigbot.coordinator --once || echo "tick finished with warnings"
 
-      - name: Commit the updated ledger and site
+      - name: Commit the updated ledger back to the repo
         run: |
           git config user.name  "sigbot"
           git config user.email "sigbot@users.noreply.github.com"
@@ -64,42 +65,35 @@ jobs:
             echo "Nothing changed this tick."
           else
             git commit -m "tick: $(date -u '+%Y-%m-%d %H:%M UTC')"
-            # Pull-rebase then push, so overlapping ticks never clobber.
             git pull --rebase --autostash origin "${GITHUB_REF_NAME}" || true
             git push origin "HEAD:${GITHUB_REF_NAME}"
           fi
 
-  # Serve the site from GitHub Pages after each tick. This job is allowed to
-  # fail without failing the whole run — the tick (recording predictions and
-  # committing) is what matters; a Pages config hiccup must not block it.
-  deploy-pages:
-    needs: tick
-    runs-on: ubuntu-latest
-    continue-on-error: true
-    permissions:
-      pages: write
-      id-token: write
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Check out (with the fresh commit)
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.ref_name }}
+      # Publish the site built by this same job (app/public exists here now).
+      # If publish produced nothing, skip Pages instead of failing the run.
+      - name: Check the site was built
+        id: site
+        run: |
+          if [ -f app/public/index.html ]; then
+            echo "ok=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+            echo "No app/public/index.html — skipping Pages this tick."
+          fi
 
       - name: Configure Pages
+        if: steps.site.outputs.ok == 'true'
         uses: actions/configure-pages@v5
         with:
-          # Auto-enable Pages if it isn't turned on yet, instead of failing.
           enablement: true
 
       - name: Upload the published site
+        if: steps.site.outputs.ok == 'true'
         uses: actions/upload-pages-artifact@v3
         with:
-          # publish writes the site to app/public/index.html
           path: app/public
 
       - name: Deploy to GitHub Pages
+        if: steps.site.outputs.ok == 'true'
         id: deployment
         uses: actions/deploy-pages@v4
