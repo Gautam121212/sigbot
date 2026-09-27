@@ -332,10 +332,13 @@ def test_a_missing_job_is_reported_not_fatal(capsys):
 
 def test_daily_is_not_scheduled_more_often_than_daily():
     """Daily bars do not change intraday. A five-minute loop over them returns
-    the identical answer and burns the rate limit."""
+    the identical answer and burns the rate limit. The main model run (stocks)
+    is once a day; retired daily/contagion/crypto15m are gone."""
     by_name = {n: iv for n, _, iv, _ in coordinator.JOBS}
-    assert by_name["daily"] >= timedelta(hours=24)
-    assert by_name["contagion"] >= timedelta(hours=24)
+    assert by_name["stocks"] >= timedelta(hours=24)   # the daily model run
+    assert "daily" not in by_name                       # retired
+    assert "contagion" not in by_name                   # retired
+    assert "crypto15m" not in by_name                   # retired (intra-day)
     assert by_name["news"] <= timedelta(hours=4), "news is the thing that goes stale"
 
 

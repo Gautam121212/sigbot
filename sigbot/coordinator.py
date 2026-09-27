@@ -51,23 +51,21 @@ JOBS: list[tuple[str, str, timedelta, Venue | None]] = [
     # the scan only speaks when something is new.
     ("opportunities", "run_opportunities", timedelta(hours=4), None),
     ("news", "run_news", timedelta(hours=2), None),
-    # Every fifteen minutes, always: crypto does not close, and the whole
-    # point of this model is that its evidence arrives ninety-six times faster
-    # than the daily one's.
-    # Hourly. Every fifteen minutes produced ~9,600 forecasts a day whose
-    # errors were almost entirely shared — volume, not information — and made
-    # every page unreadable. The horizon is one hour, so scoring once per
-    # horizon loses nothing that mattered.
-    ("crypto15m", "run_crypto15m", timedelta(hours=3), None),
+    # The main daily model run (stocks / inflection / capitulation screen).
+    # Runs once a day — replaces the retired "daily" job. This is what makes the
+    # stocks predictions each cycle; the models' real horizons are multi-day, so
+    # once a day is the right cadence (not the old intra-day churn).
+    ("stocks", "run_stocks", timedelta(hours=24), None),
     # After resolve, so it replays predictions scored in the same cycle.
     ("paper", "run_paper", timedelta(hours=3), None),
     ("resolve", "run_resolve", timedelta(minutes=30), None),
-    ("daily", "run_daily", timedelta(hours=24), None),
-    ("contagion", "run_contagion", timedelta(hours=24), None),
     # Hourly, but it only speaks once, after the last close.
     ("day_summary", "run_day_summary", timedelta(hours=1), None),
     ("publish", "run_publish", timedelta(minutes=30), None),
     ("cycle", "run_cycle", timedelta(days=7), None),
+    # Retired models (crypto15m intra-day, daily duplicate, contagion) removed
+    # from the schedule — they no longer run. crypto15m was intra-day (no forward
+    # edge); daily is now the once-a-day "stocks" job above; contagion retired.
 ]
 
 

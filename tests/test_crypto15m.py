@@ -116,15 +116,14 @@ def test_usdt_pairs_map_to_usd_symbols():
 
 
 def test_the_model_runs_once_per_horizon():
-    from datetime import timedelta
-
+    """crypto15m (the intra-day 15-minute model) is RETIRED — removed from the
+    coordinator schedule. Intra-day had no forward edge; crypto's real edge is
+    the multi-day coiled-spring, run through the daily flow. Its module stays for
+    the historical record, but it no longer runs."""
     from sigbot.coordinator import JOBS
 
-    job = next(row for row in JOBS if row[0] == "crypto15m")
-    # Once per horizon. Fifteen-minute runs produced ~9,600 forecasts a day of
-    # almost entirely shared error — volume, not information.
-    assert job[2] == timedelta(hours=3)
-    assert job[3] is None, "crypto does not close"
+    names = [row[0] for row in JOBS]
+    assert "crypto15m" not in names            # retired from the schedule
 
 
 def test_min_bars_leaves_room_to_hold_out():
