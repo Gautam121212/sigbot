@@ -3427,6 +3427,15 @@ def main(argv: list[str]) -> int:
         "execution": lambda: print(__import__("sigbot.execution", fromlist=["describe"]).describe()),
         "grand-sim": lambda: print(__import__("sigbot.grand_simulation", fromlist=["describe"]).describe()),
         "paper-run": lambda: print(__import__("sigbot.historical_paper_run", fromlist=["describe"]).describe()),
+        "unified": lambda: print(__import__("sigbot.unified_account", fromlist=["describe"]).describe()),
+        "turnover-edge": lambda: print("Small-cap turnover edge (the crypto market gap):\n"
+            "  Market structure: mega caps efficient (no edge); small caps a\n"
+            "  graveyard (median -54%/yr, 13% die) — but 5% double.\n"
+            "  The FILTER nobody uses: TURNOVER (volume/market-cap).\n"
+            "  Small caps ($10-100M) with high turnover (>30% of cap/day):\n"
+            "  median +26% / 30d, 87% up — money flowing into coins too small\n"
+            "  for funds and ignored by top-coin models. Validate forward on\n"
+            "  the fetched history before trusting."),
         "big-winner": _show_big_winner,
         "grades": _show_grades,
         "ideas-signal": lambda: print("Ideas structural signal (from 8-K catalysts):\n"
@@ -3440,6 +3449,12 @@ def main(argv: list[str]) -> int:
             "  cash-burning hypergrowth doubles MORE (11%) than profitable (5.5%).\n"
             "  The outlier profile = hypergrowth + not-yet-profitable, sized tiny\n"
             "  across 20+ bets (the power-law portfolio)."),
+        "risk-portfolio": lambda: print("Risk portfolio layer (was entirely missing):\n"
+            "  1. Kelly sizing — size by edge x odds (half-Kelly), not flat %.\n"
+            "  2. Trailing stops — let moonshot winners run with a ratchet.\n"
+            "  3. Drawdown circuit-breaker — halt sizing past 20% book drawdown.\n"
+            "  4. Tier allocation — barbell 70% core / 20% risky / 10% very-risky.\n"
+            "  This is the aggregate-risk layer above per-trade sizing/stops."),
         "crypto-moves": lambda: print("Crypto move-detection engine (new angle):\n"
             "  Scans volume, volatility, news-attention, and basis for the\n"
             "  PRECURSORS of a big move — not constant polling. When 2+ stack\n"
