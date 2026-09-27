@@ -2552,6 +2552,7 @@ def _job_registry() -> dict:
         "contagion": run_contagion,
         "opportunity": run_opportunities,
         "stocks": run_stocks,
+        "crypto": run_crypto,
         "crypto15m": run_crypto15m,
         "profiles": run_profiles,
     }
@@ -2883,6 +2884,12 @@ def run_events(settings=SETTINGS) -> None:
     """Print what each recorded class of event actually did to each asset."""
     from .events import describe
     print(describe())
+
+
+def run_crypto(settings=SETTINGS) -> None:
+    """Live crypto model: record real coiled-spring predictions (resolvable)."""
+    from .run_crypto_live import run_crypto_live
+    print(run_crypto_live(settings=settings))
 
 
 def run_stocks(settings=SETTINGS) -> None:
@@ -3444,6 +3451,7 @@ def main(argv: list[str]) -> int:
         "setups": lambda: run_stocks(),
         "profiles": run_profiles,
         "stocks": run_stocks,
+        "crypto": run_crypto,
         "priority": run_priority,
         "priority-run": lambda: run_priority(execute=True),
         "events": run_events,

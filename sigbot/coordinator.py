@@ -56,6 +56,8 @@ JOBS: list[tuple[str, str, timedelta, Venue | None]] = [
     # stocks predictions each cycle; the models' real horizons are multi-day, so
     # once a day is the right cadence (not the old intra-day churn).
     ("stocks", "run_stocks", timedelta(hours=24), None),
+    # Live crypto: coiled-spring movers edge, real resolvable predictions.
+    ("crypto", "run_crypto", timedelta(hours=24), None),
     # After resolve, so it replays predictions scored in the same cycle.
     ("paper", "run_paper", timedelta(hours=3), None),
     ("resolve", "run_resolve", timedelta(minutes=30), None),
