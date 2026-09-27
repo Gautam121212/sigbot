@@ -31,7 +31,8 @@ def _candidate(overrides=None, unknown=()):
 def _thesis(strength=0.9):
     return ThesisCard(category="MACRO", subject="Fed", claim="Fears overblown.",
                       mechanism="not stated", articles=["Reuters"],
-                      must_be_true=["the discount is real"], would_falsify=[],
+                      must_be_true=["the discount is real"],
+                      would_falsify=["rates rise"],
                       unobservable=[], source_strength=strength,
                       created_at=datetime.now(timezone.utc))
 
@@ -156,9 +157,16 @@ def test_the_ideas_tab_exists_and_links(tmp_path):
     opps = build_opportunities([_thesis()], [_candidate()])
     html = _tiny_report(opps, tmp_path)
 
+    # The ideas tab always exists structurally.
     assert 'href="#ideas"' in html and 'id="ideas"' in html
-    for i in range(len(opps)):
-        assert f'id="i-{i}"' in html, "a card has no detail page"
+    # Only RESOLVABLE ideas get a detail page. A fresh news-thesis with nothing
+    # answered is correctly filtered (it could never finish); a real candidate
+    # with progress is kept. So at least the resolvable ones have detail pages,
+    # and unresolvable news headlines do NOT clutter the board.
+    from sigbot.report import _live_ideas
+    live = _live_ideas({"opportunities": opps})
+    for i in range(len(live)):
+        assert f'id="i-{i}"' in html, "a resolvable idea has no detail page"
 
 
 def test_the_tab_has_no_javascript(tmp_path):

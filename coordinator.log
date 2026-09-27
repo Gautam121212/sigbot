@@ -1,0 +1,186 @@
+[coordinator] loaded 4 setting(s) from .env
+NSE: closed (19:03 local), opens in 14.2h
+NYSE: closed (09:33 local), opens in 23.9h
+CRYPTO: open (13:33 local)
+
+[scheduler] started with 8 task(s)
+Paper trading paused until 2026-09-28T11:00:00+00:00. No trades placed.
+resolved 0 predictions
+resolved 0 predictions
+Screening 600 scanned candidates rather than the built-in 156.
+Cycle — 2026-09-27 13:33 UTC
+0 checks on record across 0 assets.
+No asset had a record bad enough to drop. Nothing moved.
+Dropping the weak and keeping the strong is how survivorship bias gets built on purpose. The record of what remains is partly a record of this filter, not only of the assets — which is why every drop is kept in the graveyard with its numbers, why nothing is dropped before 100 checks, and why only 2 leave per cycle.
+Monthly review — live behaviour against the playbook
+
+  [TOO EARLY] Cut losers fast
+      expected: Losing trades close near -1 R: the stop, not a hope
+      measured: 0 losing trades
+  [TOO EARLY] Let winners run
+      expected: Average win at least as large as average loss
+      measured: 0 wins, 0 losses
+  [TOO EARLY] Be selective
+      expected: Records a small share of what it looks at
+      measured: 2989 looked at
+  [TOO EARLY] Stand aside on a losing streak
+      expected: No new positions taken after 4 straight losses
+      measured: 0 closed trades
+  [TOO EARLY] Run both schools
+      expected: Both momentum and dip-buying setups are firing
+      measured: 0 trades
+  [TOO EARLY] Grow in line with history
+      expected: About +1.21% a month net of costs, against +1.00% for holding the index
+      measured: no months yet
+
+  Setups, live against their promise:
+    oversold-money-holding      0 trades         n/a  Keep watching — 0 live trade(s), needs 30.
+    capitulation                0 trades         n/a  Keep watching — 0 live trade(s), needs 30.
+    pullback-in-uptrend         0 trades         n/a  Keep watching — 0 live trade(s), needs 30.
+    momentum-breakout           0 trades         n/a  Keep watching — 0 live trade(s), needs 30.
+    panic-capitulation          0 trades         n/a  Keep watching — 0 live trade(s), needs 30.
+    hammer-in-downtrend         0 trades         n/a  Keep watching — 0 live trade(s), needs 30.
+    hard-down-day               0 trades         n/a  Keep watching — 0 live trade(s), needs 30.
+    accumulation-divergence     0 trades         n/a  Keep watching — 0 live trade(s), needs 30.
+    stretched-below-trend       0 trades         n/a  Keep watching — 0 live trade(s), needs 30.
+    extreme-williams            0 trades         n/a  Keep watching — 0 live trade(s), needs 30.
+
+  Everything is TOO EARLY. That is the correct answer until there are live trades — not a pass.
+  Recommendations only. Nothing here changes a rule by itself; promoting on luck and demoting on bad luck are equally wrong.
+
+Learning gaps — live results against what history predicted
+
+  [TOO EARLY ] crypto15m  0 checks
+  [TOO EARLY ] daily      0 checks
+  [TOO EARLY ] news       0 checks
+  [TOO EARLY ] contagion  0 checks
+  [TOO EARLY ] stocks     0 checks
+intake: 30 act, 67 learn, 185 dropped of 282
+News sweep 13:33 UTC: 30 articles, nothing above threshold.
+$SPY: possibly delisted; no price data found  (1d 2026-05-30 -> 2026-09-28)
+
+1 Failed download:
+['SPY']: possibly delisted; no price data found  (1d 2026-05-30 -> 2026-09-28)
+$HDB: possibly delisted; no price data found  (1d 2015-01-01 -> 2026-09-28)
+
+1 Failed download:
+['HDB']: possibly delisted; no price data found  (1d 2015-01-01 -> 2026-09-28)
+$INDHOTEL.NS: possibly delisted; no price data found  (1d 2015-01-01 -> 2026-09-28)
+
+1 Failed download:
+['INDHOTEL.NS']: possibly delisted; no price data found  (1d 2015-01-01 -> 2026-09-28)
+$BSX: possibly delisted; no price data found  (1d 2015-01-01 -> 2026-09-28)
+
+1 Failed download:
+['BSX']: possibly delisted; no price data found  (1d 2015-01-01 -> 2026-09-28)
+$WIT: possibly delisted; no price data found  (1d 2015-01-01 -> 2026-09-28)
+
+1 Failed download:
+['WIT']: possibly delisted; no price data found  (1d 2015-01-01 -> 2026-09-28)
+$SPY: possibly delisted; no price data found  (1d 2026-05-30 -> 2026-09-28)
+
+1 Failed download:
+['SPY']: possibly delisted; no price data found  (1d 2026-05-30 -> 2026-09-28)
+intake: 52 act, 93 learn, 300 dropped of 445
+could not remove the previous report (message 813) — it may be over 48 hours old, or already gone
+report sent, previous one removed
+67 of 67 board assets charted
+wrote app/public/index.html (2083 KB)
+Opportunity scan — 2026-09-27 14:01 UTC
+
+27 thing(s) worth a look — showing the 6 with the most complete case; the rest are on the Ideas tab.
+
+
+MARKET THESIS — UN Libya Reuters
+
+Reported at 70% sourcing strength. Enough to be worth reading, not enough to lean on. This model has never been scored against outcomes.
+
+UN mission warns disruption to Libya oil infrastructure could trigger sanctions - Reuters
+
+Money: Not stated. A market thesis says nothing about what acting on it would cost you.
+
+You would have to find out:
+  · the asset is genuinely priced lower in real terms, not just in a depreciating local currency
+  · there is a liquid, legal exit available to a non-resident
+  · the dislocation has a plausible resolution path with a timeframe
+
+From: Reuters (2026-09-26)
+
+MARKET THESIS — China, US AI Xi
+
+Reported at 70% sourcing strength. Enough to be worth reading, not enough to lean on. This model has never been scored against outcomes.
+
+China, US agree to AI dialogue, tariff cuts on $30 billion in goods during Xi visit - Reuters
+
+Money: Not stated. A market thesis says nothing about what acting on it would cost you.
+
+You would have to find out:
+  · the asset is genuinely priced lower in real terms, not just in a depreciating local currency
+  · there is a liquid, legal exit available to a non-resident
+  · the dislocation has a plausible resolution path with a timeframe
+
+From: Reuters (2026-09-26)
+
+MARKET THESIS — Section Loan Guarantee Program:
+
+Reported at 64% sourcing strength. Enough to be worth reading, not enough to lean on. This model has never been scored against outcomes.
+
+Section 108 Loan Guarantee Program: Announcement of Fee To Cover Credit Subsidy Costs for FY 2027
+
+Money: Not stated. A market thesis says nothing about what acting on it would cost you.
+
+You would have to find out:
+  · the opening is real and dated, not a vague announcement of intent
+  · a person or firm could actually access it (not closed to outsiders)
+  · the window is early — the crowd has not already priced it in
+
+From: Federal Register Documents published on or after 08/28/2026 and of type Rule (2026-09-28)
+
+IPO — DATES UNKNOWN — Arete 22
+
+The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 0 points' worth of the ten tests could be answered from the coverage. That is too little to say anything — it is a gap in reporting, not a judgement on the company.
+
+Arete 22 files draft papers for ₹440-crore IPO
+
+Money: 0 of a possible 0 points on the ten tests the coverage could answer.
+
+You would have to find out:
+  · Does reporting say it makes money?
+  · Is revenue growing?
+  · Does the money go into the business?
+  · Is the price being called reasonable?
+
+From: Latest Share Market News, Sensex, Nifty, BSE, NSE Today | The HinduBusinessLine (2026-09-26)
+
+IPO — DATES UNKNOWN — Biscuit maker Anmol Industries
+
+The coverage gives no dates, so whether this is open, shut, or weeks away is not known from here. Check before assuming it is live. Only 0 points' worth of the ten tests could be answered from the coverage. That is too little to say anything — it is a gap in reporting, not a judgement on the company.
+
+Biscuit maker Anmol Industries files draft papers for ₹1,800 crore IPO, makes second attempt to tap public markets
+
+Money: 0 of a possible 0 points on the ten tests the coverage could answer.
+
+You would have to find out:
+  · Does reporting say it makes money?
+  · Is revenue growing?
+  · Does the money go into the business?
+  · Is the price being called reasonable?
+
+From: Latest Share Market News, Sensex, Nifty, BSE, NSE Today | The HinduBusinessLine (2026-09-26)
+
+MARKET THESIS — Erdogan Netanyahu, Moneycontrol.com
+
+Weak sourcing (45%). One outlet, or an outlet without a track record. Read it as a prompt to check elsewhere, nothing more.
+
+Erdogan takes apparent swipe at Netanyahu, says ‘war criminals belong in courtrooms’ - Moneycontrol.com
+
+Money: Not stated. A market thesis says nothing about what acting on it would cost you.
+
+You would have to find out:
+  · the asset is genuinely priced lower in real terms, not just in a depreciating local currency
+  · there is a liquid, legal exit available to a non-resident
+  · the dislocation has a plausible resolution path with a timeframe
+
+From: Moneycontrol.com (2026-09-26)
+
+Colours describe how complete the case is, not how likely it is to work. Nothing here has been checked against what actually happened, and single events never can be — each one happens once.

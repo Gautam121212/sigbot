@@ -1869,11 +1869,13 @@ def _idea_days_left(o: dict) -> float | None:
 def _live_ideas(data: dict) -> list[dict]:
     """Ideas worth showing, strongest case first.
 
-    Dropped here: anything already expired, and anything whose case cannot be
-    completed before its own window shuts. The second is the important one —
-    an idea that will still be unanswered on the day it closes was never
-    actionable, and showing it just spends your attention on a foregone
-    conclusion.
+    Dropped here: anything already expired; anything whose case cannot be
+    completed before its own window shuts; and — the fix — anything with NO
+    resolvable window at all. A news-thesis card with "no closing date given"
+    that has answered nothing (precision 0) can never finish: it just sits in
+    Unfinished showing "3 more days" forever and gets removed by age, not by
+    ever being checked. That is not a real, verifiable prediction, so it does
+    not belong on the board. An idea shows only if it can actually resolve.
     """
     live = []
     for o in data.get("opportunities") or []:
@@ -1882,6 +1884,11 @@ def _live_ideas(data: dict) -> list[dict]:
         need = _idea_expected_days(o)
         left = _idea_days_left(o)
         if need is not None and left is not None and need > left:
+            continue
+        # NEW: drop cards that can never resolve — no readable window (left is
+        # None) AND nothing answered yet. These are raw news headlines, not
+        # checkable predictions; they would sit "unfinished" indefinitely.
+        if left is None and _idea_precision(o) <= 0:
             continue
         live.append(o)
     return sorted(live, key=lambda o: -_idea_precision(o))
