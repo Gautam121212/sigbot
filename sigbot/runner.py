@@ -3436,6 +3436,22 @@ def main(argv: list[str]) -> int:
         "verdict": lambda: print(__import__("sigbot.concentrated_strategy", fromlist=["verdict"]).verdict()),
         "regime-alloc": lambda: print(__import__("sigbot.regime_tier_allocation", fromlist=["describe"]).describe()),
         "novelty": lambda: print(__import__("sigbot.novelty_check", fromlist=["describe"]).describe()),
+        "crypto-movers": lambda: print("Crypto movers (the hidden math behind 10% days):\n"
+            "  A coin COILING (low volatility) while VOLUME BUILDS is accumulating\n"
+            "  energy: 42.9% chance of a 10%+ move day within 3 days (vs 16% base).\n"
+            "  Informed money positions quietly before the release. Risky tier\n"
+            "  (liquid) / very-risky (small-cap, where release = 10x not 10%).\n"
+            "  Crypto runs ONLY risky+very-risky (no stable direction edge)."),
+        "tier-dist": lambda: print(__import__("sigbot.tier_distribution", fromlist=["describe"]).describe()),
+        "per-model-run": lambda: print(__import__("sigbot.per_model_run", fromlist=["describe"]).describe()),
+        "deep-edges-2": lambda: print("Deep edges (ventures/ideas, run 2):\n"
+            "  CRYPTO: all free-price decompositions FAILED forward (no edge).\n"
+            "  VENTURES: sustained-inflection transfers (margin+growth accel +\n"
+            "  positive ROIC) — the durable operating-inflection edge.\n"
+            "  IDEAS: catalyst on an ALREADY-VOLATILE small-cap = ~16% chance of\n"
+            "  a 15%+ move, held every era (a quiet stock's catalyst is ignored).\n"
+            "  The overlooked timing: volatility means the market is already\n"
+            "  reacting; the catalyst confirms it."),
         "inflection": lambda: print("Sustained inflection (the overlooked stocks/news edge):\n"
             "  NOT margin/growth LEVEL (known factors, ~market returns).\n"
             "  The overlooked part: SUSTAINED multi-quarter SIMULTANEOUS\n"
