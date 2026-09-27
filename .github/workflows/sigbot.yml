@@ -69,10 +69,13 @@ jobs:
             git push origin "HEAD:${GITHUB_REF_NAME}"
           fi
 
-  # Serve the site from GitHub Pages after each tick.
+  # Serve the site from GitHub Pages after each tick. This job is allowed to
+  # fail without failing the whole run — the tick (recording predictions and
+  # committing) is what matters; a Pages config hiccup must not block it.
   deploy-pages:
     needs: tick
     runs-on: ubuntu-latest
+    continue-on-error: true
     permissions:
       pages: write
       id-token: write
@@ -87,6 +90,9 @@ jobs:
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
+        with:
+          # Auto-enable Pages if it isn't turned on yet, instead of failing.
+          enablement: true
 
       - name: Upload the published site
         uses: actions/upload-pages-artifact@v3
