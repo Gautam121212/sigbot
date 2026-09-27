@@ -123,9 +123,33 @@ def cycle_state(when: datetime | None = None) -> CycleState:
                       next_open=open_utc, predictions_locked=locked)
 
 
+# Which horizon each model runs on — decided by its EDGE'S real mechanics, not
+# a guess. Long-term = fundamental/slow (holds weeks to a quarter), locked 12h
+# before open since timing precision doesn't matter and an early lock leaves time
+# to place. Short-term = event/setup-driven (holds days), locked 6h before open
+# so the call is fresh. No intra-day — no model's real edge is intra-day.
+#   stocks   -> long-term  (sustained-inflection is quarterly; capitulation 5-20d)
+#   ventures -> long-term  (venture-inflection holds ~90 days — the slowest edge)
+#   news     -> short-term (earnings drift is a 5-10 day move from the open)
+#   ideas    -> short-term (catalyst move over ~10 days — enter while fresh)
+#   crypto   -> short-term (coiled-spring releases within ~3 days — the fastest)
+MODEL_HORIZON = {
+    "stocks": "long-term", "ventures": "long-term",
+    "news": "short-term", "ideas": "short-term", "crypto": "short-term",
+    "opportunity": "long-term",
+}
+
+
+def horizon_for_model(model_id: str) -> str:
+    """The horizon a model runs on, from its edge's real holding period."""
+    return MODEL_HORIZON.get(model_id, "short-term")
+
+
 def prediction_times(when: datetime | None = None) -> dict[str, datetime]:
-    """When each horizon's predictions are made for the next session: 12h / 6h /
-    1h before the next open. Returned in UTC, keyed by horizon."""
+    """When each horizon's predictions are made for the next session: 12h before
+    open (long-term) / 6h before open (short-term). Returned in UTC, keyed by
+    horizon. No intra-day — the two horizons match where the edges were measured.
+    """
     from datetime import timedelta
     now = _now(when)
     open_utc = next_open(ANCHOR, now)
@@ -159,3 +183,18 @@ def reset_line(when: datetime | None = None) -> str:
     st = cycle_state(when)
     local = st.reset_at.astimezone(ANCHOR_TZ)
     return f"Resets {local:%d %b %H:%M} IST (one hour after the NSE close)"
+
+
+def model_timing_summary() -> str:
+    """Per-model: which horizon, when predictions are made, and the lock — so the
+    schedule is transparent and matches each edge's real mechanics."""
+    lines = ["PER-MODEL TIMING (decided by each edge's real holding period)", ""]
+    for model, horizon in MODEL_HORIZON.items():
+        lead = PREDICTION_LEAD_HOURS.get(horizon, 6)
+        lines.append(f"  {model:<11} [{horizon}] — made & LOCKED {lead}h before "
+                     "open, then only resolves into a result/trade")
+    lines.append("")
+    lines.append("Long-term (stocks, ventures): 12h lead — fundamental/slow, an")
+    lines.append("early lock is fine. Short-term (news, ideas, crypto): 6h lead —")
+    lines.append("event-driven, a fresher call locked closer to the open.")
+    return "\n".join(lines)
