@@ -2238,6 +2238,50 @@ def run_fresh_start(settings=SETTINGS) -> None:
     print("The model is OFF now and will start clean at that time.")
 
 
+def run_reset_ideas(settings=SETTINGS) -> None:
+    """Start the IDEAS (opportunity) model completely fresh.
+
+    Clears only the ideas/opportunity model: its ledger predictions, its display
+    store (opportunities.json), and its sector cache (opportunity_sectors.json).
+    Every OTHER model's evidence is untouched — this resets ideas alone, so it
+    begins from zero on the next cycle like a brand-new model.
+    """
+    import shutil
+    import sqlite3
+    from contextlib import closing
+    from datetime import datetime, timezone
+    from pathlib import Path
+
+    # 1. Back up the ledger before touching it.
+    db = Path(settings.shadow_db)
+    if db.exists():
+        stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+        shutil.copy(db, f"{settings.shadow_db}.{stamp}.bak")
+        print(f"Backed up ledger to {settings.shadow_db}.{stamp}.bak")
+
+    # 2. Delete the ideas/opportunity predictions from the ledger.
+    removed = 0
+    if db.exists():
+        with closing(sqlite3.connect(settings.shadow_db)) as con:
+            before = con.execute(
+                "SELECT COUNT(*) FROM predictions").fetchone()[0]
+            con.execute("DELETE FROM predictions WHERE model='opportunity'")
+            con.commit()
+            after = con.execute(
+                "SELECT COUNT(*) FROM predictions").fetchone()[0]
+            removed = before - after
+
+    # 3. Clear the ideas display and sector state files (they regenerate empty).
+    for f in ("opportunities.json", "opportunity_sectors.json"):
+        p = Path(f)
+        if p.exists():
+            p.unlink()
+
+    print(f"Ideas reset: {removed:,} opportunity prediction(s) removed, "
+          "display and sector state cleared. Every other model is untouched.")
+    print("Ideas will start fresh from zero on the next cycle.")
+
+
 def run_reset(settings=SETTINGS, full: bool = False) -> None:
     """Clear what is genuinely wrong, keep what is genuinely evidence.
 
@@ -3413,6 +3457,7 @@ def main(argv: list[str]) -> int:
         "reset": run_reset,
         "reset-all": lambda: run_reset(full=True),
         "fresh-start": run_fresh_start,
+        "reset-ideas": run_reset_ideas,
         "harvest-risky": run_harvest_risky,
         "purge-stale": run_purge_stale,
         "halt": run_halt,
