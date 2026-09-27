@@ -47,9 +47,6 @@ from .scheduler import Scheduler, Task
 
 # (name, runner attribute, interval, venue gate)
 JOBS: list[tuple[str, str, timedelta, Venue | None]] = [
-    # Four-hourly. The feed does not turn over faster than that, and
-    # the scan only speaks when something is new.
-    ("opportunities", "run_opportunities", timedelta(hours=4), None),
     ("news", "run_news", timedelta(hours=2), None),
     # The main daily model run (stocks / inflection / capitulation screen).
     # Runs once a day — replaces the retired "daily" job. This is what makes the
@@ -58,6 +55,10 @@ JOBS: list[tuple[str, str, timedelta, Venue | None]] = [
     ("stocks", "run_stocks", timedelta(hours=24), None),
     # Live crypto: coiled-spring movers edge, real resolvable predictions.
     ("crypto", "run_crypto", timedelta(hours=24), None),
+    # Live ventures: sustained-inflection on SEC fundamentals (90-day horizon).
+    ("ventures", "run_ventures", timedelta(hours=24), None),
+    # Live ideas: volatile-catalyst on SEC 8-K filings (10-day horizon).
+    ("ideas", "run_ideas", timedelta(hours=24), None),
     # After resolve, so it replays predictions scored in the same cycle.
     ("paper", "run_paper", timedelta(hours=3), None),
     ("resolve", "run_resolve", timedelta(minutes=30), None),

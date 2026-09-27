@@ -2553,6 +2553,8 @@ def _job_registry() -> dict:
         "opportunity": run_opportunities,
         "stocks": run_stocks,
         "crypto": run_crypto,
+        "ventures": run_ventures,
+        "ideas": run_ideas,
         "crypto15m": run_crypto15m,
         "profiles": run_profiles,
     }
@@ -2890,6 +2892,18 @@ def run_crypto(settings=SETTINGS) -> None:
     """Live crypto model: record real coiled-spring predictions (resolvable)."""
     from .run_crypto_live import run_crypto_live
     print(run_crypto_live(settings=settings))
+
+
+def run_ventures(settings=SETTINGS) -> None:
+    """Live ventures model: record real sustained-inflection predictions."""
+    from .run_ventures_live import run_ventures_live
+    print(run_ventures_live(settings=settings))
+
+
+def run_ideas(settings=SETTINGS) -> None:
+    """Live ideas model: record real volatile-catalyst predictions from 8-Ks."""
+    from .run_ideas_live import run_ideas_live
+    print(run_ideas_live(settings=settings))
 
 
 def run_stocks(settings=SETTINGS) -> None:
@@ -3452,6 +3466,8 @@ def main(argv: list[str]) -> int:
         "profiles": run_profiles,
         "stocks": run_stocks,
         "crypto": run_crypto,
+        "ventures": run_ventures,
+        "ideas": run_ideas,
         "priority": run_priority,
         "priority-run": lambda: run_priority(execute=True),
         "events": run_events,
