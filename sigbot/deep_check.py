@@ -74,7 +74,7 @@ def horizon_completion(db_path: str) -> list[tuple[str, str, int, int]]:
     return [(m, h, sc or 0, tot) for m, h, sc, tot in rows]
 
 
-ALL_MODELS = ("stocks", "crypto15m", "news", "daily", "contagion", "opportunity")
+ALL_MODELS = ("stocks", "crypto", "news", "ventures", "opportunity")
 
 
 def full_integrity(db_path: str) -> list[str]:

@@ -25,14 +25,20 @@ Z_FLAG = 1.64          # about one-sided 5%: worth a look, not a conclusion
 # model -> (what history predicted, as an edge over chance in hit rate,
 #           and where that prediction came from)
 EXPECTED: dict[str, tuple[float, str]] = {
-    "crypto15m": (0.0, "no short-term edge in either direction (CoinGecko, GBTC)"),
-    "daily": (0.0, "no edge over 141,123 replayed decisions"),
     "news": (0.0, "priced on the day across 58,000 earnings reports"),
-    # The rebound looked positive in all three periods, but after removing
-    # each stock's own beta it was -0.14% / +0.11% / +0.11% — below costs and
-    # flipping sign. Expecting an edge would teach the loop to credit luck.
-    "contagion": (0.0, "rebound was beta to the market, not an edge"),
     "stocks": (0.02, "capitulation and calm-uptrend momentum beat the index"),
+    # Live models wired to their forward-tested edges:
+    "crypto": (0.27, "coiled-spring: low vol + building volume -> 43% chance "
+                     "of a 10%+ move in 3 days"),
+    "ventures": (0.10, "sustained inflection: margin + revenue accelerating "
+                       "together, +16-24%/yr forward"),
+    "opportunity": (0.06, "volatile-catalyst: a material-agreement 8-K on an "
+                          "already-volatile small-cap, ~16% big-move"),
+    # Retired models — kept only as the historical record of WHY they were
+    # dropped (no live edge). They no longer run; ALL_MODELS excludes them.
+    "crypto15m": (0.0, "RETIRED — no short-term edge (CoinGecko, GBTC)"),
+    "daily": (0.0, "RETIRED — no edge over 141,123 replayed decisions"),
+    "contagion": (0.0, "RETIRED — rebound was beta to the market, not an edge"),
 }
 
 

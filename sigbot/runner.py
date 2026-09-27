@@ -396,7 +396,7 @@ def board_records(settings=SETTINGS) -> dict[str, tuple[int, float]]:
     """symbol -> (checks, wins) pooled across every model."""
     ledger = ShadowLedger(settings.shadow_db)
     out: dict[str, tuple[int, float]] = {}
-    for model in ("news", "daily", "contagion", "opportunity"):
+    for model in ("stocks", "news", "crypto", "ventures", "opportunity"):
         for sym, (n, rate, _lo) in ledger.stats(model).items():
             pn, ph = out.get(sym, (0, 0.0))
             out[sym] = (pn + n, ph + rate * n)
@@ -1833,7 +1833,7 @@ def run_report(settings=SETTINGS) -> None:
     early, and nothing lowers a threshold to make a tier reachable.
     """
     ledger = ShadowLedger(settings.shadow_db)
-    for model in ("daily", "news", "contagion"):
+    for model in ("stocks", "news", "crypto", "ventures", "opportunity"):
         n, hit, lo = ledger.overall(model)
         if n == 0:
             print(f"\n=== {model} ===\nno resolved predictions yet")
@@ -2465,7 +2465,7 @@ def run_priority(settings=SETTINGS, budget_minutes: float = 20.0,
         print(f"All models paused until {until}. Nothing forecast or traded.")
         return
 
-    jobs = ["resolve", "news", "opportunity", "crypto15m"]
+    jobs = ["resolve", "news", "opportunity", "crypto", "ventures", "ideas"]
     queue = plan(jobs, verdicts, budget_seconds=budget_minutes * 60)
     print(describe(queue))
 

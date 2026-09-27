@@ -384,7 +384,7 @@ def test_cycle_drops_and_replaces_one_or_two(tmp_path):
     led = ShadowLedger(st.shadow_db)
     for sym in wl.symbols()[:8]:
         for i in range(150):
-            pid = led.record("daily", sym, "BUY", 0.6, 0.02, 100.0, horizon_hours=-1)
+            pid = led.record("stocks", sym, "BUY", 0.6, 0.02, 100.0, horizon_hours=-1)
             led.resolve(pid, 103.0 if i % 3 == 0 else 97.0,
                         bar_open=100.0, bar_high=103.5, bar_low=97.0)
 

@@ -61,7 +61,7 @@ def test_board_changes_do_not_hide_names_from_the_models(settings):
 def test_outcomes_reach_the_board(settings):
     led = ShadowLedger(settings.shadow_db)
     _record(led, "news", "NVDA", 150, 0.65)
-    _record(led, "daily", "NVDA", 100, 0.60)
+    _record(led, "stocks", "NVDA", 100, 0.60)
 
     rec = board_records(settings)
     assert "NVDA" in rec

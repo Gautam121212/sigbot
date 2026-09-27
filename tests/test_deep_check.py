@@ -55,5 +55,7 @@ def test_full_integrity_covers_every_model(tmp_path):
     led.resolve(pid, 103.0)
     lines = "\n".join(full_integrity(db))
     assert "stocks" in lines
-    assert "contagion" in lines and "NO DATA" in lines
+    # The live models must all be covered; a model with no data shows NO DATA.
+    assert "ventures" in lines and "NO DATA" in lines
+    assert "crypto" in lines
     assert "opportunity" in lines
