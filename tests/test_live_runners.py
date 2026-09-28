@@ -55,7 +55,16 @@ def test_ventures_no_inflection_records_nothing(tmp_path):
     assert n == 0                            # nothing forced
 
 
-def test_ideas_records_real_catalyst_predictions(tmp_path):
+def test_ideas_is_disabled_until_edge_is_fixed(tmp_path):
+    """Ideas failed trade-level validation (median trade -3.31%), so the live
+    runner refuses to record predictions until rebuilt with 8-K classification."""
+    from sigbot.run_ideas_live import run_ideas_live
+    result = run_ideas_live()
+    assert "DISABLED" in result
+    return  # the rest of the old test (expecting records) no longer applies
+
+
+def _test_ideas_records_real_catalyst_predictions_DISABLED(tmp_path):
     from sigbot.run_ideas_live import run_ideas_live
 
     db = tmp_path / "l.db"

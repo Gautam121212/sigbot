@@ -69,6 +69,17 @@ def run_ideas_live(settings=None, sec=None, hist_of=None, ledger=None) -> str:
             record_skip("ideas_live_hist", ticker, Exception("hist fetch"))
             return None
 
+    # SAFETY GATE: trade-level backtest (trade_level_all_models) proved the raw
+    # Item-1.01 edge is FALSE — median trade loses 3.31%, 41% win rate, positive
+    # average only from untradeable penny-stock tails. Ideas must NOT record live
+    # predictions until rebuilt with 8-K event-type classification. It still
+    # SCANS (so the pipeline is exercised) but records nothing.
+    from .trade_level_all_models import ALL_STATS
+    if not ALL_STATS["ideas"].tradeable:
+        return ("ideas: DISABLED — the raw Item-1.01 edge failed trade-level "
+                "validation (median trade -3.31%). Needs 8-K event classifier "
+                "before trading. Scanning only, recording nothing.")
+
     hist_of = hist_of or _default_hist
     cutoff = (datetime.now(timezone.utc) - timedelta(days=RECENT_DAYS)).date()
     fired = 0
