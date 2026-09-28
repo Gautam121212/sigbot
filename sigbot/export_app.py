@@ -252,7 +252,7 @@ def _cycle_info() -> dict:
 
 
 def _horizon_class(model_id: str, hold_days: int | None) -> str:
-    """Classify a row as intra-day, short-term, or long-term.
+    """Classify a row as short-term or long-term (no intra-day).
 
     Stocks use the firing signal's own hold period; the other models use their
     fixed horizon. This is the classifier the page groups rows under.

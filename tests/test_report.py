@@ -913,8 +913,8 @@ def test_predictions_page_lists_every_model(report):
     from sigbot.report import _predictions_rows
     rows = _predictions_rows({"models": [
         {"id": "stocks", "subtitle": "x", "alerts": [{}], "resolved": 10},
-        {"id": "crypto15m", "subtitle": "y", "alerts": [], "resolved": 5}]})
-    assert 'href="#pred-stocks"' in rows and 'href="#pred-crypto15m"' in rows
+        {"id": "crypto", "subtitle": "y", "alerts": [], "resolved": 5}]})
+    assert 'href="#pred-stocks"' in rows and 'href="#pred-crypto"' in rows
 
 
 def test_top_picks_are_grouped_by_model(report):
@@ -930,7 +930,7 @@ def test_top_picks_are_grouped_by_model(report):
                                           + wins("news", "MSFT", 8)}]},
             "models": []}
     html = _picks_rows(data)
-    assert "Stocks &amp; funds" in html and "News" in html
+    assert "Stocks" in html and "News" in html
 
 
 def test_fresh_paper_day_separates_today_from_all_time():
@@ -953,19 +953,19 @@ def test_fresh_paper_day_separates_today_from_all_time():
 
 
 def test_horizon_rows_link_to_separate_pages():
-    """Clicking a horizon (intra-day/short-term/long-term) opens its own page,
-    not an inline expand."""
+    """Clicking a horizon (short-term/long-term) opens its own page,
+    not an inline expand. Two horizons only — intra-day removed."""
     from sigbot.report import _horizon_groups, _horizon_pages
-    model = {"id": "crypto15m", "name": "Crypto", "alerts": [
-        {"symbol": "BTC", "horizon": "intra-day", "conviction": 60, "detail": "x",
+    model = {"id": "crypto", "name": "Crypto", "alerts": [
+        {"symbol": "BTC", "horizon": "short-term", "conviction": 60, "detail": "x",
          "tier": "WATCH", "to_trade": 30},
-        {"symbol": "ETH", "horizon": "short-term", "conviction": 70, "detail": "y",
+        {"symbol": "ETH", "horizon": "long-term", "conviction": 70, "detail": "y",
          "tier": "WATCH", "to_trade": 40}]}
     def row(a): return f'<div>{a["symbol"]}</div>'
     groups = _horizon_groups(model, row)
-    assert 'href="#h-crypto15m-intra-day"' in groups
+    assert 'href="#h-crypto-short-term"' in groups
     pages = _horizon_pages(model, row)
-    assert 'id="h-crypto15m-intra-day"' in pages
+    assert 'id="h-crypto-short-term"' in pages
     assert "BTC" in pages
     # no inline <details> horizon expander any more
     assert 'details class="horizon"' not in groups

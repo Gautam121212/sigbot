@@ -1109,7 +1109,7 @@ def build_report(data: dict) -> str:
     <span class="stamp">every model that forecasts</span></div>
   <p class="lead">Each model that makes predictions, and how many it has
   scored. Tap one to see its predictions, grouped by how long they are held
-  (intra-day, short-term, long-term).</p>
+  (short-term, long-term).</p>
   {_predictions_rows(data)}
 </div></div>
 {_prediction_pages(data)}
@@ -1546,9 +1546,9 @@ def _benchmark_rows(data: dict) -> str:
 def _predictions_rows(data: dict) -> str:
     """One row per forecasting model, with a pass/fail checker, linking through
     to that model's page. Blanks between reset and the next prediction run."""
-    MODEL_TITLES = {"stocks": "Stocks & funds", "crypto15m": "Crypto",
-                    "news": "News", "contagion": "Follow-on moves",
-                    "daily": "Daily outlook", "opportunity": "Opportunities"}
+    MODEL_TITLES = {"stocks": "Stocks & Funds", "crypto": "Crypto",
+                    "news": "News & Events", "ventures": "Ventures",
+                    "opportunity": "Ideas", "ideas": "Ideas"}
     # Item 1: the "Fixed predictions" banner is removed — no longer useful.
     out = []
     for m in data.get("models", []):
@@ -1578,15 +1578,14 @@ def _predictions_rows(data: dict) -> str:
 
 
 def _prediction_pages(data: dict) -> str:
-    """A dedicated page per model (item 3): three horizon rows (intra-day /
-    short-term / long-term) linking to sub-pages of predictions sorted by
-    confidence. Separate from the model page."""
+    """A dedicated page per model (item 3): two horizon rows (short-term /
+    long-term) linking to sub-pages of predictions sorted by confidence.
+    Separate from the model page."""
     from .daily_cycle import horizon_lead_line
-    MODEL_TITLES = {"stocks": "Stocks & funds", "crypto15m": "Crypto",
-                    "news": "News", "contagion": "Follow-on moves",
-                    "daily": "Daily outlook", "opportunity": "Opportunities"}
-    HZ = (("intra-day", "Held less than a day"),
-          ("short-term", "Held days to a few weeks"),
+    MODEL_TITLES = {"stocks": "Stocks & Funds", "crypto": "Crypto",
+                    "news": "News & Events", "ventures": "Ventures",
+                    "opportunity": "Ideas", "ideas": "Ideas"}
+    HZ = (("short-term", "Held days to a few weeks"),
           ("long-term", "Held weeks to months"))
     pages = []
     for m in data.get("models", []):
@@ -1662,9 +1661,9 @@ def _picks_rows(data: dict) -> str:
     # Grouped by model (issue 7): each model's picks under its own heading,
     # rather than one flat list, so picks are read per model.
     from collections import defaultdict
-    MODEL_TITLES = {"stocks": "Stocks & funds", "crypto15m": "Crypto",
-                    "news": "News", "contagion": "Follow-on moves",
-                    "daily": "Daily outlook", "opportunity": "Opportunities"}
+    MODEL_TITLES = {"stocks": "Stocks & Funds", "crypto": "Crypto",
+                    "news": "News & Events", "ventures": "Ventures",
+                    "opportunity": "Ideas", "ideas": "Ideas"}
     by_model = defaultdict(list)
     for row in picks:
         by_model[row.get("model", "other")].append(row)
@@ -1689,9 +1688,9 @@ def _pick_pages(data: dict) -> str:
     if not picks:
         return ""
     from collections import defaultdict
-    MODEL_TITLES = {"stocks": "Stocks & funds", "crypto15m": "Crypto",
-                    "news": "News", "contagion": "Follow-on moves",
-                    "daily": "Daily outlook", "opportunity": "Opportunities"}
+    MODEL_TITLES = {"stocks": "Stocks & Funds", "crypto": "Crypto",
+                    "news": "News & Events", "ventures": "Ventures",
+                    "opportunity": "Ideas", "ideas": "Ideas"}
     pages_avail = {f"{m['id']}-{a['symbol']}"
                    for m in data.get("models", []) for a in (m.get("alerts") or [])}
     by_model = defaultdict(list)
@@ -2153,14 +2152,13 @@ def _sector_detail_pages(model: dict) -> str:
     return "".join(pages)
 
 
-HORIZONS = (("intra-day", "Held less than a day"),
-            ("short-term", "Held days to a few weeks"),
+HORIZONS = (("short-term", "Held days to a few weeks"),
             ("long-term", "Held weeks to months"))
 
 
 def _horizon_groups(model: dict, row_fn) -> str:
-    """Three horizon rows that LINK to separate pages (intra-day / short-term /
-    long-term). Clicking a row opens that horizon's own page, like the sector
+    """Two horizon rows that LINK to separate pages (short-term / long-term).
+    Clicking a row opens that horizon's own page, like the sector
     cards. row_fn is kept for the page bodies (see _horizon_pages).
 
     Only horizons with at least one item are shown as active links; an empty

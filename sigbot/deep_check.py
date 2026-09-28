@@ -67,9 +67,8 @@ def horizon_completion(db_path: str) -> list[tuple[str, str, int, int]]:
     with closing(sqlite3.connect(db_path)) as con:
         rows = con.execute(
             "SELECT model, "
-            "CASE WHEN (julianday(resolve_after)-julianday(created_at))*24 <= 3 "
-            "THEN 'intra-day' WHEN (julianday(resolve_after)-julianday(created_at))*24 "
-            "<= 360 THEN 'short-term' ELSE 'long-term' END AS h, "
+            "CASE WHEN (julianday(resolve_after)-julianday(created_at))*24 "
+            "<= 720 THEN 'short-term' ELSE 'long-term' END AS h, "
             "COUNT(hit), COUNT(*) FROM predictions GROUP BY 1,2 ORDER BY 1,2").fetchall()
     return [(m, h, sc or 0, tot) for m, h, sc, tot in rows]
 
