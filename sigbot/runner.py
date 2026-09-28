@@ -3515,6 +3515,7 @@ def main(argv: list[str]) -> int:
         "per-model-run": lambda: print(__import__("sigbot.per_model_run", fromlist=["describe"]).describe()),
         "pro-alloc": lambda: print(__import__("sigbot.pro_allocation", fromlist=["describe"]).describe()),
         "final-run": lambda: print(__import__("sigbot.final_run", fromlist=["describe"]).describe()),
+        "trade-backtest": lambda: print(__import__("sigbot.trade_level_backtest", fromlist=["describe"]).describe()),
         "predictions": lambda: print(__import__("sigbot.prediction_transparency", fromlist=["summary"]).summary("ledger.db")),
         "timing": lambda: print(__import__("sigbot.daily_cycle", fromlist=["model_timing_summary"]).model_timing_summary()),
         "deep-edges-2": lambda: print("Deep edges (ventures/ideas, run 2):\n"
