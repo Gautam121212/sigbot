@@ -15,10 +15,14 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import datetime, timezone
 
-# Index benchmark, as a monthly rate (+1.00%/mo ~ the S&P long-run average).
-INDEX_MONTHLY = 0.0100
-INDEX_DAILY = INDEX_MONTHLY / 21          # ~21 trading days a month
-INDEX_YEARLY = (1 + INDEX_MONTHLY) ** 12 - 1
+# Benchmark = the professional "exceptional" target (~20%/yr), the concentrated
+# per-model goal, NOT the S&P (~12%). This is what a model must clear to be worth
+# running per the professional-concentration analysis. Updated from the historical
+# per-model run: the strong models target 20%, so the book benchmark is 20%/yr.
+TARGET_YEARLY = 0.20                       # the exceptional professional bar
+INDEX_MONTHLY = (1 + TARGET_YEARLY) ** (1 / 12) - 1   # ~1.53%/mo
+INDEX_DAILY = (1 + TARGET_YEARLY) ** (1 / 252) - 1    # ~0.072%/day
+INDEX_YEARLY = TARGET_YEARLY
 
 
 @dataclass(frozen=True)
