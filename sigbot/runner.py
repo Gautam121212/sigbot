@@ -1764,8 +1764,6 @@ def run_publish(settings=SETTINGS, market=None, days: int = 180) -> None:
     # frozen copy: it shows whatever was true when it was sent, and nothing on
     # screen says otherwise. Keeping one means whatever you tap is current.
     try:
-        from .setup_delivery import send_report
-
         fingerprint = _report_fingerprint(str(out))
         marker_file = Path(".last_report_hash")
         previous = marker_file.read_text().strip() if marker_file.exists() else ""
@@ -1807,16 +1805,18 @@ def run_publish(settings=SETTINGS, market=None, days: int = 180) -> None:
             public = out.parent / "public"
             public.mkdir(exist_ok=True)
             (public / "index.html").write_bytes(out.read_bytes())
-            # One deployable file. The telegram-named copy is deleted after
-            # sending (or immediately when telegram is unconfigured) so app/
-            # holds exactly one page and there is nothing to pick wrongly.
-            send_report(str(out), caption=caption)
-            # Report size from the surviving copy — the working file is
-            # deleted next, and stat() after unlink was a crash shipped by
-            # cleaning up in the wrong order.
+            # Send a text message with the site link, not the raw HTML file.
+            # The HTML file is 2MB and Telegram renders it as an interactive
+            # document with CSS transitions (the "moving" effect the user saw).
+            # The site is already published to dripxwear.com — send the link.
+            from .setup_delivery import send_heartbeat as _send_link
+            link_msg = (f"{caption}\n\n"
+                        f"https://dripxwear.com\n\n"
+                        f"Site updated — open the link for the full board.")
+            _send_link(link_msg)
             out.unlink(missing_ok=True)
             marker_file.write_text(fingerprint)
-            print("report sent, previous one removed")
+            print("report link sent (site published to dripxwear.com)")
     except Exception as exc:  # noqa: BLE001
         record_skip("report_delivery", "telegram", exc)
         print(f"report not sent: {type(exc).__name__}: {exc}")
