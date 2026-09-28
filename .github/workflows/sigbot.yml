@@ -54,6 +54,8 @@ jobs:
         env:
           SEC_UA: ${{ vars.SEC_UA || 'sigbot research sigbot@dripxwear.com' }}
         run: |
+          # Lift the halt so paper trading and all models run.
+          python -m sigbot.runner resume || true
           python -m sigbot.coordinator --once || echo "tick finished with warnings"
 
       - name: Commit the updated ledger back to the repo

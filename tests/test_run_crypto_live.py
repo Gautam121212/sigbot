@@ -32,7 +32,8 @@ def test_crypto_records_real_resolvable_predictions(tmp_path):
     class S:
         shadow_db = str(db)
 
-    run_crypto_live(settings=S(), provider=_coiled_provider(), ledger=ledger)
+    run_crypto_live(settings=S(), provider=_coiled_provider(), ledger=ledger,
+                   inter_request_sleep=0)
 
     with closing(sqlite3.connect(db)) as con:
         rows = con.execute(
@@ -60,7 +61,8 @@ def test_a_flat_market_records_nothing(tmp_path):
     class S:
         shadow_db = str(db)
 
-    run_crypto_live(settings=S(), provider=Flat(), ledger=ledger)
+    run_crypto_live(settings=S(), provider=Flat(), ledger=ledger,
+                   inter_request_sleep=0)
     with closing(sqlite3.connect(db)) as con:
         n = con.execute(
             "SELECT COUNT(*) FROM predictions WHERE model='crypto'").fetchone()[0]

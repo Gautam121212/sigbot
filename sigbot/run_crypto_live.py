@@ -20,10 +20,16 @@ from .crypto_movers import crypto_mover
 
 # A liquid set to scan — majors plus active mid-caps (all on CoinGecko).
 CRYPTO_UNIVERSE = [
-    "bitcoin", "ethereum", "solana", "chainlink", "avalanche-2", "polkadot",
-    "uniswap", "aave", "near", "aptos", "arbitrum", "optimism", "injective-protocol",
-    "render-token", "the-graph", "sui", "sei-network", "algorand", "litecoin",
-    "dogecoin",
+    # Large-cap (always liquid)
+    "bitcoin", "ethereum", "solana", "dogecoin", "shiba-inu",
+    # Mid-cap DeFi + L2s
+    "chainlink", "uniswap", "aave", "avalanche-2", "polkadot",
+    "near", "aptos", "arbitrum", "optimism", "the-graph",
+    "injective-protocol", "render-token", "sui", "sei-network",
+    # Active movers with regular volatility cycles
+    "algorand", "litecoin", "immutable-x", "celestia",
+    "pepe", "bonk", "floki", "fantom", "tezos",
+    "matic-network", "fetch-ai", "ocean-protocol", "akash-network",
 ]
 HORIZON_HOURS = 72        # the coiled-spring releases within ~3 days
 SMALL_CAP_UNDER = 5e8     # below this = very-risky tier (bigger release)
@@ -40,9 +46,14 @@ def _ranges(closes: list[float]) -> tuple[float, float]:
     return avg_move(10), avg_move(30)
 
 
-def run_crypto_live(settings=None, provider=None, ledger=None) -> str:
+def run_crypto_live(settings=None, provider=None, ledger=None,
+                    inter_request_sleep: float = 2.5) -> str:
     """Scan the crypto universe, record a real prediction for each coiled-and-
-    loaded coin. Returns a one-line summary."""
+    loaded coin. Returns a one-line summary.
+
+    inter_request_sleep: seconds between CoinGecko requests (free tier ~30/min).
+    Tests pass 0 to skip the sleep.
+    """
     from .config import SETTINGS
     from .providers.coingecko import CoinGeckoProvider
     from .shadow import ShadowLedger
@@ -54,6 +65,8 @@ def run_crypto_live(settings=None, provider=None, ledger=None) -> str:
     fired = 0
     scanned = 0
     for coin in CRYPTO_UNIVERSE:
+        if inter_request_sleep:
+            import time; time.sleep(inter_request_sleep)  # noqa: E702
         try:
             df = provider.history(coin, days=40)
         except Exception as exc:  # noqa: BLE001

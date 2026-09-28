@@ -18,14 +18,22 @@ from .deep_edges_2 import volatile_catalyst
 
 HORIZON_HOURS = 10 * 24        # 10-day catalyst window
 MATERIAL_AGREEMENT = "1.01"    # the 8-K item that drives the edge
-RECENT_DAYS = 3                # only act on a filing within the last few days
+RECENT_DAYS = 7                # act on a filing within the last 7 days (3 was too tight)
 
 # (ticker, CIK) for a small/mid-cap watchlist where catalysts move stocks.
 IDEAS_WATCHLIST = [
-    ("IONQ", "1824920"), ("RGTI", "1838831"), ("SOUN", "1844505"),
-    ("BBAI", "1836981"), ("RKLB", "1819994"), ("ASTS", "1780312"),
-    ("ACHR", "1824644"), ("JOBY", "1819848"), ("LUNR", "1844452"),
-    ("RXRX", "1601830"), ("DNA", "1830214"), ("PATH", "1734722"),
+    # Quantum / AI / Space — high-volatility small-caps, frequent 8-K deals
+    ("IONQ", "1824920"), ("RGTI", "1838831"), ("QBTS", "1860742"),
+    ("SOUN", "1844505"), ("BBAI", "1836981"), ("RKLB", "1819994"),
+    ("ASTS", "1780312"), ("ACHR", "1824644"), ("JOBY", "1819848"),
+    ("LUNR", "1844452"), ("RXRX", "1601830"), ("DNA", "1830214"),
+    # BioTech / MedTech — frequent material agreements (licensing, partnerships)
+    ("ARQT", "1673139"), ("BEAM", "1689548"), ("CRSP", "1674930"),
+    ("EDIT", "1480572"), ("FATE", "1340652"), ("NTLA", "1617898"),
+    ("PCVX", "1756497"), ("RCKT", "1516108"), ("RARE", "1574085"),
+    # EV / Clean energy — deal-heavy, volatile
+    ("CHPT", "1819989"), ("FSR", "1731480"), ("GOEV", "1750153"),
+    ("HYLN", "1759774"), ("NKLA", "1628369"), ("RIDE", "1750153"),
 ]
 
 

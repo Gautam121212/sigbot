@@ -18,10 +18,19 @@ HORIZON_HOURS = 90 * 24        # 90-day hold — the venture inflection's horizo
 # (ticker, CIK) for a growth-company watchlist. CIKs are SEC's company ids.
 # A starter set of liquid growth names; extend as the board rotates.
 VENTURE_WATCHLIST = [
+    # Cloud/SaaS — the highest sustained-inflection hit rate historically
     ("NVDA", "1045810"), ("CRM", "1108524"), ("NOW", "1373715"),
     ("SNOW", "1640147"), ("DDOG", "1561550"), ("NET", "1477333"),
     ("CRWD", "1535527"), ("ZS", "1713683"), ("PLTR", "1321655"),
     ("SHOP", "1594805"), ("MDB", "1441816"), ("TEAM", "1650372"),
+    # High-growth tech with recurring revenue
+    ("AXON", "1069183"), ("BILL", "1786522"), ("GTLB", "1653482"),
+    ("HUBS", "1404655"), ("MNDY", "1805809"), ("RBRK", "1817830"),
+    ("S", "1666134"), ("SEMR", "1624985"), ("TTD", "1671933"),
+    # Profitable growers (positive ROIC + inflection)
+    ("ANET", "1313925"), ("CDNS", "813672"), ("ENPH", "1274173"),
+    ("FTNT", "1262039"), ("PAYC", "1590714"), ("VEEV", "1393052"),
+    ("WDAY", "1327811"), ("ZM", "1585521"),
 ]
 
 
