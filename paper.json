@@ -1,1 +1,20 @@
-{"days": [], "starting_cash": 100000, "equity": 100000, "total_return": 0.0, "total_costs": 0.0, "by_model": {}, "verdict": "Halted \u2014 rebuilding from scratch."}
+{
+  "generated_at": "2026-09-28T15:08:24.916022+00:00",
+  "starting_cash": 100000.0,
+  "equity": 100000.0,
+  "total_pnl": 0.0,
+  "total_return": 0.0,
+  "total_costs": 0,
+  "trades": 0,
+  "wins": 0,
+  "win_rate": null,
+  "max_drawdown": 0.0,
+  "skipped_no_price": 0,
+  "by_model": {},
+  "verdict": "No resolved prediction carried both an entry and an exit price, so there is nothing to replay yet.",
+  "gated_models": [],
+  "benchmark_return": 0.0,
+  "benchmark_trades": 0,
+  "recent_trades": [],
+  "days": []
+}
