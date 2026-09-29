@@ -3526,6 +3526,7 @@ def main(argv: list[str]) -> int:
         "factor-filter": lambda: print(__import__("sigbot.factor_filter", fromlist=["describe"]).describe()),
         "regime": lambda: print(__import__("sigbot.regime_conditional", fromlist=["describe"]).describe()),
         "firewall": lambda: print(__import__("sigbot.risk_firewall", fromlist=["describe"]).describe()),
+        "adapter": lambda: print(__import__("sigbot.strategy_adapter", fromlist=["describe"]).describe()),
         "predictions": lambda: print(__import__("sigbot.prediction_transparency", fromlist=["summary"]).summary("ledger.db")),
         "timing": lambda: print(__import__("sigbot.daily_cycle", fromlist=["model_timing_summary"]).model_timing_summary()),
         "deep-edges-2": lambda: print("Deep edges (ventures/ideas, run 2):\n"
