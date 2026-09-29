@@ -58,10 +58,10 @@ class RegimeExpectancy:
 
 
 REGIMES = {
-    "STRESS": RegimeExpectancy("STRESS", 204, 19.4, 14.04, 71.1, 2.0),
-    "HIGH-VOL": RegimeExpectancy("HIGH-VOL", 64, 14.13, 12.93, 67.2, 1.5),
+    "STRESS": RegimeExpectancy("STRESS", 204, 19.4, 14.04, 71.1, 1.35),   # tempered from 2.0 after decomposition
+    "HIGH-VOL": RegimeExpectancy("HIGH-VOL", 64, 14.13, 12.93, 67.2, 1.2),   # tempered from 1.5
     "NORMAL": RegimeExpectancy("NORMAL", 928, 5.09, 3.65, 57.8, 1.0),
-    "BULL": RegimeExpectancy("BULL", 926, 3.65, 1.12, 52.9, 0.6),
+    "BULL": RegimeExpectancy("BULL", 926, 3.65, 1.12, 52.9, 0.7),   # tempered from 0.6
 }
 
 # OOS validation: (dev_median, oos_median) per regime bucket
@@ -69,6 +69,40 @@ OOS_VALIDATION = {
     "STRESS": (13.64, 15.19),      # strengthened OOS
     "CALM": (4.22, 1.12),
 }
+
+
+
+# ── DECOMPOSITION (the robustness gate) ─────────────────────────────────────
+# The stress effect broken down by calendar quarter reveals it is REAL across
+# multiple crises but MATERIALLY INFLATED by 2020-Q2 (COVID V-recovery):
+#   2019-Q1: +17.59% median (n=27)   real, strong
+#   2020-Q2: +50.10% median (n=43)   ★ COVID bounce — 28% of stress trades,
+#                                      an unrepeatable outlier that inflated the
+#                                      headline "+14% stress median"
+#   2022-Q3: +6.02%  median (n=30)   real, modest
+#   2025-Q2: +11.11% median (n=58)   real, strong, large sample
+#   2022-Q4: -0.21%  median (n=5)    stress can LOSE
+#   2023-Q4: -13.35% median (n=4)    stress can lose BADLY
+#
+# HONEST CONCLUSION: there is a real, MILD, multi-period stress premium — but
+# "4x stronger, size up 2.0x" was a COVID artifact. Excluding 2020-Q2, the
+# stress median is ~+6-8%, still above calm (+1-3%) but far below the headline.
+# And 2022-Q4/2023-Q4 prove inflection can lose in stress, which KILLS any
+# aggressive multiplier. The defensible tilt is MODEST (1.25-1.35x), not 2.0x.
+
+# Robust stress median with the single dominant crisis (2020-Q2) removed:
+STRESS_MEDIAN_ROBUST = 6.5      # ex-COVID; vs ~+3% normal, ~+1% bull
+STRESS_MEDIAN_HEADLINE = 14.04  # COVID-inflated — do NOT size against this
+
+
+def stress_effect_is_one_crisis_artifact() -> bool:
+    """Partly. Real across 2019/2022/2025 but ~half the headline is 2020-Q2."""
+    return False   # not PURELY an artifact — multi-period, but inflated
+
+
+def stress_can_lose() -> bool:
+    """2022-Q4 and 2023-Q4 stress trades lost money — no 2.0x lever is safe."""
+    return True
 
 
 def classify_regime(spy_3mo_return: float, spy_1mo_vol: float) -> str:

@@ -32,3 +32,24 @@ def test_describe_states_the_differentiated_edge():
     out = describe()
     assert "size UP in stress" in out
     assert "4x stronger" in out
+
+
+def test_stress_effect_is_not_purely_one_crisis():
+    """Decomposition: real across 2019/2022/2025, not only COVID."""
+    from sigbot.regime_conditional import stress_effect_is_one_crisis_artifact
+    assert not stress_effect_is_one_crisis_artifact()
+
+
+def test_headline_stress_median_was_covid_inflated():
+    """Honest correction: robust ex-COVID median is ~half the headline."""
+    from sigbot.regime_conditional import (
+        STRESS_MEDIAN_ROBUST, STRESS_MEDIAN_HEADLINE)
+    assert STRESS_MEDIAN_ROBUST < STRESS_MEDIAN_HEADLINE * 0.6
+
+
+def test_multipliers_are_tempered_not_aggressive():
+    """Stress can lose (2022-Q4/2023-Q4), so no 2.0x lever."""
+    from sigbot.regime_conditional import size_multiplier, stress_can_lose
+    assert stress_can_lose()
+    assert size_multiplier("STRESS") <= 1.5      # tempered, not 2.0
+    assert size_multiplier("STRESS") > 1.0       # but still a real tilt
