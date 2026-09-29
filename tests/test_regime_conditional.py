@@ -53,3 +53,13 @@ def test_multipliers_are_tempered_not_aggressive():
     assert stress_can_lose()
     assert size_multiplier("STRESS") <= 1.5      # tempered, not 2.0
     assert size_multiplier("STRESS") > 1.0       # but still a real tilt
+
+
+def test_regime_sizing_rejected_as_alpha_on_locked_test():
+    """The decisive gate: OOS uplift is +0.18% (~zero), not production-worthy."""
+    from sigbot.regime_conditional import (
+        regime_sizing_is_production_ready, LOCKED_TEST_OOS_UPLIFT,
+        LOCKED_TEST_FIT_UPLIFT)
+    assert not regime_sizing_is_production_ready()
+    assert LOCKED_TEST_OOS_UPLIFT < 0.5           # evaporates OOS
+    assert LOCKED_TEST_FIT_UPLIFT > LOCKED_TEST_OOS_UPLIFT * 3   # fit >> oos

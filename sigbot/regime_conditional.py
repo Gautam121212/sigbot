@@ -105,6 +105,27 @@ def stress_can_lose() -> bool:
     return True
 
 
+
+# ── LOCKED-TEST REPLAY (the decisive gate) ──────────────────────────────────
+# The 1.35x schedule was chosen after seeing 2020/2022/2023 stress quarters, so
+# those cannot judge it. Clean split: FIT 2013-21 (rule chosen), LOCKED-TEST
+# 2022-26 (multipliers never saw it). Replay V2.0 equal-weight vs V2.1 weighted:
+#   FIT 2013-21:        V2.0 +6.73% -> V2.1 +8.14%  (+1.40% — but COVID-driven)
+#   LOCKED-TEST 2022-26: V2.0 +5.15% -> V2.1 +5.33%  (+0.18% — essentially zero)
+# The advantage EVAPORATES out-of-sample. And avg multiplier is <1.0 (0.90/0.92)
+# because bull(0.7x) is more common than stress(1.35x) — so V2.1 mostly REDUCES
+# exposure, meaning the +0.18% gain comes with ~8% lower capital utilization,
+# making V2.1 net WORSE on capital efficiency.
+#
+# VERDICT: REJECT regime sizing as an ALPHA rule. The conditional relationship
+# (inflection stronger in stress) is a real DIAGNOSTIC but does NOT translate
+# into a tradeable sizing edge OOS. The +14% stress median was COVID; the
+# generalizable effect is ~0. Keep V2.0 at constant size. The regime info is
+# worth DISPLAYING as context, not TRADING on.
+LOCKED_TEST_FIT_UPLIFT = 1.40     # per-trade %, 2013-21 (COVID-inflated)
+LOCKED_TEST_OOS_UPLIFT = 0.18     # per-trade %, 2022-26 untouched — ~zero
+
+
 def classify_regime(spy_3mo_return: float, spy_1mo_vol: float) -> str:
     """Market state from SPY trailing 3-month return and 1-month volatility.
     Point-in-time safe — uses only data available at the entry date."""
@@ -128,6 +149,11 @@ def stress_effect_survives_oos() -> bool:
     dev_stress, oos_stress = OOS_VALIDATION["STRESS"]
     dev_calm, oos_calm = OOS_VALIDATION["CALM"]
     return dev_stress > dev_calm and oos_stress > oos_calm
+
+
+def regime_sizing_is_production_ready() -> bool:
+    """REJECTED as alpha: OOS uplift +0.18% with lower capital utilization."""
+    return LOCKED_TEST_OOS_UPLIFT > 1.0   # False
 
 
 def describe() -> str:
