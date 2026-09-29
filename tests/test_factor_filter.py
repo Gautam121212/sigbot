@@ -25,3 +25,24 @@ def test_describe_states_filter_not_engine():
     out = describe()
     assert "build the FILTER, not the discovery engine" in out
     assert "1-for-5" in out
+
+
+def test_momentum_does_not_survive_oos():
+    """The correction: momentum's in-sample edge collapsed out-of-sample."""
+    from sigbot.factor_filter import OOS
+    assert not OOS.momentum_survives_oos()
+    assert OOS.mom_oos_median < OOS.mom_dev_median - 3.0   # large decay
+
+
+def test_quality_partially_survives_oos():
+    """Quality (ROIC) held a weak but real OOS edge over rejected trades."""
+    from sigbot.factor_filter import OOS
+    assert OOS.quality_survives_oos()
+
+
+def test_no_filter_is_production_ready_yet():
+    """Honest state: inflection stands alone; quality needs one more pass."""
+    from sigbot.factor_filter import production_ready_filter
+    verdict = production_ready_filter()
+    assert "quality-only" in verdict or "none" in verdict
+    assert "momentum+quality" not in verdict

@@ -27,6 +27,27 @@ good inflection setups from mediocre ones?). 2016-2022.
    the universe standalone.
 
 ═══════════════════════════════════════════════════════════════════════════
+TEST 3 — OOS VALIDATION (the correction). The +3.34% uplift in TEST 2 was
+measured on DEVELOPMENT data (pre-2023). Re-run with a locked holdout
+(DEV pre-2023, OOS 2023-2026 untouched), momentum and quality separated:
+
+  DEV (in-sample):   infl+mom +4.68% med / infl+qual +4.55% / low-both +3.82%
+  OOS (untouched):   infl+mom +0.17% med / infl+qual +1.44% / low-both -0.50%
+
+  ★ THE FILTER LARGELY OVERFIT. ★ Momentum's in-sample +4.68% median collapsed
+  to +0.17% OOS — classic factor decay, gone in 2023-2026. Quality (ROIC) held
+  up partially: +1.44% OOS median, 54.1% win vs 48.9% for rejected trades — a
+  weak but real conditional signal. The combined filter's OOS median edge is
+  ~1-2%, not the +3.34% seen in-sample, and it cuts trade count ~40%, so it
+  will likely LOSE portfolio CAGR to idle capital.
+
+CORRECTED VERDICT: DROP the momentum filter (does not survive OOS). Quality
+(ROIC) is a weak OOS-surviving candidate worth ONE more validation pass, but
+too thin to justify the ~40% trade-count cut on its own. The locked V2.0
+inflection sleeve remains the edge; no filter has earned production yet.
+The "cashable now" claim from the prior turn was an in-sample artifact —
+corrected here.
+
 VERDICT: build the FILTER, not the discovery engine. The momentum+quality
 composite is useless as a universe-wide ranker but valuable as a quality gate on
 the validated inflection signal. This raises the inflection sleeve's median trade
@@ -54,7 +75,7 @@ class FactorFilterResult:
     standalone_mid_decile_median: float = 2.24
     inflection_benchmark_median: float = 3.74
     # filter test (works)
-    infl_high_factor_median: float = 4.88
+    infl_high_factor_median: float = 4.88  # DEV/in-sample; OOS ~1.9%
     infl_high_factor_win: float = 61.9
     infl_low_factor_median: float = 1.54
     infl_low_factor_win: float = 54.5
@@ -82,6 +103,34 @@ def factor_filter_score(mom6_z: float, roic_z: float) -> float:
 
 def passes_quality_gate(mom6_z: float, roic_z: float) -> bool:
     return factor_filter_score(mom6_z, roic_z) > 0
+
+
+@dataclass(frozen=True)
+class OOSValidation:
+    """The locked-holdout test that corrects the in-sample filter result."""
+    mom_dev_median: float = 4.68
+    mom_oos_median: float = 0.17          # momentum decayed to ~zero OOS
+    qual_dev_median: float = 4.55
+    qual_oos_median: float = 1.44         # quality partially survived
+    lowboth_oos_median: float = -0.50
+
+    def momentum_survives_oos(self) -> bool:
+        return self.mom_oos_median > 1.0
+
+    def quality_survives_oos(self) -> bool:
+        return self.qual_oos_median > self.lowboth_oos_median + 1.0
+
+
+OOS = OOSValidation()
+
+
+def production_ready_filter() -> str:
+    """Which filter, if any, has earned production. Momentum: no. Quality: not yet."""
+    if OOS.momentum_survives_oos():
+        return "momentum+quality"
+    if OOS.quality_survives_oos():
+        return "quality-only (weak, needs one more validation pass)"
+    return "none — inflection V2.0 stands alone"
 
 
 def describe() -> str:
