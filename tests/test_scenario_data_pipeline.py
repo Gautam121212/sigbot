@@ -61,3 +61,53 @@ def test_fails_correction_is_no_trade():
                             tail_dependent=False)   # t below bar
     assert not low_t.is_specialist()
     assert "correction" in low_t.verdict()
+
+
+# ── multi-feature scenario map (the regime expansion) ───────────────────────
+def test_multi_feature_map_exists():
+    from sigbot.scenario_data_pipeline import MULTI_FEATURE_MAP
+    assert len(MULTI_FEATURE_MAP) == 4
+
+
+def test_tiny_samples_reported_as_insufficient():
+    """The high-accel cells are too small to judge — reported, not cherry-picked."""
+    from sigbot.scenario_data_pipeline import multi_feature_insufficient
+    insuf = multi_feature_insufficient()
+    assert "high_accel_high_reaction" in insuf
+    assert "high_accel_low_reaction" in insuf
+
+
+def test_high_accel_hypothesis_failed():
+    """The pre-registered hypothesis failed — honest negative result retained."""
+    from sigbot.scenario_data_pipeline import MULTI_FEATURE_MAP
+    high = [c for c in MULTI_FEATURE_MAP if c.scenario.startswith("high_accel")]
+    # every high-accel cell is either insufficient or non-positive
+    for c in high:
+        assert not c.sufficient_sample() or (c.oos_median is not None
+                                             and c.oos_median <= 0)
+
+
+def test_large_cells_are_suggestive_not_validated():
+    """The price-reaction split is suggestive, explicitly NOT a validated sub-specialist."""
+    from sigbot.scenario_data_pipeline import MULTI_FEATURE_MAP
+    large = [c for c in MULTI_FEATURE_MAP if c.total_n >= 100]
+    assert len(large) == 2
+    for c in large:
+        assert "not a validated sub-specialist" in c.verdict()
+
+
+def test_low_reaction_beats_high_reaction_directionally():
+    """The economically-sensible finding: buy before the price runs."""
+    from sigbot.scenario_data_pipeline import MULTI_FEATURE_MAP
+    m = {c.scenario: c for c in MULTI_FEATURE_MAP}
+    low = m["mod_accel_low_reaction"]
+    high = m["mod_accel_high_reaction"]
+    assert low.dev_median > high.dev_median
+    assert low.oos_median > high.oos_median
+
+
+def test_findings_document_the_failed_hypothesis():
+    from sigbot.scenario_data_pipeline import MULTI_FEATURE_FINDINGS
+    joined = " ".join(MULTI_FEATURE_FINDINGS)
+    assert "FAILED" in joined
+    assert "SUGGESTIVE" in joined or "suggestive" in joined

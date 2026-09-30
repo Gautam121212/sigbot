@@ -99,6 +99,57 @@ def edge_ranking(cells=FIRST_SCENARIO_MAP) -> list[tuple[str, float]]:
                   key=lambda x: x[1], reverse=True)
 
 
+
+# ── multi-feature scenario map (magnitude x price-reaction) ─────────────────
+# The expansion beyond regime. Scenarios frozen before outcomes. The honest
+# result: the pre-registered "high acceleration" hypothesis FAILED (those cells
+# are tiny and negative), and the price-reaction split is SUGGESTIVE but not a
+# validated sub-specialist (the edge of low-reaction over high-reaction is real
+# in direction but too small to clear correction).
+@dataclass(frozen=True)
+class MultiFeatureCell:
+    scenario: str
+    total_n: int
+    dev_median: float | None
+    oos_median: float | None
+    oos_mean: float
+    oos_std: float
+    oos_n: int
+    MIN_SAMPLE = 30
+
+    def sufficient_sample(self) -> bool:
+        return self.total_n >= self.MIN_SAMPLE
+
+    def verdict(self) -> str:
+        if not self.sufficient_sample():
+            return f"INSUFFICIENT SAMPLE (n={self.total_n}) -> cannot judge"
+        if self.oos_median is not None and self.oos_median <= 0:
+            return "NO SPECIALIST — non-positive OOS"
+        return "suggestive edge over zero (not a validated sub-specialist)"
+
+
+MULTI_FEATURE_MAP = (
+    MultiFeatureCell("high_accel_high_reaction", 11, -17.46, -16.07, -20.95, 25.1, 10),
+    MultiFeatureCell("high_accel_low_reaction", 5, None, -2.2, -9.4, 26.39, 5),
+    MultiFeatureCell("mod_accel_high_reaction", 1101, 4.36, 1.77, 5.76, 29.31, 591),
+    MultiFeatureCell("mod_accel_low_reaction", 990, 5.78, 2.05, 4.97, 41.1, 579),
+)
+
+MULTI_FEATURE_FINDINGS = (
+    "High-acceleration cells (rev accel >20pts) are TINY (n=1,5,10) and NEGATIVE "
+    "-- the pre-registered 'high accel' hypothesis FAILED.",
+    "Among large moderate-accel cells: LOW price-reaction beats HIGH in dev "
+    "(+5.78 vs +4.36) and oos (+2.05 vs +1.77) -- buying inflection BEFORE the "
+    "price runs beats chasing it. But the OOS gap (+0.28% median) is too small "
+    "to clear correction: SUGGESTIVE, not a validated sub-specialist.",
+)
+
+
+def multi_feature_insufficient() -> list[str]:
+    return [c.scenario for c in MULTI_FEATURE_MAP if not c.sufficient_sample()]
+
+
+
 def describe() -> str:
     lines = ["SIGBOT SCENARIO MAP — where inflection's edge actually lives",
              "  (real Shibui data, 45-day PIT delay -> PROVISIONAL, not validated)",
