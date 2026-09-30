@@ -140,7 +140,35 @@ else
    script can keep up. Run npm run github again in a minute."
     fi
     echo "     rejected (the tick pushed while we worked) — rebasing, retry $attempt"
-    git pull --rebase --autostash origin "$BRANCH" || die "rebase failed"
+    # The tick and this ship both regenerate the same throwaway files, so a
+    # rebase conflict on them is expected and meaningless — take the remote copy
+    # (it is rebuilt next run anyway) and continue. Any OTHER conflict, or a
+    # rebase we cannot finish, is cleaned up (abort) so we never leave a broken
+    # detached-HEAD state for the next command to reset away.
+    if ! git pull --rebase --autostash origin "$BRANCH"; then
+      GEN_FILES="alignment_history.json shadow.db patterns.db watchlist.db \
+                 opportunities.json universe.json paper.json themes.json \
+                 dead_symbols.json learning_log.jsonl news_archive.jsonl \
+                 gkg_state.json risk_loop.jsonl opportunity_sectors.json \
+                 app/data.json app/public/index.html app/sigbot-report.html"
+      # resolve every conflicted path that is a known generated file by taking
+      # the incoming (remote) version
+      CONFLICTS=$(git diff --name-only --diff-filter=U)
+      UNRESOLVABLE=""
+      for c in $CONFLICTS; do
+        if echo "$GEN_FILES" | grep -qw "$c"; then
+          git checkout --theirs -- "$c" 2>/dev/null && git add "$c"
+        else
+          UNRESOLVABLE="$UNRESOLVABLE $c"
+        fi
+      done
+      if [ -n "$UNRESOLVABLE" ]; then
+        git rebase --abort 2>/dev/null || true
+        die "rebase conflict in non-generated file(s):$UNRESOLVABLE — resolve by hand, then run npm run github again"
+      fi
+      # all conflicts were generated files — finish the rebase
+      GIT_EDITOR=true git rebase --continue || { git rebase --abort 2>/dev/null; die "could not continue rebase — aborted cleanly, run npm run github again"; }
+    fi
   done
 fi
 
