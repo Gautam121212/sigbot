@@ -3531,6 +3531,7 @@ def main(argv: list[str]) -> int:
         "harness": lambda: print(__import__("sigbot.improvement_harness", fromlist=["describe"]).describe()),
         "intelligence": lambda: print(__import__("sigbot.strategy_intelligence_engine", fromlist=["describe"]).describe()),
         "reconcile": lambda: print(__import__("sigbot.broker_reconciliation", fromlist=["describe"]).describe()),
+        "shadow": lambda: print(__import__("sigbot.shadow_trading", fromlist=["describe"]).describe()),
         "predictions": lambda: print(__import__("sigbot.prediction_transparency", fromlist=["summary"]).summary("ledger.db")),
         "timing": lambda: print(__import__("sigbot.daily_cycle", fromlist=["model_timing_summary"]).model_timing_summary()),
         "deep-edges-2": lambda: print("Deep edges (ventures/ideas, run 2):\n"
