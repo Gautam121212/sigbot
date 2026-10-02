@@ -3540,6 +3540,7 @@ def main(argv: list[str]) -> int:
         "scenario-audit": lambda: print(__import__("sigbot.scenario_historical_runner", fromlist=["describe"]).describe()),
         "scenario-map": lambda: print(__import__("sigbot.scenario_data_pipeline", fromlist=["describe"]).describe()),
         "distill": lambda: print(__import__("sigbot.strategy_distillation", fromlist=["describe"]).describe()),
+        "innovate": lambda: print(__import__("sigbot.research_innovation_engine", fromlist=["describe"]).describe()),
         "predictions": lambda: print(__import__("sigbot.prediction_transparency", fromlist=["summary"]).summary("ledger.db")),
         "timing": lambda: print(__import__("sigbot.daily_cycle", fromlist=["model_timing_summary"]).model_timing_summary()),
         "deep-edges-2": lambda: print("Deep edges (ventures/ideas, run 2):\n"
