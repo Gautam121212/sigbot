@@ -3543,6 +3543,7 @@ def main(argv: list[str]) -> int:
         "innovate": lambda: print(__import__("sigbot.research_innovation_engine", fromlist=["describe"]).describe()),
         "assurance": lambda: print(__import__("sigbot.system_assurance", fromlist=["describe"]).describe()),
         "operating-loop": lambda: print(__import__("sigbot.operating_loop", fromlist=["describe"]).describe()),
+        "production": lambda: print(__import__("sigbot.production_integration", fromlist=["describe"]).describe()),
         "predictions": lambda: print(__import__("sigbot.prediction_transparency", fromlist=["summary"]).summary("ledger.db")),
         "timing": lambda: print(__import__("sigbot.daily_cycle", fromlist=["model_timing_summary"]).model_timing_summary()),
         "deep-edges-2": lambda: print("Deep edges (ventures/ideas, run 2):\n"
