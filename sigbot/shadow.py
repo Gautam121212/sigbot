@@ -262,6 +262,29 @@ class ShadowLedger:
             con.commit()
             return int(cur.lastrowid or 0)
 
+    def pending_entries(self, model: str = "stocks") -> list[dict]:
+        """List predictions awaiting entry activation (entry_price IS NULL and
+        pending_entry in payload). Returns id, symbol, and the stored decision
+        timestamp so the caller can fetch the right session-open price."""
+        import json as _json
+        out: list[dict] = []
+        with closing(sqlite3.connect(self.path)) as con:
+            rows = con.execute(
+                "SELECT id, symbol, payload FROM predictions "
+                "WHERE model=? AND entry_price IS NULL AND hit IS NULL",
+                (model,)).fetchall()
+        for pid, symbol, payload in rows:
+            try:
+                meta = _json.loads(payload) if payload else {}
+            except ValueError:  # noqa: BLE001  # handled: skip unparseable
+                continue
+            if not meta.get("pending_entry"):
+                continue
+            eff = meta.get("timestamps", {}).get("decision_effective_at")
+            out.append({"id": pid, "symbol": symbol,
+                        "decision_effective_at": eff})
+        return out
+
     def activate_entry(self, pred_id: int, execution_price: float,
                        executed_at: "datetime | None" = None) -> bool:
         """Fill a pending next-session prediction's entry at the execution point.
