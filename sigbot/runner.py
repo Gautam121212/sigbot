@@ -3582,6 +3582,7 @@ def main(argv: list[str]) -> int:
         "scheduler": lambda: print(__import__("sigbot.market_scheduler", fromlist=["describe"]).describe()),
         "notify-policy": lambda: print(__import__("sigbot.notification_policy", fromlist=["describe"]).describe()),
         "notify-pipeline": lambda: print(__import__("sigbot.notification_pipeline", fromlist=["describe"]).describe()),
+        "operating-loop-v2": lambda: print(__import__("sigbot.operating_loop_v2", fromlist=["describe"]).describe()),
         "predictions": lambda: print(__import__("sigbot.prediction_transparency", fromlist=["summary"]).summary("ledger.db")),
         "timing": lambda: print(__import__("sigbot.daily_cycle", fromlist=["model_timing_summary"]).model_timing_summary()),
         "deep-edges-2": lambda: print("Deep edges (ventures/ideas, run 2):\n"
