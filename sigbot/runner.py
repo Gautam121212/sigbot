@@ -3545,6 +3545,7 @@ def main(argv: list[str]) -> int:
         "operating-loop": lambda: print(__import__("sigbot.operating_loop", fromlist=["describe"]).describe()),
         "production": lambda: print(__import__("sigbot.production_integration", fromlist=["describe"]).describe()),
         "burn-in": lambda: print(__import__("sigbot.burn_in", fromlist=["describe"]).describe()),
+        "evidence": lambda: print(__import__("sigbot.canonical_evidence", fromlist=["describe"]).describe()),
         "predictions": lambda: print(__import__("sigbot.prediction_transparency", fromlist=["summary"]).summary("ledger.db")),
         "timing": lambda: print(__import__("sigbot.daily_cycle", fromlist=["model_timing_summary"]).model_timing_summary()),
         "deep-edges-2": lambda: print("Deep edges (ventures/ideas, run 2):\n"
