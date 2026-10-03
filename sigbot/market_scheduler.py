@@ -36,15 +36,25 @@ from .market_hours import Venue, is_open, next_open
 class EventType(str, Enum):
     SCAN = "scan"             # look for setups — never records
     RESEARCH = "research"     # generate/test hypotheses — never records
+    THESIS_UPDATE = "thesis_update"        # ventures research — never records
+    OPPORTUNITY_UPDATE = "opportunity_update"  # ideas research — never records
     PREPARE = "prepare"       # pre-session data prep — never records
-    PREDICT = "predict"       # the ONLY type that can produce a prediction
+    # The two kinds of PREDICT. A next-session call is made while the market is
+    # closed/pre-open and its outcome window opens at the next execution point.
+    # A current-session call is only for strategies genuinely designed to enter
+    # intraday with a correctly defined decision point — never a retroactive
+    # "prediction" of a move that already happened.
+    PREDICT_NEXT_SESSION = "predict_next_session"
+    PREDICT_CURRENT_SESSION = "predict_current_session"
     RESOLVE = "resolve"       # score matured predictions — never records
     MONITOR = "monitor"       # health/pipeline checks — never records
     RECOVER = "recover"       # post-quarantine recovery — never records
 
 
-# only PREDICT may create a prediction. Enforced by can_create_prediction().
-_PREDICTION_CAPABLE = frozenset({EventType.PREDICT})
+# only the two PREDICT types may create a prediction. Research/prepare/scan/
+# resolve/monitor/recover/thesis_update/opportunity_update never record.
+_PREDICTION_CAPABLE = frozenset({EventType.PREDICT_NEXT_SESSION,
+                                 EventType.PREDICT_CURRENT_SESSION})
 
 
 def can_create_prediction(event_type: EventType) -> bool:
@@ -216,39 +226,62 @@ class MarketScheduler:
         state = MarketState.observe(now, self.preopen_window_h)
         events: list[ScheduledEvent] = []
 
-        # STOCKS: session-aware
+        # STOCKS: session-aware. The prediction is about the NEXT execution
+        # window, so it is made while the market is CLOSED or PRE-OPEN — never
+        # a new current-session call once the market is open (that would be a
+        # retroactive prediction of a move already underway). When open, Stocks
+        # only monitors and resolves; it does not mint new predictions.
         s_pri = priority_for(Family.STOCKS, state)
-        if state.equities_phase == MarketPhase.PREOPEN:
-            events.append(ScheduledEvent(Family.STOCKS, EventType.PREPARE, s_pri))
-        elif state.equities_phase == MarketPhase.OPEN:
-            events.append(ScheduledEvent(Family.STOCKS, EventType.PREDICT, s_pri))
-        else:  # CLOSED
-            events.append(ScheduledEvent(Family.STOCKS, EventType.RESOLVE, s_pri))
+        if state.equities_phase == MarketPhase.CLOSED:
+            events.append(ScheduledEvent(Family.STOCKS, EventType.RESOLVE,
+                                         Priority.BACKGROUND))
             events.append(ScheduledEvent(Family.STOCKS, EventType.RESEARCH,
                                          Priority.BACKGROUND))
+            events.append(ScheduledEvent(Family.STOCKS, EventType.PREPARE, s_pri))
+            events.append(ScheduledEvent(Family.STOCKS,
+                                         EventType.PREDICT_NEXT_SESSION, s_pri))
+        elif state.equities_phase == MarketPhase.PREOPEN:
+            events.append(ScheduledEvent(Family.STOCKS, EventType.PREPARE, s_pri))
+            # final revalidation of the next-session call per policy
+            events.append(ScheduledEvent(Family.STOCKS,
+                                         EventType.PREDICT_NEXT_SESSION, s_pri))
+        else:  # OPEN — monitor and resolve only, NO new current-session mint
+            events.append(ScheduledEvent(Family.STOCKS, EventType.MONITOR, s_pri))
+            events.append(ScheduledEvent(Family.STOCKS, EventType.RESOLVE, s_pri))
 
-        # NEWS: event-driven — only a PREDICT when there is an event to act on
+        # NEWS: event-driven — a current-session PREDICT only when an event is
+        # queued (news acts on the event as it lands, with its own decision
+        # point). No event -> MONITOR, never a prediction.
         n_pri = priority_for(Family.NEWS, state, event_queue=news_queue)
         if news_queue > 0:
-            events.append(ScheduledEvent(Family.NEWS, EventType.PREDICT, n_pri))
+            events.append(ScheduledEvent(Family.NEWS,
+                                         EventType.PREDICT_CURRENT_SESSION, n_pri))
         else:
             events.append(ScheduledEvent(Family.NEWS, EventType.MONITOR, n_pri))
 
-        # CRYPTO: continuous
+        # CRYPTO: continuous market, so current-session predictions are valid.
         c_pri = priority_for(Family.CRYPTO, state)
         if state.crypto_open:
-            events.append(ScheduledEvent(Family.CRYPTO, EventType.PREDICT, c_pri))
+            events.append(ScheduledEvent(Family.CRYPTO,
+                                         EventType.PREDICT_CURRENT_SESSION, c_pri))
 
-        # VENTURES / IDEAS: research-driven, more when equities closed
+        # VENTURES / IDEAS: research is NOT prediction. They do research/thesis
+        # work (never records) and only emit a PREDICT when a concrete thesis/
+        # opportunity is ready — with a future outcome window. Overnight they get
+        # more COMPUTE priority, not more "predictions".
         v_pri = priority_for(Family.VENTURES, state, backlog=ventures_backlog)
-        events.append(ScheduledEvent(Family.VENTURES, EventType.RESEARCH, v_pri))
+        events.append(ScheduledEvent(Family.VENTURES, EventType.THESIS_UPDATE,
+                                     v_pri))
         if ventures_backlog > 0:
-            events.append(ScheduledEvent(Family.VENTURES, EventType.PREDICT, v_pri))
+            events.append(ScheduledEvent(Family.VENTURES,
+                                         EventType.PREDICT_NEXT_SESSION, v_pri))
 
         i_pri = priority_for(Family.IDEAS, state, backlog=ideas_backlog)
-        events.append(ScheduledEvent(Family.IDEAS, EventType.RESEARCH, i_pri))
+        events.append(ScheduledEvent(Family.IDEAS, EventType.OPPORTUNITY_UPDATE,
+                                     i_pri))
         if ideas_backlog > 0:
-            events.append(ScheduledEvent(Family.IDEAS, EventType.PREDICT, i_pri))
+            events.append(ScheduledEvent(Family.IDEAS,
+                                         EventType.PREDICT_NEXT_SESSION, i_pri))
 
         return events
 
@@ -278,14 +311,18 @@ def describe() -> str:
         "  what's a valid prediction (admission does). So more frequent wakes",
         "  cannot become database spam.",
         "",
-        "  EVENT TAXONOMY: every event is SCAN/RESEARCH/PREPARE/PREDICT/RESOLVE/",
-        "  MONITOR/RECOVER. ONLY PREDICT can produce a prediction — and only",
-        "  through admission. 10,000 wakes can produce zero predictions.",
+        "  EVENT TAXONOMY: SCAN/RESEARCH/THESIS_UPDATE/OPPORTUNITY_UPDATE/PREPARE/",
+        "  PREDICT_NEXT_SESSION/PREDICT_CURRENT_SESSION/RESOLVE/MONITOR/RECOVER.",
+        "  ONLY the two PREDICT types can produce a prediction — and only through",
+        "  admission. 10,000 wakes can produce zero predictions.",
         "",
-        "  CLOCKS: stocks session-aware (PREPARE preopen / PREDICT open / RESOLVE",
-        "  +RESEARCH closed); news event-driven (PREDICT only with a queued",
-        "  event); crypto continuous; ventures/ideas research-driven, boosted",
-        "  when equities close. Service-level budgets keep every family above a",
-        "  minimum — none is ever starved. PredictAction carries the full",
-        "  information/decision/outcome timestamp chain, and News carries event_id.",
+        "  CLOCKS: stocks predicts the NEXT SESSION while CLOSED/PREOPEN (outcome",
+        "  window opens at next execution), and only MONITORs/RESOLVEs when OPEN —",
+        "  it never mints a new current-session call on a move already underway.",
+        "  News acts on queued events (current-session); crypto is continuous;",
+        "  ventures/ideas do research (thesis/opportunity updates, never records)",
+        "  with more COMPUTE overnight, predicting only when a concrete thesis/",
+        "  opportunity is ready. Service-level budgets keep every family above a",
+        "  minimum. PredictAction carries the full information/decision/outcome",
+        "  timestamp chain, and News carries event_id.",
     ])

@@ -15,9 +15,11 @@ NSE_OPEN = datetime(2026, 10, 5, 5, 0, tzinfo=timezone.utc)   # Monday ~10:30 IS
 
 # ── event taxonomy: only PREDICT creates predictions ────────────────────────
 def test_only_predict_can_create_prediction():
-    assert can_create_prediction(EventType.PREDICT)
+    assert can_create_prediction(EventType.PREDICT_NEXT_SESSION)
+    assert can_create_prediction(EventType.PREDICT_CURRENT_SESSION)
     for et in (EventType.SCAN, EventType.RESEARCH, EventType.PREPARE,
-               EventType.RESOLVE, EventType.MONITOR, EventType.RECOVER):
+               EventType.RESOLVE, EventType.MONITOR, EventType.RECOVER,
+               EventType.THESIS_UPDATE, EventType.OPPORTUNITY_UPDATE):
         assert not can_create_prediction(et)
 
 
@@ -60,34 +62,53 @@ def test_no_family_below_its_minimum():
 
 
 # ── plan_tick: event types by phase ─────────────────────────────────────────
-def test_closed_tick_stocks_does_not_predict():
+def test_closed_tick_stocks_predicts_next_session():
+    """CORRECTED: stocks predicts the NEXT session while the market is closed —
+    the prediction is about a future execution window, frozen before the move."""
     sched = MarketScheduler()
     events = sched.plan_tick(CLOSED)
     stocks_events = [e for e in events if e.family == Family.STOCKS]
-    # stocks when closed: resolve + research, NEVER predict
-    assert all(e.event_type != EventType.PREDICT for e in stocks_events)
+    # predicts next session, and still resolves/prepares
+    assert any(e.event_type == EventType.PREDICT_NEXT_SESSION
+               for e in stocks_events)
     assert any(e.event_type == EventType.RESOLVE for e in stocks_events)
+    assert any(e.event_type == EventType.PREPARE for e in stocks_events)
+    # NEVER a current-session mint when closed
+    assert all(e.event_type != EventType.PREDICT_CURRENT_SESSION
+               for e in stocks_events)
+
+
+def test_open_tick_stocks_does_not_mint_new_prediction():
+    """When the market is OPEN, stocks only monitors/resolves — no retroactive
+    prediction of a move already underway."""
+    sched = MarketScheduler()
+    # NSE open ~10:30 IST = 05:00 UTC Monday
+    nse_open = datetime(2026, 10, 5, 5, 0, tzinfo=timezone.utc)
+    events = sched.plan_tick(nse_open)
+    stocks = [e for e in events if e.family == Family.STOCKS]
+    assert all(not can_create_prediction(e.event_type) for e in stocks)
+    assert any(e.event_type == EventType.MONITOR for e in stocks)
 
 
 def test_news_no_event_no_predict():
     sched = MarketScheduler()
     events = sched.plan_tick(CLOSED, news_queue=0)
     news_events = [e for e in events if e.family == Family.NEWS]
-    assert all(e.event_type != EventType.PREDICT for e in news_events)
+    assert all(not can_create_prediction(e.event_type) for e in news_events)
 
 
 def test_news_with_event_gets_predict():
     sched = MarketScheduler()
     events = sched.plan_tick(CLOSED, news_queue=5)
     news_events = [e for e in events if e.family == Family.NEWS]
-    assert any(e.event_type == EventType.PREDICT for e in news_events)
+    assert any(can_create_prediction(e.event_type) for e in news_events)
 
 
 def test_crypto_predicts_continuously():
     sched = MarketScheduler()
     events = sched.plan_tick(CLOSED)
     crypto_events = [e for e in events if e.family == Family.CRYPTO]
-    assert any(e.event_type == EventType.PREDICT for e in crypto_events)
+    assert any(can_create_prediction(e.event_type) for e in crypto_events)
 
 
 def test_ventures_backlog_triggers_predict():
@@ -95,10 +116,19 @@ def test_ventures_backlog_triggers_predict():
     no_backlog = sched.plan_tick(CLOSED, ventures_backlog=0)
     with_backlog = sched.plan_tick(CLOSED, ventures_backlog=30)
     v_no = [e for e in no_backlog if e.family == Family.VENTURES
-            and e.event_type == EventType.PREDICT]
+            and can_create_prediction(e.event_type)]
     v_yes = [e for e in with_backlog if e.family == Family.VENTURES
-             and e.event_type == EventType.PREDICT]
+             and can_create_prediction(e.event_type)]
     assert len(v_no) == 0 and len(v_yes) >= 1
+
+
+def test_ventures_research_is_not_prediction():
+    """Research (thesis_update) is separate from prediction — cleaner audit."""
+    sched = MarketScheduler()
+    events = sched.plan_tick(CLOSED, ventures_backlog=0)
+    v = [e for e in events if e.family == Family.VENTURES]
+    assert any(e.event_type == EventType.THESIS_UPDATE for e in v)
+    assert all(not can_create_prediction(e.event_type) for e in v)  # no backlog
 
 
 def test_every_family_appears_every_tick():
