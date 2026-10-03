@@ -116,7 +116,7 @@ def run_ideas_live(settings=None, sec=None, hist_of=None, ledger=None) -> str:
             model="opportunity", symbol=ticker, side="BUY",
             score=read.big_move_prob, expected_move=0.15, entry_price=price,
             horizon_hours=HORIZON_HOURS,
-            payload=f"volatile catalyst (8-K material agreement): {read.note}")
+            payload=f"volatile catalyst (8-K material agreement): {read.note}", gate=True)
         fired += 1
     return (f"ideas: scanned {scanned}, {fired} volatile-catalyst prediction(s) "
             "recorded (10-day horizon, resolves on the move)")

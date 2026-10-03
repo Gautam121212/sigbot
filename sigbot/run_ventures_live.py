@@ -79,7 +79,7 @@ def run_ventures_live(settings=None, sec=None, price_of=None, ledger=None) -> st
             model="ventures", symbol=ticker, side="BUY",
             score=None, expected_move=0.20, entry_price=entry,
             horizon_hours=HORIZON_HOURS,
-            payload=f"sustained inflection: {read.note}")
+            payload=f"sustained inflection: {read.note}", gate=True)
         fired += 1
     return (f"ventures: scanned {scanned}, {fired} sustained-inflection "
             "prediction(s) recorded (90-day horizon, resolves on the move)")

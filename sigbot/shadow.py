@@ -138,8 +138,37 @@ class ShadowLedger:
 
     def record(self, model: str, symbol: str, side: str, score: float | None,
                expected_move: float | None, entry_price: float | None,
-               horizon_hours: int = 24, payload: str = "", alerted: bool = True) -> int:
+               horizon_hours: int = 24, payload: str = "", alerted: bool = True,
+               as_of: "datetime | None" = None, dedup_key: str | None = None,
+               gate: bool = False) -> int:
+        """Record a prediction. A pure storage primitive by default (gate=False);
+        pass gate=True in a live runner to enforce the admission invariants.
+
+        When gate=True the two hard invariants apply so a live runner cannot
+        bypass them (fixtures/backfill keep the default gate=False):
+          1. No look-ahead — the information timestamp (as_of, defaulting to now)
+             must be strictly before the outcome window opens (now). A stale
+             as_of at or after the window open is refused.
+          2. Dedup — one open prediction per model's natural key. When dedup_key
+             is given it is used as-is; otherwise the model+symbol open-book guard
+             applies (the conservative default).
+        Returns the new row id, or 0 when admission refused the prediction.
+        """
         now = datetime.now(timezone.utc)
+        info_at = as_of or now
+        if gate:
+            # Invariant 1: information must predate the outcome window (now).
+            # A prediction recorded "now" whose information is also "now" takes
+            # effect immediately and resolves in the future — valid. A stale
+            # as_of newer than now, or a non-positive horizon, is refused.
+            if info_at > now or horizon_hours <= 0:
+                return 0
+            # Invariant 2: dedup. Explicit key wins; else the open-book guard.
+            if dedup_key is not None:
+                if self._has_open_key(dedup_key):
+                    return 0
+            elif self.has_open_prediction(model, symbol):
+                return 0
         with closing(sqlite3.connect(self.path)) as con:
             cur = con.execute(
                 "INSERT INTO predictions(model,symbol,side,score,expected_move,"
@@ -151,6 +180,17 @@ class ShadowLedger:
             )
             con.commit()
             return int(cur.lastrowid or 0)
+
+    def _has_open_key(self, dedup_key: str) -> bool:
+        """True if an open prediction carries this exact dedup key in its payload.
+        Lets a runner pass a model-specific key (news event id, thesis id) rather
+        than relying on the symbol-only guard."""
+        with closing(sqlite3.connect(self.path)) as con:
+            row = con.execute(
+                "SELECT 1 FROM predictions WHERE hit IS NULL "
+                "AND payload LIKE ? LIMIT 1",
+                (f'%"dedup_key": "{dedup_key}"%',)).fetchone()
+        return row is not None
 
     def due(self, model: str | None = None) -> list[tuple[int, str, str, float | None]]:
         now = datetime.now(timezone.utc).isoformat()

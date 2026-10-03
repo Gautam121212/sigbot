@@ -91,7 +91,7 @@ def run_crypto_live(settings=None, provider=None, ledger=None,
             model="crypto", symbol=coin.upper(), side="MOVE",
             score=read.big_move_prob, expected_move=0.10,
             entry_price=entry, horizon_hours=HORIZON_HOURS,
-            payload=f"coiled-spring: {read.note}")
+            payload=f"coiled-spring: {read.note}", gate=True)
         fired += 1
     return (f"crypto: scanned {scanned}, {fired} coiled-and-loaded prediction(s) "
             "recorded (3-day horizon, resolves on the realised move)")

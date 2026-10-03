@@ -736,7 +736,7 @@ def run_news(messenger=None, settings=SETTINGS, hours: int = 12) -> None:
         # measure on news was reading a malformed column.
         confidence = min(1.0, abs(float(s.raw_score)))
         ledger.record("news", symbol, s.side, confidence, None, entry, 24,
-                      payload=_json.dumps({"source": src}))
+                      payload=_json.dumps({"source": src}), gate=True)
     messenger.send("\n\n".join(format_news(s) for s in signals))
 
 
@@ -3100,7 +3100,10 @@ def run_stocks(settings=SETTINGS) -> None:
                       # while every historical test measured ten-day ones.
                       # Trading days to calendar hours: x 7/5 x 24.
                       hit.candidate.hold_days * 24 * 7 // 5,
-                      payload=liquidity)
+                      payload=liquidity,
+                      # Live runner: enforce the admission invariants (no
+                      # look-ahead, one open prediction per symbol).
+                      gate=True)
 
         if decision and decision.allowed:
             hits.append(hit)
@@ -3556,6 +3559,7 @@ def main(argv: list[str]) -> int:
         "evidence-api": lambda: print(__import__("sigbot.evidence_api", fromlist=["describe"]).describe()),
         "lifecycle": lambda: print(__import__("sigbot.live_lifecycle", fromlist=["describe"]).describe()),
         "telegram-ops": lambda: print(__import__("sigbot.telegram_ops", fromlist=["describe"]).describe()),
+        "admission": lambda: print(__import__("sigbot.prediction_admission", fromlist=["describe"]).describe()),
         "predictions": lambda: print(__import__("sigbot.prediction_transparency", fromlist=["summary"]).summary("ledger.db")),
         "timing": lambda: print(__import__("sigbot.daily_cycle", fromlist=["model_timing_summary"]).model_timing_summary()),
         "deep-edges-2": lambda: print("Deep edges (ventures/ideas, run 2):\n"
