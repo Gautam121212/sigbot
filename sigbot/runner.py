@@ -3547,6 +3547,7 @@ def main(argv: list[str]) -> int:
         "burn-in": lambda: print(__import__("sigbot.burn_in", fromlist=["describe"]).describe()),
         "evidence": lambda: print(__import__("sigbot.canonical_evidence", fromlist=["describe"]).describe()),
         "evidence-api": lambda: print(__import__("sigbot.evidence_api", fromlist=["describe"]).describe()),
+        "lifecycle": lambda: print(__import__("sigbot.live_lifecycle", fromlist=["describe"]).describe()),
         "predictions": lambda: print(__import__("sigbot.prediction_transparency", fromlist=["summary"]).summary("ledger.db")),
         "timing": lambda: print(__import__("sigbot.daily_cycle", fromlist=["model_timing_summary"]).model_timing_summary()),
         "deep-edges-2": lambda: print("Deep edges (ventures/ideas, run 2):\n"
