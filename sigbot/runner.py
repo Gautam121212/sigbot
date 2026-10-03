@@ -3085,6 +3085,13 @@ def run_stocks(settings=SETTINGS) -> None:
             "sector": sector,
             "hold_days": hit.candidate.hold_days,
         })
+        # Dedup: skip if there is already an open (unresolved) prediction for
+        # this symbol. Re-recording the same signal every run inflates the
+        # ledger with duplicates and makes the site unreadable — one open
+        # position per symbol is the correct representation.
+        if ledger.has_open_prediction("stocks", asset.symbol):
+            continue
+
         ledger.record("stocks", asset.symbol, hit.candidate.side,
                       hit.conviction_pct / 100.0,
                       plan.stop_distance_pct if plan else 0.0, close,

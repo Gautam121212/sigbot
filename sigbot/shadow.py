@@ -126,6 +126,16 @@ class ShadowLedger:
         cols = ("job", "ran_at", "considered", "signals", "note")
         return dict(zip(cols, row)) if row else None
 
+    def has_open_prediction(self, model: str, symbol: str) -> bool:
+        """True if there is already an unresolved prediction for this model+symbol.
+        Used to prevent duplicate entries when the scanner re-fires on a symbol
+        that is already in the open book."""
+        with closing(sqlite3.connect(self.path)) as con:
+            row = con.execute(
+                "SELECT 1 FROM predictions WHERE model=? AND symbol=? "
+                "AND hit IS NULL LIMIT 1", (model, symbol)).fetchone()
+        return row is not None
+
     def record(self, model: str, symbol: str, side: str, score: float | None,
                expected_move: float | None, entry_price: float | None,
                horizon_hours: int = 24, payload: str = "", alerted: bool = True) -> int:
