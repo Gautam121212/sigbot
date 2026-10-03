@@ -169,6 +169,17 @@ class ShadowLedger:
                     return 0
             elif self.has_open_prediction(model, symbol):
                 return 0
+        # When a dedup_key is supplied, store it in the payload so a later
+        # open-path OR next-session-path call for the same key is caught by
+        # _has_open_key — the two recording paths dedup against each other.
+        if dedup_key is not None:
+            import json as _json
+            try:
+                meta = _json.loads(payload) if payload else {}
+            except ValueError:  # noqa: BLE001  # handled: non-JSON payload wrapped
+                meta = {"raw": payload}
+            meta["dedup_key"] = dedup_key
+            payload = _json.dumps(meta)
         with closing(sqlite3.connect(self.path)) as con:
             cur = con.execute(
                 "INSERT INTO predictions(model,symbol,side,score,expected_move,"
@@ -191,6 +202,99 @@ class ShadowLedger:
                 "AND payload LIKE ? LIMIT 1",
                 (f'%"dedup_key": "{dedup_key}"%',)).fetchone()
         return row is not None
+
+    def record_next_session(self, *, model: str, symbol: str, side: str,
+                            score: float | None, expected_move: float | None,
+                            information_as_of: "datetime", created_at: "datetime",
+                            decision_effective_at: "datetime",
+                            outcome_end: "datetime", dedup_key: str,
+                            payload: str = "", alerted: bool = True) -> int:
+        """Record a NEXT-SESSION prediction with the full admission contract.
+
+        entry_price is deliberately NULL: the prediction is sealed now, but its
+        entry is the next-session execution price, which does not exist yet. It
+        is filled later by activate_entry() at decision_effective_at. This is
+        what makes the return calculation EXCLUDE the overnight drift between the
+        scan and the execution point — the realised return is measured from the
+        activated entry, never from the scan-time price.
+
+        Enforces the admission invariants itself (no look-ahead, dedup) so the
+        live runner cannot bypass them. Returns 0 when admission refuses.
+        """
+        import json as _json
+        from datetime import timezone as _tz
+        # Invariant 1: no look-ahead. Information must predate the outcome window
+        # (which opens at decision_effective_at), and the call must be at/after
+        # the information and at/before the execution point.
+        if not (information_as_of <= created_at <= decision_effective_at
+                and information_as_of < decision_effective_at
+                and decision_effective_at < outcome_end):
+            return 0
+        # Invariant 2: one open prediction per dedup key.
+        if self._has_open_key(dedup_key):
+            return 0
+        # The timestamp chain travels in the payload so the guarantee is
+        # permanent and auditable, not just checked once.
+        try:
+            meta = _json.loads(payload) if payload else {}
+        except ValueError:  # noqa: BLE001  # handled: non-JSON payload wrapped
+            meta = {"raw": payload}
+        meta["dedup_key"] = dedup_key
+        meta["timestamps"] = {
+            "information_as_of": information_as_of.astimezone(_tz.utc).isoformat(),
+            "prediction_created_at": created_at.astimezone(_tz.utc).isoformat(),
+            "decision_effective_at": decision_effective_at.astimezone(_tz.utc).isoformat(),
+            "outcome_start": decision_effective_at.astimezone(_tz.utc).isoformat(),
+            "outcome_end": outcome_end.astimezone(_tz.utc).isoformat(),
+        }
+        meta["pending_entry"] = True
+        with closing(sqlite3.connect(self.path)) as con:
+            cur = con.execute(
+                "INSERT INTO predictions(model,symbol,side,score,expected_move,"
+                "created_at,resolve_after,entry_price,payload,alerted) "
+                "VALUES (?,?,?,?,?,?,?,?,?,?)",
+                (model, symbol, side, score, expected_move,
+                 created_at.astimezone(_tz.utc).isoformat(),
+                 outcome_end.astimezone(_tz.utc).isoformat(),
+                 None,                       # entry_price filled at activation
+                 _json.dumps(meta), int(alerted)),
+            )
+            con.commit()
+            return int(cur.lastrowid or 0)
+
+    def activate_entry(self, pred_id: int, execution_price: float,
+                       executed_at: "datetime | None" = None) -> bool:
+        """Fill a pending next-session prediction's entry at the execution point.
+
+        Only fills if the prediction is still pending (entry_price IS NULL) and
+        the execution time is at/after its decision_effective_at — so the entry
+        can never be back-dated to a price before the window opened. Returns True
+        if it activated, False otherwise.
+        """
+        import json as _json
+        from datetime import datetime as _dt, timezone as _tz
+        with closing(sqlite3.connect(self.path)) as con:
+            row = con.execute(
+                "SELECT entry_price, payload FROM predictions WHERE id=?",
+                (pred_id,)).fetchone()
+            if row is None or row[0] is not None:
+                return False               # not found, or already activated
+            try:
+                meta = _json.loads(row[1]) if row[1] else {}
+            except ValueError:  # noqa: BLE001  # handled: unparseable -> no-op
+                meta = {}
+            eff = meta.get("timestamps", {}).get("decision_effective_at")
+            if eff is not None:
+                eff_dt = _dt.fromisoformat(eff)
+                now = (executed_at or _dt.now(_tz.utc)).astimezone(_tz.utc)
+                if now < eff_dt:
+                    return False           # cannot activate before execution point
+            meta["pending_entry"] = False
+            con.execute(
+                "UPDATE predictions SET entry_price=?, payload=? WHERE id=?",
+                (execution_price, _json.dumps(meta), pred_id))
+            con.commit()
+        return True
 
     def due(self, model: str | None = None) -> list[tuple[int, str, str, float | None]]:
         now = datetime.now(timezone.utc).isoformat()

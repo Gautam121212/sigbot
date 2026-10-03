@@ -3092,18 +3092,37 @@ def run_stocks(settings=SETTINGS) -> None:
         if ledger.has_open_prediction("stocks", asset.symbol):
             continue
 
-        ledger.record("stocks", asset.symbol, hit.candidate.side,
-                      hit.conviction_pct / 100.0,
-                      plan.stop_distance_pct if plan else 0.0, close,
-                      # Scored at the strategy's real holding period. It was
-                      # 24 hours, so the live record measured one-day trades
-                      # while every historical test measured ten-day ones.
-                      # Trading days to calendar hours: x 7/5 x 24.
-                      hit.candidate.hold_days * 24 * 7 // 5,
-                      payload=liquidity,
-                      # Live runner: enforce the admission invariants (no
-                      # look-ahead, one open prediction per symbol).
-                      gate=True)
+        # Full next-session admission contract. A stocks setup found overnight
+        # or pre-open is a NEXT-SESSION prediction: its entry is the next
+        # execution open, not the scan-time price. We seal the timestamp chain
+        # now (information/created at scan time, decision_effective_at and the
+        # outcome window anchored to the next session open) and leave the entry
+        # pending until activate_entry fills it at execution — so the realised
+        # return can never include the overnight scan->open drift.
+        from .market_hours import is_open as _is_open, \
+            next_open as _next_open, venue_for as _venue_for
+        now_ts = datetime.now(timezone.utc)
+        horizon_h = hit.candidate.hold_days * 24 * 7 // 5
+        venue = _venue_for(asset.symbol)
+        dkey = f"stocks|{asset.symbol}|{hit.candidate.hold_days}d"
+        if _is_open(venue, now_ts):
+            # Market open: a current-session setup enters at the known price now.
+            ledger.record("stocks", asset.symbol, hit.candidate.side,
+                          hit.conviction_pct / 100.0,
+                          plan.stop_distance_pct if plan else 0.0, close,
+                          horizon_h, payload=liquidity, gate=True,
+                          dedup_key=dkey)
+        else:
+            # Market closed / pre-open: NEXT-SESSION prediction, entry pending.
+            exec_at = _next_open(venue, now_ts)
+            outcome_end = exec_at + timedelta(hours=horizon_h)
+            ledger.record_next_session(
+                model="stocks", symbol=asset.symbol, side=hit.candidate.side,
+                score=hit.conviction_pct / 100.0,
+                expected_move=plan.stop_distance_pct if plan else 0.0,
+                information_as_of=now_ts, created_at=now_ts,
+                decision_effective_at=exec_at, outcome_end=outcome_end,
+                dedup_key=dkey, payload=liquidity)
 
         if decision and decision.allowed:
             hits.append(hit)
