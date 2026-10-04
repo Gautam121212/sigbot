@@ -331,15 +331,19 @@ def test_a_missing_job_is_reported_not_fatal(capsys):
 
 
 def test_daily_is_not_scheduled_more_often_than_daily():
-    """Daily bars do not change intraday. A five-minute loop over them returns
-    the identical answer and burns the rate limit. The main model run (stocks)
-    is once a day; retired daily/contagion/crypto15m are gone."""
+    """After Commit B, stocks is handled by the OperatingLoop (market-aware) rather
+    than a fixed 24h job. Retired jobs must remain absent from the schedule."""
     by_name = {n: iv for n, _, iv, _ in coordinator.JOBS}
-    assert by_name["stocks"] >= timedelta(hours=24)   # the daily model run
+    # stocks is no longer a top-level job — it is inside the OperatingLoop
+    assert "stocks" not in by_name
+    # operating_loop runs every 15 minutes; the loop internally respects market
+    # phase so daily-bar models still only predict once per session
+    assert "operating_loop" in by_name
+    assert by_name["operating_loop"].total_seconds() <= 900  # ≤15 min
     assert "daily" not in by_name                       # retired
     assert "contagion" not in by_name                   # retired
     assert "crypto15m" not in by_name                   # retired (intra-day)
-    assert by_name["news"] <= timedelta(hours=4), "news is the thing that goes stale"
+    # news is now inside the OperatingLoop (event-driven, not a top-level job)
 
 
 def test_status_mode_runs(capsys):

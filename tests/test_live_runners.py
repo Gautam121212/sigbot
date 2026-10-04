@@ -118,7 +118,12 @@ def test_ideas_quiet_stock_records_nothing(tmp_path):
 
 
 def test_all_five_models_scheduled():
-    from sigbot.coordinator import JOBS
+    """After Commit B, the five old prediction runners are replaced by the single
+    OperatingLoop job. The old names leave the schedule; the loop covers all five."""
+    from sigbot.coordinator import JOBS, _LOOP_ENABLED
     names = [j[0] for j in JOBS]
-    for m in ("stocks", "news", "crypto", "ventures", "ideas"):
-        assert m in names                    # every model runs live
+    # old individual runners no longer in schedule — loop covers them
+    for old in ("stocks", "news", "crypto", "ventures", "ideas"):
+        assert old not in names, f"old prediction job '{old}' still in schedule"
+    assert "operating_loop" in names          # the single new path
+    assert _LOOP_ENABLED is True

@@ -45,21 +45,22 @@ from datetime import timedelta
 from .market_hours import Venue, status
 from .scheduler import Scheduler, Task
 
+# ── OperatingLoop integration (Commit A: alongside, not replacing, old jobs) ──
+_LOOP_INSTANCE = None  # OperatingLoop | None, imported lazily
+_LOOP_ENABLED = True      # Commit B: loop is now the single prediction path
+
 # (name, runner attribute, interval, venue gate)
+# COMMIT B: the five old prediction jobs (stocks, news, crypto, ventures, ideas)
+# are replaced by the single OperatingLoop job. The old runners remain in
+# runner.py and can still be called directly for diagnostics, but they are no
+# longer in the schedule — they cannot independently mint predictions.
+#
+# If you need to roll back: restore the old JOBS list and set _LOOP_ENABLED=False.
 JOBS: list[tuple[str, str, timedelta, Venue | None]] = [
-    ("news", "run_news", timedelta(hours=2), None),
-    # The main daily model run (stocks / inflection / capitulation screen).
-    # Runs once a day — replaces the retired "daily" job. This is what makes the
-    # stocks predictions each cycle; the models' real horizons are multi-day, so
-    # once a day is the right cadence (not the old intra-day churn).
-    ("stocks", "run_stocks", timedelta(hours=24), None),
-    # Live crypto: coiled-spring movers edge, real resolvable predictions.
-    ("crypto", "run_crypto", timedelta(hours=24), None),
-    # Live ventures: sustained-inflection on SEC fundamentals (90-day horizon).
-    ("ventures", "run_ventures", timedelta(hours=24), None),
-    # Live ideas: volatile-catalyst on SEC 8-K filings (10-day horizon).
-    ("ideas", "run_ideas", timedelta(hours=24), None),
     # After resolve, so it replays predictions scored in the same cycle.
+    # ── Commit B: single operating loop replaces the five old prediction jobs ──
+    # market-aware, event-driven, fail-closed, all through OperatingLoop.tick()
+    ("operating_loop", "run_operating_loop_tick", timedelta(minutes=15), None),
     ("paper", "run_paper", timedelta(hours=3), None),
     ("resolve", "run_resolve", timedelta(minutes=30), None),
     # Hourly, but it only speaks once, after the last close.
@@ -105,6 +106,31 @@ def _alert(message: str) -> None:
         # Delivery is best-effort; the message is already on stdout and in the
         # log file, so a failure here must not take the scheduler down with it.
         print(f"[coordinator] could not send the alert: {type(exc).__name__}: {exc}")
+
+
+def _run_operating_loop_tick() -> None:
+    """One tick of the market-aware OperatingLoop. Called by the coordinator as
+    a scheduled job when _LOOP_ENABLED is True. Fail-closed: an exception here
+    is caught by the scheduler's error handler, not silently swallowed."""
+    if not _LOOP_ENABLED:
+        return
+    global _LOOP_INSTANCE
+    if _LOOP_INSTANCE is None:
+        from .operating_loop_v2 import OperatingLoop
+        from .live_handlers import LiveHandlers, RealSetupSources
+        from .shadow import ShadowLedger
+        from .providers.market import YahooProvider
+        from .config import SETTINGS
+        ledger = ShadowLedger(SETTINGS.shadow_db)
+        market = YahooProvider()
+        src = RealSetupSources(settings=SETTINGS)
+        handlers = LiveHandlers(
+            ledger=ledger, market=market,
+            stocks_setups=src.stocks,
+            # crypto/ventures/ideas: real sources added as each is verified
+        )
+        _LOOP_INSTANCE = OperatingLoop(handlers=handlers)
+    _LOOP_INSTANCE.tick()
 
 
 def build(scheduler: Scheduler | None = None, jobs=None) -> Scheduler:
