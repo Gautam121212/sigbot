@@ -43,8 +43,8 @@ def test_get_fact_serves_label_and_state():
     api = EvidenceAPI()
     f = api.get_fact("inflection.net_per_trade")
     assert f.value == "+6.57%"
-    assert f.evidence_state == "backtest"
-    assert f.label == "BACKTEST"
+    assert f.evidence_state == "historical_reported"
+    assert f.label == "HISTORICAL_REPORTED"
 
 
 def test_get_fact_raises_on_untraceable():
@@ -73,8 +73,11 @@ def test_evidence_reports_no_live_yet():
 def test_evidence_counts_match_store():
     api = EvidenceAPI()
     ev = api.evidence()
-    assert ev.state_counts["backtest"] == 8
-    assert ev.state_counts["oos"] == 2
+    # the 6 inflection facts moved to historical_reported (4 were backtest,
+    # 2 were oos) when the generating harness was found missing from the repo
+    assert ev.state_counts["historical_reported"] == 6
+    assert ev.state_counts["backtest"] == 4
+    assert ev.state_counts["oos"] == 0
     assert ev.state_counts["live"] == 0
 
 
@@ -111,13 +114,16 @@ def test_record_forward_fact_appends_and_registers():
 
 
 def test_record_forward_fact_blocks_relabel():
-    """Can't launder a backtest number to live via the API either."""
+    """Can't launder a historical-reported number to live via the API either."""
     from sigbot.canonical_evidence import StateUpgradeError
     api = EvidenceAPI()
+    # the stored fact's source must match for the laundering guard to fire;
+    # use the actual current source of the historical-reported fact
+    stored = api.get_fact("inflection.net_per_trade")
     with pytest.raises(StateUpgradeError):
         api.record_forward_fact(EvidenceFact(
             "inflection.net_per_trade", "+6.57%", EvidenceState.LIVE,
-            "trade_level_backtest", "2026"))   # same source = laundering
+            stored.source, "2026"))   # same source = laundering
 
 
 # ── one surface: both consumers get identical facts ─────────────────────────

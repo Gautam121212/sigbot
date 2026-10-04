@@ -68,11 +68,17 @@ def test_canonical_store_has_no_live_yet():
     assert len(s.facts_by_state(EvidenceState.PAPER)) == 0
 
 
-def test_inflection_figures_are_backtest_not_live():
-    """The core numbers are honestly labelled BACKTEST/OOS, never LIVE."""
+def test_inflection_figures_are_historical_reported_not_live():
+    """The 1,703-trade result is HISTORICAL_REPORTED — the generating harness did
+    not survive in the repo, so it is retained for provenance but excluded from
+    qualification. Never LIVE, never even BACKTEST (a backtest is reproducible)."""
     s = build_canonical_store()
-    assert s.require("inflection.net_per_trade").state == EvidenceState.BACKTEST
-    assert s.require("inflection.forward_cagr").state == EvidenceState.OOS
+    assert (s.require("inflection.net_per_trade").state
+            == EvidenceState.HISTORICAL_REPORTED)
+    assert (s.require("inflection.forward_cagr").state
+            == EvidenceState.HISTORICAL_REPORTED)
+    # and it must not count toward qualification
+    assert not s.require("inflection.net_per_trade").state.counts_for_qualification()
 
 
 def test_scenario_map_is_provisional():

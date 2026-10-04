@@ -26,7 +26,15 @@ class EvidenceState(str, Enum):
     """The provenance label every public number must carry. These are ordered by
     strength — a claim may never be upgraded to a stronger state without new
     evidence of that state."""
-    BACKTEST = "backtest"              # historical simulation
+    # A previously reported historical result whose original generation CANNOT
+    # be reproduced from the surviving codebase. Retained for provenance only —
+    # structurally excluded from qualification, sizing, and capital (strength -1,
+    # below BACKTEST). This is NOT a backtest: a backtest is reproducible; this
+    # is a number we can no longer regenerate. (The 1,703-trade inflection result
+    # is HISTORICAL_REPORTED: the trade-generation harness and full trade panel
+    # did not survive in the repo — only summary statistics remain.)
+    HISTORICAL_REPORTED = "historical_reported"
+    BACKTEST = "backtest"              # historical simulation (reproducible)
     OOS = "oos"                        # held-out, but still historical
     PROVISIONAL = "provisional"        # real but caveated (e.g. 45-day PIT delay)
     PAPER = "paper"                    # forward, no capital
@@ -35,10 +43,18 @@ class EvidenceState(str, Enum):
     def is_forward(self) -> bool:
         return self in (EvidenceState.PAPER, EvidenceState.LIVE)
 
+    def counts_for_qualification(self) -> bool:
+        """Whether a fact in this state may contribute to model qualification,
+        sizing authority, or capital decisions. HISTORICAL_REPORTED never does —
+        an unreproducible number cannot unlock anything."""
+        return self != EvidenceState.HISTORICAL_REPORTED
 
-_STRENGTH = {EvidenceState.BACKTEST: 0, EvidenceState.OOS: 1,
-             EvidenceState.PROVISIONAL: 1, EvidenceState.PAPER: 2,
-             EvidenceState.LIVE: 3}
+
+# HISTORICAL_REPORTED is strength -1: strictly below BACKTEST, so it can never
+# be the strongest evidence for any claim and never clears a qualification bar.
+_STRENGTH = {EvidenceState.HISTORICAL_REPORTED: -1, EvidenceState.BACKTEST: 0,
+             EvidenceState.OOS: 1, EvidenceState.PROVISIONAL: 1,
+             EvidenceState.PAPER: 2, EvidenceState.LIVE: 3}
 
 
 class StateUpgradeError(Exception):
@@ -120,19 +136,32 @@ def build_canonical_store() -> CanonicalEvidenceStore:
     THESE — it does not hard-code them."""
     s = CanonicalEvidenceStore()
     reg = s.register
-    # inflection — the validated edge (trade-level backtest = BACKTEST/OOS)
-    reg(EvidenceFact("inflection.trades", "1,703", EvidenceState.BACKTEST,
-                     "trade_level_backtest", "2013-2024"))
-    reg(EvidenceFact("inflection.net_per_trade", "+6.57%", EvidenceState.BACKTEST,
-                     "trade_level_backtest", "2013-2024"))
-    reg(EvidenceFact("inflection.win_rate", "59.4%", EvidenceState.BACKTEST,
-                     "trade_level_backtest", "2013-2024"))
-    reg(EvidenceFact("inflection.sharpe", "1.58", EvidenceState.BACKTEST,
-                     "daily_portfolio_engine", "2013-2024"))
-    reg(EvidenceFact("inflection.forward_cagr", "~14%", EvidenceState.OOS,
-                     "validation_battery (Monte Carlo median)", "2013-2024"))
-    reg(EvidenceFact("inflection.walk_forward", "12 / 12", EvidenceState.OOS,
-                     "trade_level_backtest walk-forward", "2013-2024"))
+    # inflection — PREVIOUSLY REPORTED, NOT REPRODUCIBLE. The trade-generation
+    # harness and full 1,703-trade panel did not survive in the codebase; only
+    # summary statistics remain (sustained_inflection.py is the detector, not the
+    # backtest). These are retained for provenance and are structurally excluded
+    # from qualification/sizing/capital via HISTORICAL_REPORTED (strength -1).
+    # To regenerate as real BACKTEST evidence, the harness must be rebuilt
+    # against point-in-time Shibui data (the parked Option-1 project).
+    _HR = EvidenceState.HISTORICAL_REPORTED
+    reg(EvidenceFact("inflection.trades", "1,703", _HR,
+                     "trade_level_backtest (reported; harness not in repo)",
+                     "2013-2024"))
+    reg(EvidenceFact("inflection.net_per_trade", "+6.57%", _HR,
+                     "trade_level_backtest (reported; not reproducible)",
+                     "2013-2024"))
+    reg(EvidenceFact("inflection.win_rate", "59.4%", _HR,
+                     "trade_level_backtest (reported; not reproducible)",
+                     "2013-2024"))
+    reg(EvidenceFact("inflection.sharpe", "1.58", _HR,
+                     "daily_portfolio_engine (reported; not reproducible)",
+                     "2013-2024"))
+    reg(EvidenceFact("inflection.forward_cagr", "~14%", _HR,
+                     "validation_battery (reported; not reproducible)",
+                     "2013-2024"))
+    reg(EvidenceFact("inflection.walk_forward", "12 / 12", _HR,
+                     "trade_level_backtest walk-forward (reported)",
+                     "2013-2024"))
     # scenario map — PROVISIONAL (45-day PIT delay)
     reg(EvidenceFact("scenario.stress_edge", "+3.89%", EvidenceState.PROVISIONAL,
                      "scenario_data_pipeline", "2013-2026", caveat="45d PIT delay"))
