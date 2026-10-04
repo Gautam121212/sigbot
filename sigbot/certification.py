@@ -328,3 +328,204 @@ def describe() -> str:
         "  A negative return does NOT automatically disqualify it.",
         "  The run produces evidence; authority remains with the human gate.",
     ])
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# CERTIFICATION INTEGRITY LAYER (B353)
+# The framework above can run a replay; this layer decides whether a replay is
+# allowed to be CERTIFIED. Six integrity requirements, each structural:
+#   1. Replay A declares RAW_DATA vs HISTORICAL_SIGNAL — never ambiguous.
+#   2. Snapshot captures source/dependency/data identity, not just params.
+#   3. Every historical data accessor must be clock-gated (audited).
+#   4. Dataset integrity gate (missing data, survivorship, corp actions, costs).
+#   5. Replay B cannot silently use non-chronological research.
+#   6. A high return with ANY integrity failure => NOT CERTIFIABLE.
+# ─────────────────────────────────────────────────────────────────────────────
+import subprocess  # noqa: E402
+
+
+class ReplayKind(str, Enum):
+    """Explicit — a certification must say which kind of replay it is."""
+    RAW_DATA = "RAW_DATA"               # real model vs raw historical inputs
+    HISTORICAL_SIGNAL = "HISTORICAL_SIGNAL"  # re-scores pre-generated trades
+    UNDECLARED = "UNDECLARED"           # structurally invalid for certification
+
+
+@dataclass(frozen=True)
+class SourceIdentity:
+    """#2 — strong snapshot identity. A model_version string can stay fixed while
+    the implementation underneath changes; this captures what actually ran."""
+    git_commit: str
+    tree_clean: bool
+    dependency_hash: str
+    data_manifest_hash: str
+    runner_version: str
+
+    def is_reproducible(self) -> bool:
+        """A dirty working tree means the result cannot be reproduced from the
+        commit alone — it is a soft integrity failure for certification."""
+        return self.tree_clean
+
+
+def capture_source_identity(repo_root: str, dependency_lock: str,
+                            data_manifest: dict, runner_version: str
+                            ) -> SourceIdentity:
+    """Capture the real source/data identity. git calls fail-soft to 'unknown'
+    so the capture never crashes a run, but 'unknown' is treated as not-clean."""
+    commit, clean = "unknown", False
+    try:
+        commit = subprocess.check_output(
+            ["git", "-C", repo_root, "rev-parse", "HEAD"],
+            text=True, timeout=10).strip()
+        status = subprocess.check_output(
+            ["git", "-C", repo_root, "status", "--porcelain"],
+            text=True, timeout=10).strip()
+        clean = (status == "")
+    except (subprocess.SubprocessError, OSError, ValueError):  # noqa: BLE001  # handled: unknown/not-clean
+        commit, clean = "unknown", False
+    return SourceIdentity(
+        git_commit=commit, tree_clean=clean,
+        dependency_hash=_hash(dependency_lock),
+        data_manifest_hash=_hash(json.dumps(data_manifest, sort_keys=True)),
+        runner_version=runner_version)
+
+
+# ── #3: data-accessor audit ─────────────────────────────────────────────────
+@dataclass
+class AccessorAudit:
+    """Inventory of every historical data accessor Replay B uses, and whether
+    each is clock-gated. An unguarded accessor => NOT CERTIFIABLE."""
+    accessors: dict[str, bool] = field(default_factory=dict)  # name -> gated?
+
+    def register(self, name: str, clock_gated: bool) -> None:
+        self.accessors[name] = clock_gated
+
+    def unguarded(self) -> list[str]:
+        return [n for n, gated in self.accessors.items() if not gated]
+
+    def all_gated(self) -> bool:
+        return len(self.accessors) > 0 and not self.unguarded()
+
+
+# The known historical accessors Replay B must route through the clock. If the
+# audit doesn't cover all of these, certification is refused.
+REQUIRED_ACCESSORS = (
+    "market_prices", "gdelt_news", "fundamentals", "benchmark_data",
+    "news_events", "research_inputs", "innovation_ledger", "model_evaluation",
+)
+
+
+def audit_accessors(registered: dict[str, bool]) -> AccessorAudit:
+    audit = AccessorAudit()
+    for name in REQUIRED_ACCESSORS:
+        # an accessor not registered at all is treated as unguarded (fail-closed)
+        audit.register(name, registered.get(name, False))
+    for name, gated in registered.items():
+        if name not in REQUIRED_ACCESSORS:
+            audit.register(name, gated)
+    return audit
+
+
+# ── #4: dataset integrity gate ──────────────────────────────────────────────
+@dataclass
+class DataIntegrityReport:
+    """Dataset-level checks independent of lookahead. A clean audit on bad data
+    is still untrustworthy, so these are a separate gate."""
+    missing_data_pct: float = 0.0
+    includes_delisted: bool = False       # survivorship: must be True to pass
+    corporate_actions_handled: bool = False
+    execution_costs_modeled: bool = False
+    silent_skips: int = 0                 # rows silently dropped — must be 0
+    required_datasets_available: bool = False
+
+    def failures(self) -> list[str]:
+        f = []
+        if self.missing_data_pct > 5.0:
+            f.append(f"missing data {self.missing_data_pct:.1f}% > 5%")
+        if not self.includes_delisted:
+            f.append("survivorship: delisted names absent")
+        if not self.corporate_actions_handled:
+            f.append("corporate actions not handled")
+        if not self.execution_costs_modeled:
+            f.append("execution costs not modeled")
+        if self.silent_skips > 0:
+            f.append(f"{self.silent_skips} rows silently skipped")
+        if not self.required_datasets_available:
+            f.append("required datasets not all available")
+        return f
+
+    def passes(self) -> bool:
+        return len(self.failures()) == 0
+
+
+# ── the certification decision ──────────────────────────────────────────────
+@dataclass
+class CertificationDecision:
+    """#6 — the final gate. CERTIFIABLE requires BOTH replays complete, zero
+    violations, strong snapshot, all accessors gated, and clean data integrity.
+    A high return with ANY failure returns NOT_CERTIFIABLE."""
+    replay_kind: ReplayKind
+    source_identity: SourceIdentity | None
+    accessor_audit: AccessorAudit | None
+    data_integrity: DataIntegrityReport | None
+    replay_a_done: bool
+    replay_b_done: bool
+    lookahead_violations: int
+    timing_violations: int
+    unauthorized_promotions: int = 0
+    unauthorized_capital: int = 0
+
+    def blocking_reasons(self) -> list[str]:
+        r = []
+        if self.replay_kind == ReplayKind.UNDECLARED:
+            r.append("replay kind undeclared (RAW_DATA or HISTORICAL_SIGNAL)")
+        if not self.replay_a_done:
+            r.append("Replay A not complete")
+        if not self.replay_b_done:
+            r.append("Replay B not complete")
+        if self.lookahead_violations > 0:
+            r.append(f"{self.lookahead_violations} lookahead violations")
+        if self.timing_violations > 0:
+            r.append(f"{self.timing_violations} timing violations")
+        if self.unauthorized_promotions > 0:
+            r.append(f"{self.unauthorized_promotions} unauthorized promotions")
+        if self.unauthorized_capital > 0:
+            r.append(f"{self.unauthorized_capital} unauthorized capital events")
+        if self.source_identity is None or not self.source_identity.is_reproducible():
+            r.append("source identity missing or working tree dirty")
+        if self.accessor_audit is None or not self.accessor_audit.all_gated():
+            unguarded = (self.accessor_audit.unguarded()
+                         if self.accessor_audit else ["<no audit>"])
+            r.append(f"unguarded data accessors: {unguarded}")
+        if self.data_integrity is None or not self.data_integrity.passes():
+            fails = (self.data_integrity.failures()
+                     if self.data_integrity else ["<no integrity report>"])
+            r.append(f"data integrity: {fails}")
+        return r
+
+    def certifiable(self) -> bool:
+        return len(self.blocking_reasons()) == 0
+
+    def verdict(self) -> str:
+        return "CERTIFIABLE" if self.certifiable() else "NOT_CERTIFIABLE"
+
+
+def describe_integrity() -> str:
+    return "\n".join([
+        "CERTIFICATION INTEGRITY — a replay is not certified just by running",
+        "",
+        "  Six structural requirements beyond 'it ran':",
+        "  1. Replay A declares RAW_DATA vs HISTORICAL_SIGNAL (never ambiguous).",
+        "     RAW_DATA = real model vs raw historical inputs; HISTORICAL_SIGNAL =",
+        "     re-scores pre-generated trades (weaker — cannot catch baked-in leak).",
+        "  2. Snapshot captures git commit, tree-clean, dependency + data-manifest",
+        "     hashes, runner version — not just model_version+params (which can",
+        "     stay fixed while the implementation underneath changes).",
+        "  3. Every historical accessor audited for clock-gating; an unguarded",
+        "     accessor => NOT CERTIFIABLE (fail-closed on unregistered accessors).",
+        "  4. Dataset integrity gate: missing-data %, survivorship (delisted),",
+        "     corporate actions, execution costs, silent skips — separate from",
+        "     lookahead, because a clean audit on bad data is still untrustworthy.",
+        "  5. Replay B promotions timestamped; non-chronological research blocked.",
+        "  6. A high return with ANY integrity failure => NOT CERTIFIABLE.",
+    ])

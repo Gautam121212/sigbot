@@ -166,3 +166,154 @@ def test_both_replays_clean_certifiable():
     wf = WalkForwardResult()          # empty but no violations
     report = CertificationReport(result.snapshot, result, wf)
     assert report.governance_summary()["certifiable"]
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# Certification integrity layer (B353)
+# ═══════════════════════════════════════════════════════════════════════════
+from sigbot.certification import (  # noqa: E402
+    CertificationDecision, DataIntegrityReport, ReplayKind,
+    REQUIRED_ACCESSORS, SourceIdentity, audit_accessors)
+
+
+def _clean_decision(**overrides):
+    defaults = dict(
+        replay_kind=ReplayKind.RAW_DATA,
+        source_identity=SourceIdentity("abc", True, "d", "m", "v1"),
+        accessor_audit=audit_accessors({n: True for n in REQUIRED_ACCESSORS}),
+        data_integrity=DataIntegrityReport(
+            0.0, True, True, True, 0, True),
+        replay_a_done=True, replay_b_done=True,
+        lookahead_violations=0, timing_violations=0)
+    defaults.update(overrides)
+    return CertificationDecision(**defaults)
+
+
+# ── #1: replay kind must be declared ────────────────────────────────────────
+def test_undeclared_replay_kind_not_certifiable():
+    d = _clean_decision(replay_kind=ReplayKind.UNDECLARED)
+    assert not d.certifiable()
+
+
+def test_raw_data_replay_certifiable_when_clean():
+    assert _clean_decision().certifiable()
+
+
+def test_historical_signal_declared_not_hidden():
+    d = _clean_decision(replay_kind=ReplayKind.HISTORICAL_SIGNAL)
+    assert d.replay_kind == ReplayKind.HISTORICAL_SIGNAL
+
+
+# ── #2: strong snapshot identity ────────────────────────────────────────────
+def test_dirty_tree_not_reproducible():
+    ident = SourceIdentity("abc", False, "d", "m", "v1")
+    assert not ident.is_reproducible()
+
+
+def test_dirty_tree_blocks_certification():
+    d = _clean_decision(
+        source_identity=SourceIdentity("abc", False, "d", "m", "v1"))
+    assert not d.certifiable()
+
+
+def test_missing_identity_blocks():
+    d = _clean_decision(source_identity=None)
+    assert not d.certifiable()
+
+
+# ── #3: accessor audit ──────────────────────────────────────────────────────
+def test_all_required_accessors_gated_passes():
+    audit = audit_accessors({n: True for n in REQUIRED_ACCESSORS})
+    assert audit.all_gated()
+
+
+def test_one_unguarded_accessor_fails():
+    reg = {n: True for n in REQUIRED_ACCESSORS}
+    reg["gdelt_news"] = False
+    audit = audit_accessors(reg)
+    assert not audit.all_gated()
+    assert "gdelt_news" in audit.unguarded()
+
+
+def test_unregistered_accessor_treated_as_unguarded():
+    # fail-closed: a required accessor not registered at all is unguarded
+    audit = audit_accessors({"market_prices": True})
+    assert not audit.all_gated()
+    assert "fundamentals" in audit.unguarded()
+
+
+def test_unguarded_accessor_blocks_certification():
+    reg = {n: True for n in REQUIRED_ACCESSORS}
+    reg["research_inputs"] = False
+    d = _clean_decision(accessor_audit=audit_accessors(reg))
+    assert not d.certifiable()
+
+
+# ── #4: data integrity gate ─────────────────────────────────────────────────
+def test_survivorship_fails_integrity():
+    di = DataIntegrityReport(0.0, False, True, True, 0, True)  # no delisted
+    assert not di.passes()
+    assert any("survivorship" in f for f in di.failures())
+
+
+def test_missing_data_over_threshold_fails():
+    di = DataIntegrityReport(20.0, True, True, True, 0, True)
+    assert not di.passes()
+
+
+def test_silent_skips_fail():
+    di = DataIntegrityReport(0.0, True, True, True, 50, True)
+    assert not di.passes()
+
+
+def test_no_execution_costs_fails():
+    di = DataIntegrityReport(0.0, True, True, False, 0, True)
+    assert not di.passes()
+
+
+def test_clean_data_passes():
+    di = DataIntegrityReport(0.0, True, True, True, 0, True)
+    assert di.passes()
+
+
+def test_bad_data_blocks_certification():
+    di = DataIntegrityReport(0.0, False, True, True, 0, True)
+    d = _clean_decision(data_integrity=di)
+    assert not d.certifiable()
+
+
+# ── #6: the key property — return cannot buy past integrity ─────────────────
+def test_high_return_cannot_bypass_any_failure():
+    """Each integrity failure alone blocks certification, regardless of return.
+    (Return isn't even an input to certifiable() — that's the point.)"""
+    for override in [
+        {"replay_kind": ReplayKind.UNDECLARED},
+        {"source_identity": SourceIdentity("x", False, "d", "m", "v")},
+        {"lookahead_violations": 1},
+        {"timing_violations": 1},
+        {"unauthorized_promotions": 1},
+        {"unauthorized_capital": 1},
+        {"replay_a_done": False},
+        {"replay_b_done": False},
+    ]:
+        assert not _clean_decision(**override).certifiable(), override
+
+
+def test_unauthorized_capital_blocks():
+    assert not _clean_decision(unauthorized_capital=1).certifiable()
+
+
+def test_unauthorized_promotion_blocks():
+    assert not _clean_decision(unauthorized_promotions=1).certifiable()
+
+
+def test_verdict_string():
+    assert _clean_decision().verdict() == "CERTIFIABLE"
+    assert _clean_decision(timing_violations=5).verdict() == "NOT_CERTIFIABLE"
+
+
+def test_blocking_reasons_listed():
+    d = _clean_decision(lookahead_violations=2, timing_violations=1)
+    reasons = d.blocking_reasons()
+    assert any("lookahead" in r for r in reasons)
+    assert any("timing" in r for r in reasons)
