@@ -3587,6 +3587,7 @@ def main(argv: list[str]) -> int:
         "news-health": lambda: print(__import__("sigbot.company_news_health", fromlist=["describe"]).describe()),
         "certification": lambda: print(__import__("sigbot.certification", fromlist=["describe"]).describe()),
         "certification-integrity": lambda: print(__import__("sigbot.certification", fromlist=["describe_integrity"]).describe_integrity()),
+        "trader-policy": lambda: print(__import__("sigbot.trader_policy", fromlist=["describe"]).describe()),
         "predictions": lambda: print(__import__("sigbot.prediction_transparency", fromlist=["summary"]).summary("ledger.db")),
         "timing": lambda: print(__import__("sigbot.daily_cycle", fromlist=["model_timing_summary"]).model_timing_summary()),
         "deep-edges-2": lambda: print("Deep edges (ventures/ideas, run 2):\n"
