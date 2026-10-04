@@ -3268,5 +3268,114 @@
     "recommendation": "Keep watching \u2014 0 live trade(s), needs 30."
    }
   ]
+ },
+ {
+  "at": "2026-10-04T23:50:14+00:00",
+  "checks": [
+   {
+    "principle": "Cut losers fast",
+    "expectation": "Losing trades close near -1 R: the stop, not a hope",
+    "measured": "average loss -0.38 R",
+    "verdict": "PASS",
+    "note": ""
+   },
+   {
+    "principle": "Let winners run",
+    "expectation": "Average win at least as large as average loss",
+    "measured": "payoff 0.70",
+    "verdict": "DRIFT",
+    "note": "Wins are smaller than losses. A high hit rate can hide this, and it is the pattern that made the washout setup lose to holding."
+   },
+   {
+    "principle": "Be selective",
+    "expectation": "Records a small share of what it looks at",
+    "measured": "5.5% of 47,783 recorded",
+    "verdict": "PASS",
+    "note": ""
+   },
+   {
+    "principle": "Stand aside on a losing streak",
+    "expectation": "No new positions taken after 4 straight losses",
+    "measured": "1 taken during a streak",
+    "verdict": "DRIFT",
+    "note": "1 position(s) taken during a streak. The pause is the rule that protected +0.241 R against -0.559 R historically."
+   },
+   {
+    "principle": "Run both schools",
+    "expectation": "Both momentum and dip-buying setups are firing",
+    "measured": "reversion",
+    "verdict": "DRIFT",
+    "note": "Only one school is firing. They failed in opposite years (2020 and 2022), so running one leaves the desk exposed to the regime it cannot handle."
+   },
+   {
+    "principle": "Grow in line with history",
+    "expectation": "About +1.21% a month net of costs, against +1.00% for holding the index",
+    "measured": "2026-09: BELOW RANGE; over 1 month(s): TOO EARLY",
+    "verdict": "TOO EARLY",
+    "note": "-32.72% is worse than nine historical months in ten (-5.41). Worth a look \u2014 but check whether the whole market fell before blaming the system. 1 month(s). The average of fewer than six months is mostly luck."
+   }
+  ],
+  "setups": [
+   {
+    "setup": "oversold-money-holding",
+    "trades": 0,
+    "live_r": null,
+    "recommendation": "Keep watching \u2014 0 live trade(s), needs 30."
+   },
+   {
+    "setup": "capitulation",
+    "trades": 0,
+    "live_r": null,
+    "recommendation": "Keep watching \u2014 0 live trade(s), needs 30."
+   },
+   {
+    "setup": "pullback-in-uptrend",
+    "trades": 150,
+    "live_r": -0.252,
+    "recommendation": "DECAY \u2014 negative live R. Review whether its conditions have changed; consider demoting or retiring it."
+   },
+   {
+    "setup": "momentum-breakout",
+    "trades": 0,
+    "live_r": null,
+    "recommendation": "Keep watching \u2014 0 live trade(s), needs 30."
+   },
+   {
+    "setup": "panic-capitulation",
+    "trades": 0,
+    "live_r": null,
+    "recommendation": "Keep watching \u2014 0 live trade(s), needs 30."
+   },
+   {
+    "setup": "hammer-in-downtrend",
+    "trades": 0,
+    "live_r": null,
+    "recommendation": "Keep watching \u2014 0 live trade(s), needs 30."
+   },
+   {
+    "setup": "hard-down-day",
+    "trades": 0,
+    "live_r": null,
+    "recommendation": "Keep watching \u2014 0 live trade(s), needs 30."
+   },
+   {
+    "setup": "accumulation-divergence",
+    "trades": 0,
+    "live_r": null,
+    "recommendation": "Keep watching \u2014 0 live trade(s), needs 30."
+   },
+   {
+    "setup": "stretched-below-trend",
+    "trades": 0,
+    "live_r": null,
+    "recommendation": "Keep watching \u2014 0 live trade(s), needs 30."
+   },
+   {
+    "setup": "extreme-williams",
+    "trades": 0,
+    "live_r": null,
+    "recommendation": "Keep watching \u2014 0 live trade(s), needs 30."
+   }
+  ]
  }
 ]
