@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-04T23:50:07.362536+00:00",
+  "generated_at": "2026-10-05T04:09:04.275894+00:00",
   "starting_cash": 100000.0,
   "equity": 100000.0,
   "total_pnl": 0.0,
@@ -13,8 +13,8 @@
   "by_model": {},
   "verdict": "No resolved prediction carried both an entry and an exit price, so there is nothing to replay yet.",
   "gated_models": [],
-  "benchmark_return": -0.23638609573268654,
-  "benchmark_trades": 175,
+  "benchmark_return": -0.3308304645497163,
+  "benchmark_trades": 225,
   "recent_trades": [],
   "days": []
 }
