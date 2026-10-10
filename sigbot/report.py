@@ -77,6 +77,22 @@ MECHANISM = {
                   "whether the move was large enough to cover fees and spread. "
                   "Most fifteen-minute moves are not, which is why most "
                   "forecasts here are recorded rather than called"),
+    "crypto": ("It watches the most-traded coins for a coiled spring — an "
+               "unusually calm stretch of price while trading volume builds "
+               "underneath. When both line up it flags that a large move is "
+               "likely over the next few days. The count is how often a "
+               "flagged coin then made that move.",
+               "which direction the move takes — it bets on size, not up or "
+               "down. A coin can also stay coiled far longer than expected, or "
+               "break on news this has no way to see"),
+    "ventures": ("It reads company fundamentals from SEC filings and flags a "
+                 "name only when revenue growth and margins have improved "
+                 "together for several quarters — a sustained inflection, not "
+                 "one good quarter. The count is how often such a name was "
+                 "higher about ninety days later.",
+                 "price and momentum — it is fundamentals-only and slow. It "
+                 "sees nothing between quarterly filings, and a ninety-day "
+                 "thesis can be overtaken by news long before it resolves"),
     "news": ("A story came out, we matched it to this company, and guessed which way "
              "the price would go. The count below is how often that guess was right.",
              "whether this story is already old news to everyone else. The count "

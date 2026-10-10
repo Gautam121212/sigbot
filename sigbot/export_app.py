@@ -27,7 +27,8 @@ from .watchlist import Flag, Watchlist
 # in the export rather than at the definition. A test now checks the two maps
 # agree, because the failure surfaced twenty-four tests away from its cause.
 ACCENTS = {"news": "teal", "daily": "purple", "contagion": "red",
-           "crypto15m": "amber", "opportunity": "green", "setups": "green", "stocks": "green"}
+           "crypto15m": "amber", "crypto": "yellow", "ventures": "purple",
+           "opportunity": "green", "setups": "green", "stocks": "green"}
 
 # Plain-English names for what went wrong. The stored codes are precise; these
 # are what a person reads at 8am without a finance degree.
@@ -60,6 +61,15 @@ TARGET_CHECKS = {
     "daily": 4000,
     "contagion": 2000,
     "crypto15m": 6000,
+    # crypto/ventures: pre-registered sample targets, fixed before data arrives.
+    # Operational design choices sized to the existing rate-based principle
+    # (slow/rare accumulators get low targets so they are judged in comparable
+    # time) — NOT statistical significance thresholds, and NOT evidence of an
+    # edge. Both models are at 0 observations, so their true accumulation rate
+    # is still unknown. Revisit only with an explicit, versioned rationale,
+    # never because results later look disappointing or promising.
+    "crypto": 120,        # slow coiled-spring, multi-day — sized like `setups` (120), not crypto15m's intraday 6000
+    "ventures": 100,      # rarest family (SEC inflection, 90-day hold) — the test-enforced floor
     "opportunity": 200,
     # Low on purpose. A setup fires on roughly one session in 170, so 120
     # checks is a year of evidence rather than a week — and a target sized to
@@ -80,7 +90,8 @@ MODEL_META = {
     "news": ("News scanner", "Scores stories for whether they move an asset"),
     "stocks": ("Stocks & funds",
                "Scans every stock and fund, and shows only the ones worth a look"),
-    "crypto15m": ("Crypto", "Coiled-spring setups on the most traded pairs (multi-day)"),
+    "crypto": ("Crypto", "Coiled-spring setups on the most traded pairs (multi-day)"),
+    "ventures": ("Ventures", "Sustained-inflection theses from SEC fundamentals"),
     "opportunity": ("Opportunities", "Investments and business gaps, rated on evidence"),
 }
 

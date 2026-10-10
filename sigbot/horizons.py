@@ -51,6 +51,14 @@ HORIZONS: dict[str, Horizon] = {
         colour="var(--green)",
         falsifier="The pair does not move the way this says within three "
                   "hours, or moves less than the round-trip cost."),
+    "crypto": Horizon(
+        badge="Trade",
+        window="next few days",
+        colour="var(--green)",
+        falsifier="Over 120 live checks a flagged coin fails to make the "
+                  "large move within a few days as often as not — no better "
+                  "than chance at calling size — or the move it makes is "
+                  "smaller than the round-trip cost."),
     "news": Horizon(
         badge="Trade",
         window="next 24 hours",
@@ -77,6 +85,14 @@ HORIZONS: dict[str, Horizon] = {
         falsifier="Nothing here can be scored. A single event happens once, "
                   "so there is no repeat to be right or wrong about — which "
                   "is exactly why it is never called a signal."),
+    "ventures": Horizon(
+        badge="Thesis",
+        window="about 90 days",
+        colour="var(--indigo)",
+        falsifier="Over 100 resolved theses a flagged name is higher ninety "
+                  "days later no more often than the market as a whole, or a "
+                  "fresh stretch of filings shows the inflection signal "
+                  "losing its edge."),
     "paper": Horizon(
         badge="Measurement",
         window="whole record to date",
