@@ -139,7 +139,10 @@ def build(scheduler: Scheduler | None = None, jobs=None) -> Scheduler:
 
     sched = scheduler or Scheduler(on_alert=_alert)
     for name, attr, interval, venue in (jobs or JOBS):
-        fn = getattr(runner, attr, None)
+        if attr == "run_operating_loop_tick":
+            fn = _run_operating_loop_tick       # defined here in coordinator, not runner
+        else:
+            fn = getattr(runner, attr, None)
         if fn is None:
             print(f"[coordinator] {attr} not found in runner — skipping {name}")
             continue
