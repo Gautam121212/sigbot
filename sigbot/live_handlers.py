@@ -440,6 +440,67 @@ class RealSetupSources:
         print(f"ventures: SCAN_OK \u2014 {len(out)} setup(s) ready this tick")
         return out
 
+    def news(self) -> list[dict]:
+        """Scan the real news model (run_news) through a capturing ledger and
+        return its would-be records as setups. run_news builds its OWN
+        ShadowLedger internally, so we intercept runner.ShadowLedger (as
+        stocks() does) and pass a no-op messenger so the pre-scan sends no
+        digest.
+
+        event_id (Option A): synthesised as SYMBOL:source:UTC-scan-date, because
+        run_news records no article id. This dedups the same symbol+source
+        within one UTC day. It does NOT dedup the same article across a
+        UTC-midnight boundary (run_news scans a 12h window that straddles
+        midnight); strict cross-day article identity needs a runner-exposed
+        article id/timestamp (Option B).
+
+        Fail-closed: if the scan raises, any captured candidates are DISCARDED
+        and no setups returned, so a partial/failed scan cannot feed the
+        handler. Prints SCAN_OK (with count) / SCAN_FAILED every tick.
+        """
+        import json as _json
+        import sigbot.runner as R
+        from datetime import datetime, timezone
+
+        class _SilentMessenger:
+            def send(self, *a, **k):
+                return None
+
+        scan_date = datetime.now(timezone.utc).strftime("%Y%m%d")
+        cap = _CapturingLedger(
+            ShadowLedger(getattr(self.settings, "shadow_db", "shadow.db")))
+        orig = R.ShadowLedger
+        try:
+            setattr(R, "ShadowLedger", lambda *a, **k: cap)   # run_news self-builds
+            R.run_news(messenger=_SilentMessenger(), settings=self.settings)
+        except Exception as exc:  # noqa: BLE001
+            from .skips import record_skip
+            record_skip("news_setup_scan", "news", exc)
+            print(f"news: SCAN_FAILED \u2014 {type(exc).__name__}: {exc}")
+            return []                      # fail closed: discard partial capture
+        finally:
+            setattr(R, "ShadowLedger", orig)                  # restore
+        out = []
+        for c in cap.captured:
+            if c["model"] != "news":
+                continue
+            symbol = c["symbol"]
+            try:
+                source = (_json.loads(c.get("payload") or "{}")
+                          or {}).get("source", "")
+            except (ValueError, TypeError):
+                source = ""
+            event_id = (f"{str(symbol).upper().strip()}:"
+                        f"{str(source).lower().strip()}:{scan_date}")
+            out.append({"symbol": symbol, "side": c["side"],
+                        "score": c["score"], "expected_move": c["expected_move"],
+                        "scan_price": c.get("scan_price"),
+                        "horizon_hours": c.get("horizon_hours") or 24,
+                        "payload": c.get("payload", ""),
+                        "event_id": event_id})
+        print(f"news: SCAN_OK \u2014 {len(out)} setup(s) ready this tick")
+        return out
+
 
 def _horizon_from_payload(captured: dict) -> int:
     """Pull hold_days from the captured payload if present (stocks encodes it),

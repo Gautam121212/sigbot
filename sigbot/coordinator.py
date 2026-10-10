@@ -125,6 +125,10 @@ def _run_operating_loop_tick() -> None:
     # and the handler records from that same scan (no double work). Stocks stays
     # lazy — its predict event is unconditional when closed/preopen.
     ventures_setups = src.ventures()
+    # News is event-queued: the scheduler emits PREDICT_CURRENT_SESSION only when
+    # news_queue > 0, so pre-scan once and pass the count. Same capture pattern
+    # as ventures; src.news() is fail-closed (returns [] on a scan error).
+    news_setups = src.news()
     if _LOOP_INSTANCE is None:
         from .operating_loop_v2 import OperatingLoop
         ledger = ShadowLedger(SETTINGS.shadow_db)
@@ -135,7 +139,9 @@ def _run_operating_loop_tick() -> None:
     # refresh setup sources for this tick
     _LOOP_INSTANCE.handlers.stocks_setups = src.stocks
     _LOOP_INSTANCE.handlers.ventures_setups = lambda: ventures_setups
-    _LOOP_INSTANCE.tick(ventures_backlog=len(ventures_setups))
+    _LOOP_INSTANCE.handlers.news_setups = lambda: news_setups
+    _LOOP_INSTANCE.tick(ventures_backlog=len(ventures_setups),
+                        news_queue=len(news_setups))
 
 
 def build(scheduler: Scheduler | None = None, jobs=None) -> Scheduler:
