@@ -408,15 +408,24 @@ class RealSetupSources:
     def ventures(self) -> list[dict]:
         """Scan the real ventures model (run_ventures_live) through a capturing
         ledger and return its would-be records as setups. run_ventures_live
-        accepts a ledger param, so no monkeypatch is needed."""
+        accepts a ledger param, so no monkeypatch is needed.
+
+        Fail-closed: if the scan raises, any candidates captured before the
+        failure are DISCARDED and no setups are returned, so a partial or failed
+        scan can never feed the prediction handler as if it had completed. The
+        outcome is printed every tick (SCAN_FAILED, or SCAN_OK with the count)
+        because record_skip's counters are in-memory only and never reach the
+        tick log on their own."""
         from sigbot.run_ventures_live import run_ventures_live
         real = ShadowLedger(getattr(self.settings, "shadow_db", "shadow.db"))
         cap = _CapturingLedger(real)
         try:
-            run_ventures_live(settings=self.settings, ledger=cap)
+            summary = run_ventures_live(settings=self.settings, ledger=cap)
         except Exception as exc:  # noqa: BLE001
             from .skips import record_skip
             record_skip("ventures_setup_scan", "ventures", exc)
+            print(f"ventures: SCAN_FAILED \u2014 {type(exc).__name__}: {exc}")
+            return []                      # fail closed: discard partial capture
         out = []
         for c in cap.captured:
             if c["model"] != "ventures":
@@ -426,6 +435,9 @@ class RealSetupSources:
                         "horizon_hours": c.get("horizon_hours") or 2160,
                         "payload": c.get("payload", ""),
                         "thesis_id": c.get("dedup_key") or c["symbol"]})
+        if summary:
+            print(summary)                 # "ventures: scanned N, M sustained-inflection ..."
+        print(f"ventures: SCAN_OK \u2014 {len(out)} setup(s) ready this tick")
         return out
 
 
