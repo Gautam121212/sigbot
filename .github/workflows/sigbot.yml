@@ -23,7 +23,7 @@ permissions:
 # Never run two ticks at once — they would fight over the commit.
 concurrency:
   group: sigbot-run
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   run:
@@ -59,7 +59,7 @@ jobs:
         run: |
           # Lift the halt so paper trading and all models run.
           python -m sigbot.runner resume || true
-          python -m sigbot.coordinator --once || echo "tick finished with warnings"
+          timeout 900 python -m sigbot.coordinator --once || echo "tick finished (warnings or 15-min timeout)"
 
       - name: Commit the updated ledger back to the repo
         run: |
