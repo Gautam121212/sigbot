@@ -501,6 +501,51 @@ class RealSetupSources:
         print(f"news: SCAN_OK \u2014 {len(out)} setup(s) ready this tick")
         return out
 
+    def crypto(self) -> list[dict]:
+        """Scan the real crypto model (run_crypto_live) through a capturing
+        ledger and return its would-be records as setups. run_crypto_live
+        accepts a ledger param (like ventures), so no monkeypatch. The default
+        inter_request_sleep (CoinGecko rate limit) is kept in production.
+
+        Dedup (signal_instance): the coiled-spring signal is a volatility STATE
+        re-observed on every 3-hourly tick while a coin stays coiled; its only
+        varying fields (score, price, note) change each tick and cannot identify
+        'the same signal'. The stable identity is (symbol, horizon, signal-class),
+        so we set signal_instance to the signal class ('coiled-spring'). The
+        handler's key 'crypto|SYMBOL|{h}h|coiled-spring' is then caught by the
+        ledger's open-key guard: one open prediction per coiled coin, every
+        re-observation suppressed until it resolves, after which a genuinely new
+        signal records. (Encode the class here if a second crypto signal is
+        added, so distinct signal types stay distinct.)
+
+        Fail-closed: if the scan raises, captured candidates are DISCARDED and
+        no setups returned. Prints SCAN_OK (with count) / SCAN_FAILED each tick.
+        """
+        from sigbot.run_crypto_live import run_crypto_live
+        real = ShadowLedger(getattr(self.settings, "shadow_db", "shadow.db"))
+        cap = _CapturingLedger(real)
+        try:
+            summary = run_crypto_live(settings=self.settings, ledger=cap)
+        except Exception as exc:  # noqa: BLE001
+            from .skips import record_skip
+            record_skip("crypto_setup_scan", "crypto", exc)
+            print(f"crypto: SCAN_FAILED \u2014 {type(exc).__name__}: {exc}")
+            return []                      # fail closed: discard partial capture
+        out = []
+        for c in cap.captured:
+            if c["model"] != "crypto":
+                continue
+            out.append({"symbol": c["symbol"], "side": c["side"],
+                        "score": c["score"], "expected_move": c["expected_move"],
+                        "scan_price": c.get("scan_price"),
+                        "horizon_hours": c.get("horizon_hours") or 72,
+                        "payload": c.get("payload", ""),
+                        "signal_instance": "coiled-spring"})
+        if summary:
+            print(summary)                 # "crypto: scanned N, M coiled-and-loaded ..."
+        print(f"crypto: SCAN_OK \u2014 {len(out)} setup(s) ready this tick")
+        return out
+
 
 def _horizon_from_payload(captured: dict) -> int:
     """Pull hold_days from the captured payload if present (stocks encodes it),

@@ -129,6 +129,10 @@ def _run_operating_loop_tick() -> None:
     # news_queue > 0, so pre-scan once and pass the count. Same capture pattern
     # as ventures; src.news() is fail-closed (returns [] on a scan error).
     news_setups = src.news()
+    # Crypto trades continuously (crypto_open always true) with no backlog gate,
+    # so the scheduler emits PREDICT_CURRENT_SESSION every tick; pre-scan and set
+    # the source. src.crypto() is fail-closed (returns [] on a scan error).
+    crypto_setups = src.crypto()
     if _LOOP_INSTANCE is None:
         from .operating_loop_v2 import OperatingLoop
         ledger = ShadowLedger(SETTINGS.shadow_db)
@@ -140,6 +144,7 @@ def _run_operating_loop_tick() -> None:
     _LOOP_INSTANCE.handlers.stocks_setups = src.stocks
     _LOOP_INSTANCE.handlers.ventures_setups = lambda: ventures_setups
     _LOOP_INSTANCE.handlers.news_setups = lambda: news_setups
+    _LOOP_INSTANCE.handlers.crypto_setups = lambda: crypto_setups
     _LOOP_INSTANCE.tick(ventures_backlog=len(ventures_setups),
                         news_queue=len(news_setups))
 
