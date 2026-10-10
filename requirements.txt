@@ -5,6 +5,7 @@ scikit-learn>=1.4
 
 # Running the test suite.
 pytest>=8.0
+ruff==0.16.5          # test_phase1 shells out to `ruff check`
 
 # Live data and news. Only used once you point it at real markets.
 yfinance>=0.2.40

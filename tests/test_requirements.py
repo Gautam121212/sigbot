@@ -75,7 +75,9 @@ def test_nothing_declared_is_unused():
     imported = _imported()
     # Optional live-data extras are imported lazily inside functions; the AST
     # walk finds those too, so they should still appear.
-    unused = sorted(declared - imported - {"scikit-learn"})
+    # scikit-learn imports as `sklearn`; ruff is a CLI run via subprocess in
+    # test_phase1, never `import`ed. Both are legitimately declared-not-imported.
+    unused = sorted(declared - imported - {"scikit-learn", "ruff"})
     assert not unused, f"declared but never imported: {unused}"
 
 
