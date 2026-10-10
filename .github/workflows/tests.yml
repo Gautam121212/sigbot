@@ -1,0 +1,47 @@
+# Automated test gate. Runs the full pytest suite on every change to source or
+# tests, so the integration tests can never again be silently skipped before a
+# push. It does NOT gate the cron tick in sigbot.yml (separate trigger): a test
+# failure must be VISIBLE as a red check, but must not halt the live heartbeat.
+# A path filter keeps the bot's generated "tick:" commits from firing this.
+name: tests
+
+on:
+  push:
+    paths:
+      - "sigbot/**"
+      - "tests/**"
+      - "scripts/**"
+      - "requirements.txt"
+      - ".github/workflows/tests.yml"
+  pull_request: {}
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sigbot-tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  pytest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run the full test suite
+        # --ignore=sigbot-10: that tracked directory is a second copy of the
+        # project tree whose duplicate tests/conftest.py breaks collection.
+        run: python -m pytest -q --ignore=sigbot-10
