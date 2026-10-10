@@ -308,6 +308,11 @@ def test_the_coordinator_schedules_real_runner_jobs():
     sched = coordinator.build(Scheduler())
     assert sched.tasks, "no jobs registered"
     for task in sched.tasks:
+        # operating_loop is the loop ORCHESTRATOR — by design it lives in
+        # coordinator (it builds the OperatingLoop + handlers), not runner.
+        if task.name == "operating_loop":
+            assert task.run is coordinator._run_operating_loop_tick
+            continue
         assert any(getattr(runner, attr, None) is task.run
                    for _, attr, _, _ in coordinator.JOBS), \
             f"{task.name} is not a runner function"

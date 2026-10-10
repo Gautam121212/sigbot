@@ -115,22 +115,27 @@ def _run_operating_loop_tick() -> None:
     if not _LOOP_ENABLED:
         return
     global _LOOP_INSTANCE
+    from .live_handlers import LiveHandlers, RealSetupSources
+    from .shadow import ShadowLedger
+    from .providers.market import YahooProvider
+    from .config import SETTINGS
+    src = RealSetupSources(settings=SETTINGS)
+    # Ventures' PREDICT event is backlog-gated in the scheduler: pre-scan once so
+    # plan_tick emits PREDICT_NEXT_SESSION only when a concrete thesis is ready,
+    # and the handler records from that same scan (no double work). Stocks stays
+    # lazy — its predict event is unconditional when closed/preopen.
+    ventures_setups = src.ventures()
     if _LOOP_INSTANCE is None:
         from .operating_loop_v2 import OperatingLoop
-        from .live_handlers import LiveHandlers, RealSetupSources
-        from .shadow import ShadowLedger
-        from .providers.market import YahooProvider
-        from .config import SETTINGS
         ledger = ShadowLedger(SETTINGS.shadow_db)
         market = YahooProvider()
-        src = RealSetupSources(settings=SETTINGS)
-        handlers = LiveHandlers(
-            ledger=ledger, market=market,
-            stocks_setups=src.stocks,
-            # crypto/ventures/ideas: real sources added as each is verified
-        )
+        handlers = LiveHandlers(ledger=ledger, market=market,
+                                stocks_setups=src.stocks)
         _LOOP_INSTANCE = OperatingLoop(handlers=handlers)
-    _LOOP_INSTANCE.tick()
+    # refresh setup sources for this tick
+    _LOOP_INSTANCE.handlers.stocks_setups = src.stocks
+    _LOOP_INSTANCE.handlers.ventures_setups = lambda: ventures_setups
+    _LOOP_INSTANCE.tick(ventures_backlog=len(ventures_setups))
 
 
 def build(scheduler: Scheduler | None = None, jobs=None) -> Scheduler:

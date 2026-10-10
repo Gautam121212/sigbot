@@ -405,6 +405,29 @@ class RealSetupSources:
                         "payload": c.get("payload", "")})
         return out
 
+    def ventures(self) -> list[dict]:
+        """Scan the real ventures model (run_ventures_live) through a capturing
+        ledger and return its would-be records as setups. run_ventures_live
+        accepts a ledger param, so no monkeypatch is needed."""
+        from sigbot.run_ventures_live import run_ventures_live
+        real = ShadowLedger(getattr(self.settings, "shadow_db", "shadow.db"))
+        cap = _CapturingLedger(real)
+        try:
+            run_ventures_live(settings=self.settings, ledger=cap)
+        except Exception as exc:  # noqa: BLE001
+            from .skips import record_skip
+            record_skip("ventures_setup_scan", "ventures", exc)
+        out = []
+        for c in cap.captured:
+            if c["model"] != "ventures":
+                continue
+            out.append({"symbol": c["symbol"], "side": c["side"],
+                        "score": c["score"], "expected_move": c["expected_move"],
+                        "horizon_hours": c.get("horizon_hours") or 2160,
+                        "payload": c.get("payload", ""),
+                        "thesis_id": c.get("dedup_key") or c["symbol"]})
+        return out
+
 
 def _horizon_from_payload(captured: dict) -> int:
     """Pull hold_days from the captured payload if present (stocks encodes it),
