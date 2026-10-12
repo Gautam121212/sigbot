@@ -71,7 +71,7 @@ jobs:
           # force-adding them, every GitHub Actions run starts with an empty
           # ledger and the site always shows zero. ship.sh does the same.
           for f in shadow.db patterns.db watchlist.db opportunities.json \
-                   universe.json paper.json dead_symbols.json; do
+                   universe.json paper.json dead_symbols.json scan_health.json; do
             git add -f "$f" 2>/dev/null || true
           done
           git add -A
