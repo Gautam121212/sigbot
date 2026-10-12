@@ -29,3 +29,5 @@ app/sigbot-report.html
 
 # Wrangler cache — local tooling state, never source
 .wrangler/
+app/status.json
+app/sigbot-standalone.html

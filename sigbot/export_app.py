@@ -495,6 +495,37 @@ def _dominant_side(ledger, model_id: str, symbol: str) -> str:
         return ""
 
 
+# Which families count toward the operational verification ring, and which are
+# research-only (quarantined). The exporter owns this split so the UI never has
+# to hard-code it.
+OPERATIONAL_MODELS = {"news", "stocks", "crypto", "ventures"}
+
+
+def _with_role(md: dict) -> dict:
+    md["role"] = "operational" if md.get("id") in OPERATIONAL_MODELS else "research"
+    return md
+
+
+def _build_id() -> str:
+    """A stable id shared by data.json and status.json for one published build.
+
+    In CI this is GITHUB_SHA: the SOURCE revision checked out for the run, not
+    the later ledger commit this run may create. Locally it is the current git
+    HEAD, falling back to a timestamp when there is no git revision.
+    """
+    import os
+    sha = os.environ.get("GITHUB_SHA")
+    if sha:
+        return sha.strip()
+    try:
+        import subprocess
+        return subprocess.check_output(
+            ["git", "rev-parse", "HEAD"], text=True,
+            stderr=subprocess.DEVNULL).strip()
+    except Exception:  # noqa: BLE001  # handled: no git revision available, fall back to a timestamp id
+        return datetime.now(timezone.utc).isoformat()
+
+
 def build_export(db_path: str = "shadow.db", patterns_path: str = "patterns.db",
                  watchlist_path: str = "watchlist.db", max_alerts: int = 40,
                  charts: list[dict] | None = None, is_sample: bool = False,
@@ -702,7 +733,7 @@ def build_export(db_path: str = "shadow.db", patterns_path: str = "patterns.db",
                 "exactly what should happen — it means nothing is being made up."
             ),
         },
-        "models": _attach_sectors(_stamp_time([m.to_dict() for m in models])),
+        "models": _attach_sectors(_stamp_time([_with_role(m.to_dict()) for m in models])),
         "board": board,
         "charts": charts or [],
         "opportunities": opportunities or [],
@@ -824,7 +855,18 @@ def _failure_feed(ledger: ShadowLedger, scan: int = 600) -> list[dict]:
 def write_export(out: str | Path = "app/data.json", **kwargs) -> Path:
     path = Path(out)
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(build_export(**kwargs), indent=2), encoding="utf-8")
+    data = build_export(**kwargs)
+    build = _build_id()
+    data["build"] = build
+    path.write_text(json.dumps(data, indent=2), encoding="utf-8")
+    # A tiny companion file the dashboard polls to learn the current build
+    # without refetching the large data file. Same build id as data.json, so
+    # the page can refuse data that does not match what status announced.
+    status = {"build": build, "generated_at": data.get("generated_at"),
+              "note": ("build is the source revision (GITHUB_SHA) at export "
+                       "time, not the later ledger commit this run may create.")}
+    (path.parent / "status.json").write_text(
+        json.dumps(status, indent=2), encoding="utf-8")
     return path
 
 

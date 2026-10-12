@@ -69,8 +69,8 @@ def test_generated_files_are_not_tracked():
     from pathlib import Path
 
     ignored = (Path(__file__).resolve().parents[1] / ".gitignore").read_text()
-    for generated in ("app/data.json", "app/public/", "app/sigbot-report.html",
-                      "outbox.log"):
+    for generated in ("app/data.json", "app/status.json", "app/public/",
+                      "app/sigbot-report.html", "outbox.log"):
         assert generated in ignored, f"{generated} must not be tracked"
     # The ledger must still be force-added by the ship script.
     ship = (Path(__file__).resolve().parents[1] / "scripts" / "ship.sh").read_text()

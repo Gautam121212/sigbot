@@ -1,312 +1,577 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#0a0a0f">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<link rel="manifest" href="manifest.webmanifest">
-<link rel="apple-touch-icon" href="icon.svg">
-<title>Sigbot</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<title>SIGBOT Dashboard</title>
 <style>
+/* Small shell: fetches data.json + status.json. Layout: fixed left rail (desktop) /
+   bottom nav (mobile) + sticky status bar + scrolling content. SIGBOT dark palette. */
 :root{
-  --bg:#0a0a0f; --card:#111118; --card-border:#1a1a24;
-  --teal:#00d4aa; --teal-glow:rgba(0,212,170,.15);
-  --green:#00e676; --purple:#7c4dff; --red:#ff6b6b; --yellow:#ffd93d;
-  --white:#fff; --gray:#8b8b9a; --light-gray:#b0b0c0;
+  --bg:#0a0a0f; --surface:#111118; --surface-2:#15151f; --raise:#1a1a26;
+  --line:#20202c; --line-2:#2a2a38;
+  --text:#e9ebf2; --dim:#9aa4b8; --faint:#646f88;
+  --teal:#2dd4bf; --green:#34d399; --indigo:#8b93ff; --amber:#fbbf24; --red:#f87171; --purple:#a98bff;
+  --accent:var(--teal);
+  --good:#34d399; --warn:#fbbf24; --bad:#f87171;
+  --r:14px; --r-sm:9px;
+  --sans:"Inter","Helvetica Neue",system-ui,-apple-system,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,monospace;
+  color-scheme:dark;
 }
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:Inter,-apple-system,BlinkMacSystemFont,sans-serif;background:var(--bg);
-  color:var(--white);-webkit-font-smoothing:antialiased;overflow:hidden}
-.app{max-width:430px;height:100vh;height:100dvh;margin:0 auto;display:flex;
-  flex-direction:column;position:relative;overflow:hidden}
-.topbar{display:flex;justify-content:space-between;align-items:baseline;
-  padding:16px 24px 6px}
-.brand{font-size:15px;font-weight:800;letter-spacing:-.2px}
-.stamp{font-size:11px;color:var(--gray)}
-.main{flex:1;overflow-y:auto;overflow-x:hidden;padding:0 16px 104px;scrollbar-width:none}
-.main::-webkit-scrollbar{display:none}
-.screen{animation:slideUp .35s cubic-bezier(.4,0,.2,1)}
-@keyframes slideUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);-webkit-font-smoothing:antialiased;font-size:14px;line-height:1.5}
+a{color:inherit;text-decoration:none}
+h1,h2,h3{margin:0;text-wrap:balance;font-weight:600;letter-spacing:-.01em}
+.mono,.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+button{font-family:inherit;color:inherit;cursor:pointer;background:none;border:none}
+:focus-visible{outline:2px solid var(--teal);outline-offset:2px;border-radius:4px}
 
-.card{background:var(--card);border:1.5px solid var(--card-border);border-radius:20px;
-  padding:20px;position:relative;overflow:hidden;
-  transition:border-color .3s cubic-bezier(.4,0,.2,1),transform .3s cubic-bezier(.4,0,.2,1),box-shadow .3s}
-.card::before{content:'';position:absolute;inset:0 0 auto 0;height:1px;
-  background:linear-gradient(90deg,transparent,rgba(255,255,255,.06),transparent)}
-.tap{cursor:pointer}
-.tap:hover{border-color:rgba(255,255,255,.1);transform:translateY(-2px);
-  box-shadow:0 8px 32px rgba(0,0,0,.4)}
-.tap:active{transform:translateY(0)}
+.app{display:grid;grid-template-columns:232px 1fr;min-height:100%}
+.rail{position:sticky;top:0;align-self:start;height:100vh;border-right:1px solid var(--line);background:var(--surface);display:flex;flex-direction:column;padding:20px 14px;gap:4px}
+.brand{display:flex;align-items:center;gap:10px;padding:4px 8px 16px}
+.brand .mark{width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,var(--teal),var(--indigo));display:grid;place-items:center;font-weight:800;font-size:13px;color:#06121a;letter-spacing:-.04em}
+.brand .wordmark{font-weight:700;letter-spacing:.14em;font-size:13px}
+.navlabel{font-size:10px;letter-spacing:.14em;color:var(--faint);text-transform:uppercase;padding:14px 10px 6px}
+.navitem{display:flex;align-items:center;gap:11px;padding:9px 10px;border-radius:var(--r-sm);color:var(--dim);font-size:13.5px;font-weight:500;transition:background .15s,color .15s;width:100%;text-align:left}
+.navitem svg{width:17px;height:17px;flex:none;stroke:currentColor;fill:none;stroke-width:1.7}
+.navitem:hover{background:var(--surface-2);color:var(--text)}
+.navitem[aria-current="true"]{background:var(--raise);color:var(--text)}
+.navitem[aria-current="true"] svg{stroke:var(--teal)}
+.rail-foot{margin-top:auto;padding:12px 10px 2px;border-top:1px solid var(--line);font-size:11px;color:var(--faint);line-height:1.6}
+.rail-foot .fresh{display:flex;align-items:center;gap:7px;color:var(--dim);font-weight:500}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--good);flex:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--good) 20%,transparent)}
+.dot.stale{background:var(--warn);box-shadow:0 0 0 3px color-mix(in srgb,var(--warn) 20%,transparent)}
+.dot.fail{background:var(--bad);box-shadow:0 0 0 3px color-mix(in srgb,var(--bad) 20%,transparent)}
 
-/* Signature: the evidence ring. This product is about how much is proven,
-   so the hero is a proof meter rather than a balance. */
-.hero{margin-top:8px;display:flex;gap:20px;align-items:center}
-.hero-glow{position:absolute;top:-60%;left:-15%;width:220px;height:220px;
-  background:radial-gradient(circle,var(--teal-glow) 0%,transparent 70%);pointer-events:none}
-.ring{position:relative;flex-shrink:0;width:92px;height:92px}
-.ring svg{transform:rotate(-90deg)}
-.ring-num{position:absolute;inset:0;display:flex;flex-direction:column;
-  align-items:center;justify-content:center;line-height:1}
-.ring-num b{font-size:26px;font-weight:800;letter-spacing:-1px}
-.ring-num span{font-size:9px;color:var(--gray);letter-spacing:.6px;margin-top:3px}
-.hero-text{position:relative;z-index:1;min-width:0}
-.hero-text h2{font-size:14px;font-weight:700;line-height:1.35;margin-bottom:8px}
-.hero-text p{font-size:11.5px;color:var(--gray);line-height:1.5}
+.main{min-width:0;display:flex;flex-direction:column}
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;display:flex;align-items:center;gap:16px;padding:14px 26px;background:color-mix(in srgb,var(--bg) 86%,transparent);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.topbar h1{font-size:17px}
+.topbar .sub{color:var(--faint);font-size:12px;margin-top:2px}
+.topbar .spacer{flex:1}
+.chip{display:inline-flex;align-items:center;gap:7px;padding:5px 11px;border:1px solid var(--line-2);border-radius:999px;font-size:12px;color:var(--dim);background:var(--surface)}
+.chip .dot{width:6px;height:6px;box-shadow:none}
+.content{padding:26px;max-width:1180px;width:100%;display:flex;flex-direction:column;gap:26px}
+.section{display:flex;flex-direction:column;gap:22px;animation:fade .3s ease}
+@keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 
-.section-head{display:flex;justify-content:space-between;align-items:center;margin:26px 0 12px}
-.section-head h3{font-size:16px;font-weight:700;letter-spacing:-.2px}
-.see-all{font-size:12px;color:var(--teal);font-weight:600;cursor:pointer;
-  background:none;border:none;font-family:inherit}
-.list{display:flex;flex-direction:column;gap:12px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:20px}
+.eyebrow{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);font-weight:600}
+.muted{color:var(--dim)} .faint{color:var(--faint)}
+.subhead{display:flex;align-items:center;gap:10px;margin:2px 0}
+.subhead h3{font-size:13px;letter-spacing:.02em}
+.quar-tag{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--amber);border:1px solid color-mix(in srgb,var(--amber) 38%,transparent);background:color-mix(in srgb,var(--amber) 10%,transparent);padding:3px 9px;border-radius:999px;font-weight:600}
 
-.model{display:flex;align-items:center;gap:15px;padding:17px 18px}
-.avatar{width:46px;height:46px;border-radius:50%;display:flex;align-items:center;
-  justify-content:center;font-size:16px;font-weight:800;flex-shrink:0;border:1.5px solid}
-.model-info{flex:1;min-width:0}
-.model-info h4{font-size:14.5px;font-weight:700;margin-bottom:2px}
-.model-info p{font-size:11.5px;color:var(--gray);line-height:1.4}
-.chevron{font-size:20px;color:var(--gray);font-weight:300;flex-shrink:0}
-.badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;
-  font-size:10px;font-weight:700;letter-spacing:.4px;margin-top:6px}
+.hero{display:grid;grid-template-columns:auto 1fr;gap:28px;align-items:center}
+.ring-wrap{display:grid;place-items:center;position:relative}
+.ring-wrap .ctr{position:absolute;text-align:center}
+.ring-wrap .ctr b{display:block;font-size:30px;font-weight:700;font-family:var(--mono)}
+.ring-wrap .ctr span{font-size:11px;color:var(--faint);letter-spacing:.08em;text-transform:uppercase}
+.hero-copy h2{font-size:22px;margin-bottom:8px}
+.hero-copy p{color:var(--dim);margin:0;max-width:60ch}
+.hero-copy .note{font-size:12.5px;color:var(--faint);margin-top:10px}
 
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:16px 0 20px}
-.stat{padding:14px 8px;text-align:center}
-.stat b{display:block;font-size:15px;font-weight:800;margin-bottom:4px}
-.stat span{font-size:9px;color:var(--gray);text-transform:uppercase;letter-spacing:.5px}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px}
+.tile{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.tile .k{font-size:11px;color:var(--faint);letter-spacing:.05em;text-transform:uppercase;font-weight:600}
+.tile .v{font-size:26px;font-weight:700;font-family:var(--mono);letter-spacing:-.02em}
+.tile .v.sm{font-size:19px}
+.tile .d{font-size:12px;color:var(--dim)}
 
-.meter{height:6px;background:var(--card-border);border-radius:3px;overflow:hidden;margin:12px 0 8px}
-.meter i{display:block;height:100%;border-radius:3px;transition:width .9s cubic-bezier(.4,0,.2,1)}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.row-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.row-head h3{font-size:15px}
+.count{font-size:11px;color:var(--faint);letter-spacing:.1em}
 
-.row{display:flex;align-items:center;gap:12px;padding:15px 18px;position:relative}
-.row-bar{position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:0 3px 3px 0}
-.row-body{flex:1;min-width:0}
-.row-body h4{font-size:13px;font-weight:700;margin-bottom:3px}
-.row-body p{font-size:11px;color:var(--gray);line-height:1.45}
+.models{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
+.mcard{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:0;overflow:hidden;display:flex;flex-direction:column;text-align:left;transition:border-color .15s,transform .15s}
+.mcard:hover{border-color:var(--line-2);transform:translateY(-2px)}
+.mcard.quar{opacity:.92;border-style:dashed}
+.mcard .bar{height:3px;background:var(--ac)}
+.mcard .body{padding:17px 18px;display:flex;flex-direction:column;gap:13px;flex:1}
+.mcard .top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.mcard .name{font-size:15.5px;font-weight:600}
+.mcard .subtitle{font-size:12.5px;color:var(--dim);margin-top:2px;line-height:1.45}
+.badge{font-size:10.5px;font-weight:600;letter-spacing:.02em;padding:4px 9px;border-radius:999px;white-space:nowrap;border:1px solid var(--line-2);color:var(--dim);background:var(--surface-2)}
+.tier{font-size:11px;font-weight:600;letter-spacing:.03em;padding:3px 9px;border-radius:6px;display:inline-block}
+.tier.SILENT{color:var(--faint);background:var(--raise)}
+.tier.CAUTION{color:var(--amber);background:color-mix(in srgb,var(--amber) 14%,transparent)}
+.tier.TRADE{color:var(--green);background:color-mix(in srgb,var(--green) 16%,transparent)}
+.meter{display:flex;flex-direction:column;gap:5px}
+.meter .lbl{display:flex;justify-content:space-between;font-size:11.5px;color:var(--dim)}
+.track{height:6px;background:var(--raise);border-radius:999px;overflow:hidden;position:relative}
+.track>i{display:block;height:100%;border-radius:999px;background:var(--ac)}
+.track.hr>i{background:linear-gradient(90deg,color-mix(in srgb,var(--ac) 55%,transparent),var(--ac))}
+.track .null{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--faint);opacity:.85}
+.mcard .foot{font-size:11.5px;color:var(--faint);line-height:1.5;border-top:1px solid var(--line);padding-top:11px;margin-top:auto}
+.empty{font-size:12.5px;color:var(--faint);background:var(--surface-2);border:1px dashed var(--line-2);border-radius:var(--r-sm);padding:12px 14px;line-height:1.5}
 
-.tabs{display:flex;gap:8px;margin:10px 0 18px;overflow-x:auto;scrollbar-width:none}
-.tabs::-webkit-scrollbar{display:none}
-.tab{background:var(--card);border:1.5px solid var(--card-border);color:var(--gray);
-  padding:8px 17px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;
-  white-space:nowrap;transition:all .2s;font-family:inherit}
-.tab.on{background:var(--teal);border-color:var(--teal);color:var(--bg)}
-.tab:hover:not(.on){border-color:rgba(255,255,255,.15);color:var(--white)}
+.bk{display:flex;flex-direction:column;gap:2px}
+.bk .row{display:grid;grid-template-columns:120px 1fr auto;gap:14px;align-items:center;padding:11px 0;border-bottom:1px solid var(--line)}
+.bk .row:last-child{border-bottom:none}
+.bk .per{font-size:13px;font-weight:500}
+.bk .det{font-size:12px;color:var(--dim)}
+.bk .pill{font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px}
+.bk .pill.no{color:var(--dim);background:var(--raise)}
+.bk .pill.yes{color:var(--green);background:color-mix(in srgb,var(--green) 16%,transparent)}
 
-.back{background:none;border:none;color:var(--gray);font-size:14px;cursor:pointer;
-  padding:10px 0;display:flex;align-items:center;gap:6px;font-family:inherit;font-weight:600}
-.back:hover{color:var(--white)}
-.note{font-size:11px;color:var(--gray);line-height:1.6;padding:16px 4px 0}
-.empty{text-align:center;padding:44px 24px;color:var(--gray);font-size:13px;line-height:1.6}
-.empty b{display:block;color:var(--white);font-size:15px;margin-bottom:8px}
+.toolbar{display:flex;gap:9px;flex-wrap:wrap;align-items:center}
+.fchip{font-size:12px;padding:6px 12px;border-radius:999px;border:1px solid var(--line-2);color:var(--dim);background:var(--surface);transition:.15s}
+.fchip:hover{color:var(--text);border-color:var(--faint)}
+.fchip[aria-pressed="true"]{color:#06121a;background:var(--teal);border-color:var(--teal);font-weight:600}
+.search{margin-left:auto;display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--line-2);border-radius:999px;padding:6px 13px;min-width:180px}
+.search input{background:none;border:none;color:var(--text);font-size:13px;width:100%;outline:none}
+.search svg{width:15px;height:15px;stroke:var(--faint);fill:none;stroke-width:1.8}
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r)}
+table{width:100%;border-collapse:collapse;font-size:13px;min-width:560px}
+th{text-align:left;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);font-weight:600;padding:12px 14px;background:var(--surface-2);position:sticky;top:0}
+td{padding:11px 14px;border-top:1px solid var(--line)}
+tbody tr:hover{background:var(--surface-2)}
+.sidepill{font-size:11px;font-weight:600;padding:2px 8px;border-radius:5px}
+.sidepill.BUY{color:var(--green);background:color-mix(in srgb,var(--green) 15%,transparent)}
+.sidepill.SELL{color:var(--red);background:color-mix(in srgb,var(--red) 15%,transparent)}
+.sym{font-weight:600;font-family:var(--mono)}
+.pos{color:var(--green)} .neg{color:var(--red)}
 
-.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;
-  max-width:430px;background:linear-gradient(to top,var(--bg) 72%,transparent);
-  display:flex;justify-content:space-around;padding:12px 0 max(20px,env(safe-area-inset-bottom));z-index:100}
-.nav button{background:none;border:none;display:flex;flex-direction:column;align-items:center;
-  gap:5px;color:var(--gray);cursor:pointer;padding:4px 18px;transition:color .2s;font-family:inherit}
-.nav button.on{color:var(--teal)}
-.nav button:hover{color:var(--white)}
-.nav b{font-size:16px;font-weight:800}
-.nav span{font-size:9.5px;font-weight:600}
-:focus-visible{outline:2px solid var(--teal);outline-offset:3px;border-radius:8px}
-@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
-@media(max-width:480px){.app,.nav{max-width:100vw}}
+.drawer-bg{position:fixed;inset:0;background:rgba(4,4,8,.6);z-index:40;opacity:0;pointer-events:none;transition:opacity .2s}
+.drawer-bg.open{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;right:0;height:100%;width:min(520px,92vw);background:var(--surface);border-left:1px solid var(--line);z-index:41;transform:translateX(100%);transition:transform .24s cubic-bezier(.2,.7,.2,1);overflow-y:auto}
+.drawer.open{transform:none}
+.drawer .dhead{position:sticky;top:0;background:var(--surface);border-bottom:1px solid var(--line);padding:20px 22px;display:flex;align-items:flex-start;justify-content:space-between;gap:14px}
+.drawer .dbody{padding:22px;display:flex;flex-direction:column;gap:20px}
+.xbtn{width:30px;height:30px;border-radius:8px;border:1px solid var(--line-2);display:grid;place-items:center;color:var(--dim);flex:none}
+.xbtn:hover{background:var(--surface-2);color:var(--text)}
+.falsi{border-left:3px solid var(--line-2);padding:4px 0 4px 14px;color:var(--dim);font-size:13px;line-height:1.55}
+.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--r-sm);overflow:hidden}
+.stat-grid div{background:var(--surface);padding:12px 14px}
+.stat-grid .k{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--faint)}
+.stat-grid .v{font-size:17px;font-weight:700;font-family:var(--mono);margin-top:3px}
+
+.ph{display:flex;flex-direction:column;gap:12px;align-items:flex-start;padding:30px}
+.ph .tag{font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--teal);font-weight:600;border:1px solid color-mix(in srgb,var(--teal) 35%,transparent);padding:4px 10px;border-radius:999px}
+.ph h3{font-size:17px}
+.ph ul{margin:0;padding-left:18px;color:var(--dim);line-height:1.7;font-size:13.5px}
+.curve{width:100%;height:auto;display:block}
+
+@media(max-width:860px){
+  .app{grid-template-columns:1fr}
+  .rail{display:none}
+  .content{padding:18px 16px 92px;gap:20px}
+  .topbar{padding:13px 16px}
+  .hero{grid-template-columns:1fr;text-align:center;gap:18px;justify-items:center}
+  .hero-copy p,.hero-copy .note{margin-inline:auto}
+  .grid-2{grid-template-columns:1fr}
+  .stat-grid{grid-template-columns:repeat(2,1fr)}
+  .mobnav{display:flex}
+}
+.mobnav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:30;background:color-mix(in srgb,var(--surface) 96%,transparent);backdrop-filter:blur(12px);border-top:1px solid var(--line);padding:8px 6px calc(8px + env(safe-area-inset-bottom,0px));justify-content:space-around}
+.mobnav button{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:9.5px;color:var(--faint);padding:4px 6px;flex:1;letter-spacing:.02em}
+.mobnav button svg{width:19px;height:19px;stroke:currentColor;fill:none;stroke-width:1.7}
+.mobnav button[aria-current="true"]{color:var(--teal)}
+.updated-toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--raise);border:1px solid var(--line-2);border-radius:999px;padding:9px 18px;font-size:13px;color:var(--text);z-index:50;opacity:0;transition:.25s;box-shadow:0 8px 30px rgba(0,0,0,.4);pointer-events:none}
+.updated-toast.show{opacity:1;transform:translateX(-50%)}
+.disclaimer{font-size:11.5px;color:var(--faint);line-height:1.6;border-top:1px solid var(--line);padding-top:18px;max-width:70ch}
+.loadscreen{display:grid;place-items:center;min-height:60vh;padding:30px;text-align:center}
 </style>
-</head>
-<body>
+
+<noscript><div style="padding:24px 18px;max-width:60ch;margin:0 auto;color:#e9ebf2;background:#0a0a0f;font-family:system-ui,-apple-system,sans-serif;line-height:1.6">This dashboard loads the latest published run with JavaScript, which is turned off in your browser. The underlying data is available as plain files: <a href="./data.json" style="color:#2dd4bf">data.json</a> and <a href="./status.json" style="color:#2dd4bf">status.json</a>.</div></noscript>
+<script id="inline-data" type="application/json">__SIGBOT_DATA_SLOT__</script>
+
 <div class="app">
-  <div class="topbar"><div class="brand">Sigbot</div><div class="stamp" id="stamp"></div></div>
-  <div class="main" id="main"></div>
-  <nav class="nav" id="nav"></nav>
+  <nav class="rail">
+    <div class="brand"><div class="mark">S</div><div class="wordmark">SIGBOT</div></div>
+    <div class="navlabel">Overview</div>
+    <button class="navitem" data-nav="command"><svg viewBox="0 0 24 24"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg>Command Center</button>
+    <button class="navitem" data-nav="models"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Models</button>
+    <button class="navitem" data-nav="evidence"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg>Asset Evidence</button>
+    <div class="navlabel">Analysis</div>
+    <button class="navitem" data-nav="paper"><svg viewBox="0 0 24 24"><path d="M3 17l5-5 4 3 8-9"/><path d="M16 6h5v5"/></svg>Paper Portfolio</button>
+    <button class="navitem" data-nav="benchmarks"><svg viewBox="0 0 24 24"><path d="M12 20V10M6 20V4M18 20v-6"/></svg>Benchmarks</button>
+    <button class="navitem" data-nav="research"><svg viewBox="0 0 24 24"><path d="M9 3v6l-5 9a2 2 0 0 0 2 3h12a2 2 0 0 0 2-3l-5-9V3"/><path d="M8 3h8"/></svg>Research Lab</button>
+    <button class="navitem" data-nav="health"><svg viewBox="0 0 24 24"><path d="M3 12h4l2 5 4-12 2 7h6"/></svg>System Health</button>
+    <div class="rail-foot">
+      <div class="fresh"><span class="dot" id="freshdot"></span><span id="freshtxt">Loading…</span></div>
+      <div id="buildtxt" style="margin-top:6px"></div>
+    </div>
+  </nav>
+
+  <div class="main">
+    <header class="topbar">
+      <div><h1 id="sectitle">Command Center</h1><div class="sub" id="secsub"></div></div>
+      <div class="spacer"></div>
+      <div class="chip" id="cyclechip"><span class="dot"></span><span id="cycletxt">—</span></div>
+    </header>
+    <div class="content" id="content"><div class="loadscreen"><div><div class="eyebrow">SIGBOT</div><p class="muted" style="margin-top:8px">Loading the latest published run…</p></div></div></div>
+  </div>
 </div>
 
-<script id="inline-data" type="application/json">null</script>
+<nav class="mobnav">
+  <button data-nav="command"><svg viewBox="0 0 24 24"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg>Home</button>
+  <button data-nav="models"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Models</button>
+  <button data-nav="evidence"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg>Evidence</button>
+  <button data-nav="paper"><svg viewBox="0 0 24 24"><path d="M3 17l5-5 4 3 8-9"/><path d="M16 6h5v5"/></svg>Paper</button>
+  <button data-nav="health"><svg viewBox="0 0 24 24"><path d="M3 12h4l2 5 4-12 2 7h6"/></svg>Health</button>
+</nav>
+
+<div class="drawer-bg" id="drawerbg"></div>
+<aside class="drawer" id="drawer" aria-hidden="true"></aside>
+<div class="updated-toast" id="toast">Updated with a newer run</div>
+
 <script>
-const C = {teal:'#00d4aa', purple:'#7c4dff', red:'#ff6b6b', green:'#00e676',
-           gray:'#8b8b9a', yellow:'#ffd93d'};
-const TIER_COLOR = {TRADE:C.green, CAUTION:C.yellow, WATCH:C.teal, SILENT:C.gray};
-const pct = v => v==null ? '—' : (v*100).toFixed(0)+'%';
-const rgba = (hex,a) => {const n=parseInt(hex.slice(1),16);
-  return `rgba(${n>>16&255},${n>>8&255},${n&255},${a})`};
+"use strict";
+const OPERATIONAL=new Set(["news","stocks","crypto","ventures"]); // fallback only when data carries no role
+function roleOf(m){ return (m&&m.role) || (OPERATIONAL.has(m&&m.id)?"operational":"research"); }
+const isResearchModel=m=>roleOf(m)==="research";
+const ACMAP={teal:"var(--teal)",green:"var(--green)",indigo:"var(--indigo)",purple:"var(--purple)",amber:"var(--amber)",yellow:"var(--amber)",red:"var(--red)"};
+const esc=s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const pct=x=>x==null?"—":(x*100).toFixed(0)+"%";
+const money=x=>x==null?"—":"$"+Number(x).toLocaleString("en-US",{maximumFractionDigits:0});
+const signPct=x=>x==null?"—":(x>=0?"+":"")+Number(x).toFixed(2)+"%";
 
-let DATA = null, view = {tab:'home', model:null, filter:'all'};
+let DATA=null, BUILD=null, curNav="command", refreshState="live";
 
+async function fetchJSON(u){
+  try{const r=await fetch(u,{cache:"no-store"});if(r.ok)return await r.json();}catch(e){}
+  return null;
+}
+const idOf=d=>d&&(d.build||d.generated_at)||null;
 function inlineData(){
-  try{
-    const el = document.getElementById('inline-data');
-    const parsed = el && JSON.parse(el.textContent);
-    return (parsed && parsed.models) ? parsed : null;
-  }catch(e){ return null; }
+  const el=document.getElementById("inline-data");
+  if(!el) return null;
+  const t=(el.textContent||"").trim();
+  if(!t||t.indexOf("__SIGBOT_DATA")===0) return null;   // unfilled production placeholder
+  try{return JSON.parse(t)}catch(e){return null}
 }
 
-async function load(){
-  // Try the served file first so a refresh always shows the newest export.
-  try{
-    const r = await fetch('data.json', {cache:'no-store'});
-    if(!r.ok) throw new Error('HTTP ' + r.status);
-    DATA = await r.json();
-  }catch(e){
-    // Opened straight from a file, or offline: use the copy baked in at build
-    // time. Without this the app is blank from file://, because fetch() is
-    // blocked there for local files.
-    DATA = inlineData() || {error:String(e)};
-  }
-  render();
+/* Pure version-contract decision (unit-tested). status announces the build;
+   data must carry the SAME build before we accept it — otherwise the fetch
+   returned an older snapshot than status claims, and we keep what we have. */
+function decideRefresh(currentBuild, status, data){
+  const targetId = status ? idOf(status) : null;      // what the deploy says is current
+  if(targetId && targetId===currentBuild) return {action:"noop"};
+  if(!data) return {action:"fail"};                   // data fetch failed → keep current
+  const dataId = idOf(data);
+  if(targetId && dataId!==targetId) return {action:"fail"}; // announced build != data's build → stale/mismatch
+  const finalId = targetId || dataId;                 // no status → trust data's own stamp
+  if(!finalId) return {action:"fail"};
+  if(finalId===currentBuild) return {action:"noop"};
+  return {action:"update", build:finalId, data};
 }
 
-function ringSvg(done, total){
-  const R=40, CIRC=2*Math.PI*R, frac= total? done/total : 0;
-  return `<svg width="92" height="92" viewBox="0 0 92 92">
-    <circle cx="46" cy="46" r="${R}" fill="none" stroke="#1a1a24" stroke-width="7"/>
-    <circle cx="46" cy="46" r="${R}" fill="none" stroke="${done?C.teal:C.gray}"
-      stroke-width="7" stroke-linecap="round"
-      stroke-dasharray="${CIRC}" stroke-dashoffset="${CIRC*(1-frac)}"/>
-  </svg>`;
+/* Shared I/O wrapper used by initial load, recovery, AND polling, so the same
+   version contract applies everywhere. Fetches status first (short-circuit if
+   unchanged), then data only when needed; verification is in decideRefresh.
+   Pass currentBuild=null on first load / recovery (no build to compare yet). */
+async function tryRefresh(currentBuild){
+  const s=await fetchJSON("./status.json");
+  if(s && idOf(s) && idOf(s)===currentBuild) return {action:"noop"};
+  const data=await fetchJSON("./data.json");
+  return decideRefresh(currentBuild, s, data);
+}
+async function poll(){
+  const d=await tryRefresh(BUILD);
+  if(d.action==="update"){DATA=d.data;BUILD=d.build;refreshState="live";render();showToast();}
+  else if(d.action==="noop"){refreshState="live";freshness();}
+  else {refreshState="failed";freshness();}
+}
+function showToast(){const t=document.getElementById("toast");t.classList.add("show");setTimeout(()=>t.classList.remove("show"),3200);}
+
+function freshness(){
+  const g=DATA&&DATA.generated_at?new Date(DATA.generated_at):null;
+  const dot=document.getElementById("freshdot"), txt=document.getElementById("freshtxt");
+  let mins=g?Math.round((Date.now()-g.getTime())/60000):null;
+  let stale=mins!=null&&mins>240;
+  dot.className="dot"+(refreshState==="failed"?" fail":stale?" stale":"");
+  if(refreshState==="failed"){txt.textContent="Refresh failed — showing last good data";}
+  else if(mins==null){txt.textContent="No timestamp";}
+  else{const ago=mins<1?"just now":mins<60?mins+" min ago":Math.round(mins/60)+" h ago";txt.textContent="Data "+ago+(stale?" (stale)":"");}
+  document.getElementById("buildtxt").textContent="Refreshes on each deploy";
+  const cy=(DATA&&DATA.cycle)||{};
+  document.getElementById("cycletxt").textContent=cy.phase?("Cycle: "+cy.phase):"—";
 }
 
-function home(){
-  const h = DATA.headline, ms = DATA.models;
-  return `<div class="screen">
+/* ---- operational counts (Ideas/opportunity excluded) ---- */
+function opModels(){return (DATA.models||[]).filter(m=>!isResearchModel(m));}
+function researchModels(){return (DATA.models||[]).filter(m=>isResearchModel(m));}
+function provenCount(){return opModels().filter(m=>m.tier==="CAUTION"||m.tier==="TRADE").length;}
+
+function ring(proven,total){
+  const R=52,C=2*Math.PI*R, frac=total?proven/total:0;
+  return `<svg width="132" height="132" viewBox="0 0 132 132" aria-label="${proven} of ${total} proven">
+    <circle cx="66" cy="66" r="${R}" fill="none" stroke="var(--line-2)" stroke-width="10"/>
+    <circle cx="66" cy="66" r="${R}" fill="none" stroke="var(--teal)" stroke-width="10" stroke-linecap="round"
+      stroke-dasharray="${C}" stroke-dashoffset="${C*(1-frac)}" transform="rotate(-90 66 66)"/></svg>`;
+}
+
+function modelCard(m,quar){
+  const ac=ACMAP[m.accent]||"var(--teal)";
+  const sampleP=Math.max(2,Math.min(100,m.sample_progress||0));
+  const hasRec=(m.resolved||0)>0;
+  const ranKnown=m.last_run&&!/No run recorded/i.test(m.last_run);
+  const foot = ranKnown ? esc(m.last_run)
+    : `<span class="muted">No model-run record available. See <b>System Health</b> for the last confirmed scan.</span>`;
+  const hrBlock = hasRec
+    ? `<div class="meter"><div class="lbl"><span>Hit rate vs chance</span><span class="num">${pct(m.hit_rate)} · floor ${pct(m.lower_bound)}</span></div>
+         <div class="track hr"><i style="width:${Math.max(2,(m.hit_rate||0)*100).toFixed(0)}%"></i><span class="null" style="left:${Math.min(98,(m.null_rate||0.5)*100).toFixed(0)}%"></span></div></div>`
+    : `<div class="empty">Nothing checked yet. Stays quiet until it has a record to show.</div>`;
+  return `<button class="mcard${quar?' quar':''}" style="--ac:${ac}" data-model="${esc(m.id)}">
+    <div class="bar"></div>
+    <div class="body">
+      <div class="top">
+        <div style="min-width:0"><div class="name">${esc(m.name)}</div><div class="subtitle">${esc(m.subtitle||"")}</div></div>
+        <span class="badge">Horizon · ${esc(m.window||"—")}</span>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <span class="tier ${esc(m.tier||'SILENT')}">${esc(m.tier_label||m.tier||"")}</span>
+        ${quar?'<span class="quar-tag">Research — quarantined</span>':''}
+      </div>
+      <div class="meter"><div class="lbl"><span>Sample toward verdict</span><span class="num">${(m.resolved||0).toLocaleString()} / ${(m.target_checks||0).toLocaleString()}</span></div>
+        <div class="track"><i style="width:${sampleP}%"></i></div></div>
+      ${hrBlock}
+      <div class="foot">${foot}</div>
+    </div></button>`;
+}
+
+function commandCenter(){
+  const h=DATA.headline||{}, cy=DATA.cycle||{}, paper=DATA.paper||{};
+  const ops=opModels(), proven=provenCount(), total=ops.length;
+  const bk=(DATA.benchmarks||[]);
+  const noTrades=(paper.trades||0)===0;
+  const tiles=[
+    ["Operational proven", `${proven} / ${total}`, "families that earned the right to alert"],
+    ["Checks resolved", (h.observations_total||0).toLocaleString(), "predictions scored against reality"],
+    ["Predictions today", (h.predictions_today||0).toString(), cy.phase?("cycle: "+cy.phase):""],
+    ["Starting paper equity", money(paper.equity||paper.starting_cash), noTrades?"no completed round-trips":signPct(paper.total_return)+" after costs"],
+    ["Confirmed patterns", (h.confirmed_patterns||0).toString(), "in the pattern registry"],
+  ];
+  const research=researchModels();
+  return `<section class="section">
     <div class="card hero">
-      <div class="hero-glow"></div>
-      <div class="ring">${ringSvg(h.models_alertable, h.models_total)}
-        <div class="ring-num"><b>${h.models_alertable}/${h.models_total}</b><span>PROVEN</span></div></div>
-      <div class="hero-text">
-        <h2>${h.message}</h2>
-        <p>${h.observations_total.toLocaleString()} resolved observations so far.
-        A model alerts only once its record clears the bar.</p>
+      <div class="ring-wrap">${ring(proven,total)}<div class="ctr"><b>${proven}/${total}</b><span>proven</span></div></div>
+      <div class="hero-copy">
+        <div class="eyebrow">Verification status</div>
+        <h2>${proven?`${proven} of ${total} operational families proven`:`0 of ${total} operational families proven`}</h2>
+        <p>None has earned the right to alert yet. Early on that is exactly what should happen — it means nothing is being made up.</p>
+        ${research.length?`<div class="note">${research.length} research ${research.length>1?'families are':'family is'} quarantined and excluded from this count.</div>`:''}
       </div>
     </div>
-
-    <div class="section-head"><h3>Models</h3>
-      <button class="see-all" onclick="go('history')">History</button></div>
-    <div class="list">${ms.map(m=>{
-      const col=C[m.accent], tc=TIER_COLOR[m.tier];
-      return `<div class="card model tap" tabindex="0" role="button"
-        onclick="openModel('${m.id}')" onkeydown="if(event.key==='Enter')openModel('${m.id}')">
-        <div class="avatar" style="background:${rgba(col,.12)};border-color:${rgba(col,.35)};color:${col}">
-          ${m.name[0]}</div>
-        <div class="model-info">
-          <h4>${m.name}</h4><p>${m.subtitle}</p>
-          <span class="badge" style="background:${rgba(tc,.12)};color:${tc}">${m.tier}</span>
-        </div>
-        <div class="chevron">›</div></div>`}).join('')}</div>
-
-    <p class="note">${DATA.disclaimer}</p></div>`;
+    <div class="tiles">${tiles.map(t=>`<div class="tile"><span class="k">${t[0]}</span><span class="v ${String(t[1]).length>7?'sm':''}">${t[1]}</span><span class="d">${esc(t[2])}</span></div>`).join("")}</div>
+    <div class="grid-2">
+      <div class="card"><div class="row-head"><h3>Daily cycle</h3></div>
+        <div style="margin-top:14px;display:flex;flex-direction:column;gap:10px">
+          <div style="display:flex;justify-content:space-between;font-size:13px"><span class="muted">Phase</span><b class="mono">${esc(cy.phase||"—")}</b></div>
+          <div style="display:flex;justify-content:space-between;font-size:13px"><span class="muted">Trading day</span><span class="mono">${esc(cy.trading_day||"—")}</span></div>
+          <div style="font-size:12.5px;color:var(--dim);border-top:1px solid var(--line);padding-top:10px">${esc(cy.reset_line||"")}</div>
+        </div></div>
+      <div class="card"><div class="row-head"><h3>Benchmarks</h3><span class="count">TARGET vs ACTUAL · PAPER</span></div>
+        <div class="bk" style="margin-top:8px">${bk.map(b=>`<div class="row"><span class="per">${esc(b.period)}</span><span class="det">${esc(b.detail)}</span><span class="pill ${b.met?'yes':'no'}">${b.met?'met':'not met'}</span></div>`).join("")||`<div class="empty">No benchmark periods yet.</div>`}</div></div>
+    </div>
+    <div>
+      <div class="row-head" style="margin-bottom:14px"><h3>Operational families</h3><span class="count">${total} OPERATIONAL</span></div>
+      <div class="models">${ops.map(m=>modelCard(m,false)).join("")}</div>
+    </div>
+    ${research.length?`<div>
+      <div class="subhead" style="margin-bottom:12px"><h3 class="faint">Research</h3><span class="quar-tag">Quarantined — not production-eligible</span></div>
+      <div class="models">${research.map(m=>modelCard(m,true)).join("")}</div></div>`:''}
+    <p class="disclaimer">${esc(DATA.disclaimer||"")}</p>
+  </section>`;
 }
 
-function modelScreen(id){
-  const m = DATA.models.find(x=>x.id===id);
-  if(!m) return home();
-  const col=C[m.accent], tc=TIER_COLOR[m.tier];
-  const bar = m.lower_bound!=null ? Math.min(100, m.lower_bound*100) : 0;
-  return `<div class="screen">
-    <button class="back" onclick="go('home')">‹ Models</button>
-    <div class="card">
-      <h2 style="font-size:18px;font-weight:700;margin-bottom:6px">${m.name}</h2>
-      <p style="font-size:12.5px;color:var(--gray);margin-bottom:12px">${m.subtitle}</p>
-      <span class="badge" style="background:${rgba(tc,.12)};color:${tc}">${m.tier} · ${m.tier_label}</span>
-      <div class="meter"><i style="width:${bar}%;background:${tc}"></i></div>
-      <p style="font-size:11.5px;color:var(--gray)">${m.status_line}</p>
-    </div>
-    <div class="stats">
-      <div class="card stat"><b>${m.resolved.toLocaleString()}</b><span>Resolved</span></div>
-      <div class="card stat"><b>${pct(m.hit_rate)}</b><span>Hit rate</span></div>
-      <div class="card stat" title="90% Wilson lower bound"><b style="color:${tc}">${pct(m.lower_bound)}</b><span>Floor</span></div>
-    </div>
-    ${m.needed_for_trade ? `<p class="note" style="padding-top:0">At this hit rate,
-      the top tier needs about ${m.needed_for_trade.toLocaleString()} resolved
-      observations. The floor is the number to trust — it is what the record
-      supports at 90% confidence, not the best reading of it.</p>`:''}
-    <div class="section-head"><h3>By asset</h3></div>
-    ${m.alerts.length ? `<div class="list">${m.alerts.map(a=>rowFor(a,col)).join('')}</div>`
-      : `<div class="card empty"><b>Nothing resolved yet</b>
-         This model has produced no scored observations. It will stay quiet until it has.</div>`}
+function modelsSection(){
+  const ops=opModels(), research=researchModels();
+  return `<section class="section">
+    <div class="row-head"><h3>Operational families</h3><span class="count">${ops.length}</span></div>
+    <div class="models">${ops.map(m=>modelCard(m,false)).join("")}</div>
+    ${research.length?`<div class="subhead" style="margin-top:6px"><h3 class="faint">Research</h3><span class="quar-tag">Quarantined — not production-eligible</span></div>
+    <div class="models">${research.map(m=>modelCard(m,true)).join("")}</div>`:''}
+    <p class="disclaimer">${esc(DATA.disclaimer||"")}</p></section>`;
+}
+
+function openModel(id){
+  const m=(DATA.models||[]).find(x=>x.id===id); if(!m) return;
+  const ac=ACMAP[m.accent]||"var(--teal)", al=(m.alerts||[]);
+  const rows=al.length? `<div class="tbl-wrap"><table><thead><tr><th>Asset</th><th>Side</th><th>Record</th><th>Floor</th></tr></thead><tbody>
+      ${al.slice(0,40).map(a=>`<tr><td><span class="sym">${esc(a.symbol)}</span></td><td><span class="sidepill ${esc(a.side||'')}">${esc(a.side||"—")}</span></td><td class="muted">${esc(a.detail||"")}</td><td class="num">${pct(a.lower)}</td></tr>`).join("")}
+    </tbody></table></div>` : `<div class="empty">No assets have cleared the display threshold yet.</div>`;
+  const d=document.getElementById("drawer");
+  d.innerHTML=`<div class="dhead" style="border-top:3px solid ${ac}">
+      <div><div class="eyebrow" style="color:${ac}">Horizon · ${esc(m.window||"—")}${isResearchModel(m)?' · research':''}</div>
+      <h2 style="font-size:19px;margin-top:6px">${esc(m.name)}</h2>
+      <div class="subtitle" style="color:var(--dim);font-size:13px;margin-top:4px">${esc(m.subtitle||"")}</div></div>
+      <button class="xbtn" id="dclose" aria-label="Close">✕</button></div>
+    <div class="dbody">
+      <div class="stat-grid"><div><div class="k">Checked</div><div class="v">${(m.resolved||0).toLocaleString()}</div></div>
+        <div><div class="k">Right</div><div class="v">${pct(m.hit_rate)}</div></div>
+        <div><div class="k">Worst case</div><div class="v">${pct(m.lower_bound)}</div></div></div>
+      <div><div class="eyebrow">Where it stands</div><p class="muted" style="margin:8px 0 0;font-size:13px;line-height:1.6">${esc(m.status_line||"")}</p></div>
+      <div><div class="eyebrow">What would prove this wrong</div><div class="falsi" style="margin-top:8px">${esc(m.falsifier||"")}</div></div>
+      <div><div class="row-head"><div class="eyebrow">Assets it is watching</div><span class="count">${al.length}</span></div><div style="margin-top:10px">${rows}</div>
+        <p class="faint" style="font-size:11px;margin-top:10px">Each row aggregates many checks on one asset, not single predictions.</p></div>
+    </div>`;
+  document.getElementById("drawer").classList.add("open");
+  document.getElementById("drawerbg").classList.add("open");
+  document.getElementById("drawer").setAttribute("aria-hidden","false");
+  document.getElementById("dclose").onclick=closeDrawer;
+}
+function closeDrawer(){document.getElementById("drawer").classList.remove("open");document.getElementById("drawerbg").classList.remove("open");document.getElementById("drawer").setAttribute("aria-hidden","true");}
+
+let evFilter="all", evQuery="";
+function evidenceSection(){
+  const all=(DATA.alerts||[]);
+  const models=[...new Set(all.map(a=>a.model))];
+  const chips=`<button class="fchip" data-f="all" aria-pressed="${evFilter==='all'}">All</button>`+
+    models.map(id=>{const nm=(DATA.models||[]).find(m=>m.id===id);return `<button class="fchip" data-f="${esc(id)}" aria-pressed="${evFilter===id}">${esc(nm?nm.name:id)}</button>`}).join("");
+  let rows=all.filter(a=>evFilter==="all"||a.model===evFilter)
+    .filter(a=>!evQuery||((a.symbol||"")+(a.description||"")).toLowerCase().includes(evQuery.toLowerCase()));
+  const body=rows.length? rows.slice(0,150).map(a=>{const nm=(DATA.models||[]).find(m=>m.id===a.model);
+    return `<tr><td><span class="sym">${esc(a.symbol)}</span><div class="faint" style="font-size:11px">${esc((a.description||"").slice(0,42))}</div></td>
+      <td class="muted">${esc(nm?nm.name:a.model)}</td><td><span class="sidepill ${esc(a.side||'')}">${esc(a.side||"—")}</span></td>
+      <td class="muted">${esc(a.detail||"")}</td><td class="num">${pct(a.lower)}</td><td class="faint">${esc(a.made_at||"")}</td></tr>`}).join("")
+    : `<tr><td colspan="6"><div class="empty" style="border:none">No records match.</div></td></tr>`;
+  return `<section class="section">
+    <div class="card" style="padding:14px 18px"><p class="muted" style="margin:0;font-size:12.5px">Each row is the <b>aggregated record</b> for one asset under one model — how many checks it has had and how they resolved — not an individual prediction event. A prediction-level feed is a later export.</p></div>
+    <div class="toolbar">${chips}<div class="search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg><input id="evsearch" placeholder="Search asset…" value="${esc(evQuery)}"></div></div>
+    <div class="tbl-wrap"><table><thead><tr><th>Asset</th><th>Model</th><th>Side</th><th>Record</th><th>Floor</th><th>First made</th></tr></thead><tbody>${body}</tbody></table></div>
+  </section>`;
+}
+
+function equityCurve(days){
+  // days are newest-first; build ascending closing-equity series
+  const d=[...days].reverse().map(r=>({x:r.date,y:r.closing}));
+  if(d.length<2) return "";
+  const ys=d.map(p=>p.y), min=Math.min(...ys), max=Math.max(...ys), span=(max-min)||1;
+  const W=680,H=180,pad=8;
+  const pts=d.map((p,i)=>[pad+i*(W-2*pad)/(d.length-1), H-pad-((p.y-min)/span)*(H-2*pad)]);
+  const path=pts.map((p,i)=>(i?"L":"M")+p[0].toFixed(1)+" "+p[1].toFixed(1)).join(" ");
+  const area=path+` L${pts[pts.length-1][0].toFixed(1)} ${H-pad} L${pts[0][0].toFixed(1)} ${H-pad} Z`;
+  const up=d[d.length-1].y>=d[0].y;
+  const col=up?"var(--green)":"var(--red)";
+  return `<svg class="curve" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-label="Equity curve">
+    <path d="${area}" fill="${col}" opacity="0.08"/><path d="${path}" fill="none" stroke="${col}" stroke-width="2" stroke-linejoin="round"/>
+    <circle cx="${pts[pts.length-1][0].toFixed(1)}" cy="${pts[pts.length-1][1].toFixed(1)}" r="3.5" fill="${col}"/></svg>`;
+}
+function paperSection(){
+  const p=DATA.paper||{};
+  const noTrades=(p.trades||0)===0;
+  const pts=p.generated_at?new Date(p.generated_at):null, tts=DATA.generated_at?new Date(DATA.generated_at):null;
+  let pfresh="";
+  if(pts){const stale=tts?(Math.abs(tts-pts)/60000>60):false;
+    pfresh=`<div class="card" style="padding:11px 16px${stale?';border-color:color-mix(in srgb,var(--amber) 40%,transparent)':''}"><span class="faint" style="font-size:12px">Paper data as of ${esc(p.generated_at.slice(0,16).replace("T"," "))} UTC${stale?" — older than the rest of this page; the exporter refreshes it on its own schedule.":"."}</span></div>`;}
+  const nm='<span class="faint">not measurable</span>';
+  const tiles=`<div class="tiles">
+    <div class="tile"><span class="k">Equity</span><span class="v sm">${money(p.equity)}</span><span class="d">${noTrades?"starting — no round-trips":"from "+money(p.starting_cash)}</span></div>
+    <div class="tile"><span class="k">Return</span><span class="v sm ${p.total_return>0?'pos':p.total_return<0?'neg':''}">${noTrades?nm:signPct(p.total_return)}</span><span class="d">${noTrades?"no completed round-trips":"after costs"}</span></div>
+    <div class="tile"><span class="k">Max drawdown</span><span class="v sm">${noTrades?nm:signPct(p.max_drawdown)}</span><span class="d">${noTrades?"no completed round-trips":"peak to trough"}</span></div>
+    <div class="tile"><span class="k">Trades</span><span class="v sm">${(p.trades||0)}</span><span class="d">${noTrades?"nothing to replay yet":(p.wins||0)+" wins · "+(p.win_rate!=null?pct(p.win_rate):"—")}</span></div>
+    <div class="tile"><span class="k">Costs paid</span><span class="v sm">${noTrades?nm:money(p.total_costs)}</span><span class="d">spread + fees</span></div>
   </div>`;
+  if(noTrades){
+    return `<section class="section">${pfresh}${tiles}
+      <div class="card"><div class="empty" style="border:none">${esc(p.verdict||"No resolved prediction carried both an entry and an exit price, so there is nothing to replay yet.")}</div></div>
+      <p class="disclaimer">The equity curve, per-model breakdown and trade log appear here once resolved predictions carry both an entry and an exit price. Capital is locked; this book is simulated and places no real orders.</p></section>`;
+  }
+  const days=p.days||[], byModel=p.by_model||{}, rt=p.recent_trades||[];
+  const bmRows=Object.entries(byModel).map(([mid,r])=>{const nm=(DATA.models||[]).find(m=>m.id===mid);
+    return `<tr><td>${esc(nm?nm.name:mid)}</td><td class="num">${r.trades}</td><td class="num ${r.pnl>0?'pos':r.pnl<0?'neg':''}">${money(r.pnl)}</td><td class="num">${r.win_rate!=null?pct(r.win_rate):"—"}</td><td class="num">${money(r.costs)}</td></tr>`}).join("");
+  const rtRows=rt.slice().reverse().map(t=>`<tr><td><span class="sym">${esc(t.symbol)}</span></td><td><span class="sidepill ${esc(t.side||'')}">${esc(t.side||'')}</span></td>
+    <td class="num">${t.entry_price??"—"}</td><td class="num">${t.exit_price??"—"}</td><td class="num ${t.pnl>0?'pos':t.pnl<0?'neg':''}">${money(t.pnl)}</td><td class="faint">${esc((t.opened_at||"").slice(0,16))}</td></tr>`).join("");
+  return `<section class="section">${pfresh}${tiles}
+    ${days.length>1?`<div class="card"><div class="row-head"><h3>Equity curve</h3><span class="count">${days.length} DAYS</span></div><div style="margin-top:12px">${equityCurve(days)}</div></div>`:''}
+    <div class="card"><div class="row-head"><h3>By model</h3></div><div class="tbl-wrap" style="margin-top:12px;border:none"><table><thead><tr><th>Model</th><th>Trades</th><th>P&amp;L</th><th>Win rate</th><th>Costs</th></tr></thead><tbody>${bmRows}</tbody></table></div></div>
+    <div class="card"><div class="row-head"><h3>Recent trades</h3><span class="count">LAST ${rt.length}</span></div><div class="tbl-wrap" style="margin-top:12px;border:none"><table><thead><tr><th>Asset</th><th>Side</th><th>Entry</th><th>Exit</th><th>P&amp;L</th><th>Opened</th></tr></thead><tbody>${rtRows}</tbody></table></div></div>
+    <p class="disclaimer">Simulated book — capital locked, no real orders. Returns are after modelled spread and fees.</p></section>`;
 }
 
-function rowFor(a, col){
-  const tc = TIER_COLOR[a.tier] || C.gray;
-  return `<div class="card row"><div class="row-bar" style="background:${tc}"></div>
-    <div class="avatar" style="width:36px;height:36px;font-size:12px;
-      background:${rgba(col,.12)};border-color:${rgba(col,.3)};color:${col}">
-      ${a.symbol.slice(0,3)}</div>
-    <div class="row-body"><h4>${a.symbol}</h4><p>${a.detail}</p></div>
-    <span class="badge" style="background:${rgba(tc,.12)};color:${tc}">${a.tier}</span></div>`;
+function benchmarksSection(){
+  const bk=(DATA.benchmarks||[]), p=DATA.paper||{};
+  return `<section class="section">
+    <div class="card"><div class="row-head"><h3>Return vs target</h3><span class="count">PAPER</span></div>
+      <div class="bk" style="margin-top:8px">${bk.map(b=>`<div class="row"><span class="per">${esc(b.period)}</span><span class="det">${esc(b.detail)}</span><span class="pill ${b.met?'yes':'no'}">${b.met?'met':'not met'}</span></div>`).join("")}</div></div>
+    <div class="tiles">
+      <div class="tile"><span class="k">Noise floor</span><span class="v sm ${p.benchmark_return<0?'neg':''}">${signPct(p.benchmark_return)}</span><span class="d">every call traded, no gating</span></div>
+      <div class="tile"><span class="k">Noise-floor trades</span><span class="v sm">${(p.benchmark_trades||0).toLocaleString()}</span><span class="d">all resolved predictions</span></div></div>
+    <p class="disclaimer">The "noise floor" is what you'd get by trading <b>every</b> resolved prediction indiscriminately — the system's own code calls it a noise benchmark, not a portfolio. It is <b>not</b> a market index and <b>not</b> the paper book: the paper strategy trades only gated models (0 qualifying round-trips so far), so the two are different samples and are not directly comparable yet. Period-return targets above are pre-registered.</p></section>`;
 }
 
-function history(){
-  const f = view.filter;
-  const items = DATA.alerts.filter(a=>f==='all'||a.model===f);
-  const tabs = [['all','All'], ...DATA.models.map(m=>[m.id, m.name.split(' ')[0]])];
-  return `<div class="screen">
-    <div class="section-head" style="margin-top:8px"><h3>History</h3></div>
-    <div class="tabs">${tabs.map(([k,l])=>
-      `<button class="tab ${f===k?'on':''}" onclick="setFilter('${k}')">${l}</button>`).join('')}</div>
-    ${items.length ? `<div class="list">${items.map(a=>{
-        const m=DATA.models.find(x=>x.id===a.model)||{accent:'teal'};
-        return rowFor(a, C[m.accent]);}).join('')}</div>`
-      : `<div class="card empty"><b>No entries</b>
-         Nothing has resolved under this filter yet.</div>`}
-    <p class="note">Each row is a resolved record, not a prediction. Rows appear
-    only after the outcome is known.</p></div>`;
+function researchSection(){
+  const pat=DATA.patterns||{}, learn=DATA.learning||[];
+  const counts=["confirmed","confirming","discovery","dropped"].map(k=>[k,(pat[k]||[]).length]);
+  return `<section class="section">
+    <div class="tiles">${counts.map(c=>`<div class="tile"><span class="k">${c[0]}</span><span class="v">${c[1]}</span><span class="d">patterns</span></div>`).join("")}</div>
+    <div class="card"><div class="row-head"><h3>Learning log</h3><span class="count">${learn.length} ENTRIES</span></div>
+      <div style="margin-top:12px;display:flex;flex-direction:column;gap:10px;max-height:380px;overflow:auto">
+      ${learn.slice(0,40).map(l=>`<div style="font-size:12.5px;color:var(--dim);border-left:2px solid var(--line-2);padding-left:11px">${esc(typeof l==="string"?l:(l.note||l.message||JSON.stringify(l).slice(0,160)))}</div>`).join("")||`<div class="empty">No entries yet.</div>`}
+      </div></div>
+    <p class="disclaimer">The Research Lab becomes the interface for the autonomous hypothesis engine. For now it shows the pattern registry and learning feed already exported.</p></section>`;
 }
 
-function evidence(){
-  const p = DATA.patterns || {};
-  const stages=[['confirmed','Confirmed',C.green],['confirming','Confirming',C.yellow],
-                ['discovery','Discovery',C.teal],['pruned','Dropped',C.gray]];
-  return `<div class="screen">
-    <div class="section-head" style="margin-top:8px"><h3>Evidence</h3></div>
-    ${stages.map(([k,label,col])=>{
-      const rows=p[k]||[];
-      return `<div class="section-head"><h3 style="font-size:13px;color:${col}">${label}
-        <span style="color:var(--gray);font-weight:600"> ${rows.length}</span></h3></div>
-        ${rows.length? `<div class="list">${rows.map(r=>
-          `<div class="card row"><div class="row-bar" style="background:${col}"></div>
-           <div class="row-body"><h4>${r.key}</h4>
-           <p>${r.n?`${r.n} obs · ${pct(r.rate)} · floor ${pct(r.lower)}`:'no observations'}</p>
-           </div></div>`).join('')}</div>`
-         : `<p class="note" style="padding-top:0">None.</p>`}`}).join('')}
-    <p class="note">A pattern is discovered on one sample and confirmed on a fresh
-    one. Only the fresh sample is quoted, because a pattern measured on the data
-    that selected it reads about 10 points too high.</p></div>`;
+function healthSection(){
+  const ms=DATA.models||[];
+  const rows=ms.map(m=>{const ran=m.last_run&&!/No run recorded/i.test(m.last_run);
+    return `<tr><td><span class="sym">${esc(m.name)}</span>${isResearchModel(m)?' <span class="quar-tag">research</span>':''}</td>
+      <td>${ran?`<span class="tier TRADE">run recorded</span>`:`<span class="tier CAUTION">no model-run record</span>`}</td>
+      <td class="muted">${esc(m.last_run||"—")}</td></tr>`}).join("");
+  return `<section class="section">
+    <div class="card" style="border-color:color-mix(in srgb,var(--amber) 40%,transparent)">
+      <div class="eyebrow" style="color:var(--amber)">Known gap</div>
+      <p class="muted" style="margin:8px 0 0;font-size:13px;line-height:1.6">Durable per-family scan health is not persisted yet. This table reflects only whether each model has a recorded run in the ledger — a family can run through the coordinator and still show no record. A real System Health feed (SCAN_OK / SCAN_FAILED, provider reachability, skipped-candidate reasons, data freshness) is a backend change on the roadmap. Nothing here is inferred beyond the presence of a run record.</p></div>
+    <div class="tbl-wrap"><table><thead><tr><th>Family</th><th>Ledger status</th><th>Last recorded run</th></tr></thead><tbody>${rows}</tbody></table></div>
+  </section>`;
 }
+
+const SECTIONS={
+  command:{t:"Command Center",s:"The whole system at a glance",r:commandCenter},
+  models:{t:"Models",s:"Every family, its evidence, and what would disprove it",r:modelsSection},
+  evidence:{t:"Asset Evidence",s:"Aggregated per-asset records across families",r:evidenceSection},
+  paper:{t:"Paper Portfolio",s:"Simulated book — capital locked, no real orders",r:paperSection},
+  benchmarks:{t:"Benchmarks",s:"Measured return against pre-registered targets",r:benchmarksSection},
+  research:{t:"Research Lab",s:"Pattern registry and learning feed",r:researchSection},
+  health:{t:"System Health",s:"Operational status of each scan",r:healthSection},
+};
 
 function render(){
-  const main=document.getElementById('main'), nav=document.getElementById('nav');
-  if(DATA && DATA.error){
-    main.innerHTML=`<div class="card empty" style="margin-top:24px"><b>No data file</b>
-      Run <code>python -m sigbot.export_app app/data.json</code>, then reload.
-      If you opened this file directly rather than through a server, rebuild the
-      portable copy with <code>python -m sigbot.build_standalone</code> — it bakes
-      the data into the page so it works with no server at all.</div>`;
-    return;
+  freshness();
+  const sec=SECTIONS[curNav]||SECTIONS.command;
+  document.getElementById("sectitle").textContent=sec.t;
+  document.getElementById("secsub").textContent=sec.s;
+  document.getElementById("content").innerHTML=sec.r();
+  document.querySelectorAll("[data-nav]").forEach(b=>b.setAttribute("aria-current", b.dataset.nav===curNav?"true":"false"));
+  document.querySelectorAll("[data-model]").forEach(b=>b.onclick=()=>openModel(b.dataset.model));
+  if(curNav==="evidence"){
+    document.querySelectorAll(".fchip").forEach(c=>c.onclick=()=>{evFilter=c.dataset.f;render();});
+    const si=document.getElementById("evsearch");
+    if(si){si.oninput=e=>{evQuery=e.target.value;render();const s2=document.getElementById("evsearch");if(s2){s2.focus();s2.setSelectionRange(s2.value.length,s2.value.length);}};}
   }
-  document.getElementById('stamp').textContent =
-    'as of ' + new Date(DATA.generated_at).toLocaleString(undefined,
-      {month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
-  main.innerHTML = view.tab==='home' ? (view.model? modelScreen(view.model) : home())
-    : view.tab==='history' ? history() : evidence();
-  main.scrollTop = 0;
-  const tabs=[['home','◇','Models'],['history','≡','History'],['evidence','◈','Evidence']];
-  nav.innerHTML = tabs.map(([k,i,l])=>
-    `<button class="${view.tab===k?'on':''}" onclick="go('${k}')" aria-label="${l}">
-      <b>${i}</b><span>${l}</span></button>`).join('');
 }
+function go(nav){curNav=nav;try{location.hash=nav}catch(e){}render();window.scrollTo({top:0});}
+document.querySelectorAll("[data-nav]").forEach(b=>b.addEventListener("click",()=>go(b.dataset.nav)));
+document.getElementById("drawerbg").addEventListener("click",closeDrawer);
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeDrawer();});
 
-function go(tab){ view.tab=tab; view.model=null; render(); }
-function openModel(id){ view.tab='home'; view.model=id; render(); }
-function setFilter(f){ view.filter=f; render(); }
-
-load();
-if('serviceWorker' in navigator){
-  navigator.serviceWorker.register('sw.js').catch(()=>{});
+let retryTimer=null, pollTimer=null;
+function startPolling(){ if(pollTimer==null) pollTimer=setInterval(poll,150000); }
+function showLoadError(){
+  document.getElementById("content").innerHTML='<div class="loadscreen"><div><div class="eyebrow" style="color:var(--amber)">Could not load a consistent build</div><p class="muted" style="margin-top:8px;max-width:44ch">The latest run could not be fetched, or status.json and data.json disagree on the build. This page shows no data rather than a stale or mismatched snapshot, and will retry automatically.</p></div></div>';
+  document.getElementById("freshtxt").textContent="Load failed";document.getElementById("freshdot").className="dot fail";
 }
+function adoptBuild(r){
+  DATA=r.data; BUILD=r.build; refreshState="live";
+  const h=(location.hash||"").replace("#","");
+  if(SECTIONS[h])curNav=h;
+  render(); startPolling();
+}
+function startRetry(){
+  if(retryTimer!=null) return;
+  retryTimer=setInterval(async()=>{
+    const r=await tryRefresh(null);                 // same version contract on recovery
+    if(r.action==="update"){ clearInterval(retryTimer); retryTimer=null; adoptBuild(r); }
+  },30000);
+}
+(async function(){
+  const r=await tryRefresh(null);                   // same version contract on initial load
+  if(r.action==="update"){ adoptBuild(r); return; }
+  // Offline / file:// (standalone build): no server to fetch — use the inline
+  // snapshot build_standalone injected. No polling without a server.
+  const inl=inlineData();
+  if(inl){ DATA=inl; BUILD=idOf(inl); refreshState="live";
+    const h=(location.hash||"").replace("#","");if(SECTIONS[h])curNav=h; render(); return; }
+  showLoadError(); startRetry();
+})();
 </script>
-</body>
-</html>

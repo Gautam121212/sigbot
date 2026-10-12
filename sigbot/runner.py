@@ -1760,6 +1760,17 @@ def run_publish(settings=SETTINGS, market=None, days: int = 180) -> None:
                  opportunities=ideas)
     out = write_report("app/data.json", "app/sigbot-report.html")
 
+    # Deploy copy: the JavaScript dashboard shell plus its data and status
+    # file, refreshed every run so the published build id is always current.
+    # report.py's sigbot-report.html is still built above for the Telegram
+    # fingerprint and as a one-line rollback renderer, but is no longer served.
+    from pathlib import Path as _Path
+    _pub = _Path("app/public"); _pub.mkdir(parents=True, exist_ok=True)
+    for _name in ("index.html", "data.json", "status.json"):
+        _src = _Path("app") / _name
+        if _src.exists():
+            (_pub / _name).write_bytes(_src.read_bytes())
+
     # Push it, replacing the one it supersedes. A file already in the chat is a
     # frozen copy: it shows whatever was true when it was sent, and nothing on
     # screen says otherwise. Keeping one means whatever you tap is current.
@@ -1802,9 +1813,7 @@ def run_publish(settings=SETTINGS, market=None, days: int = 180) -> None:
             # build_standalone reads — a generated artifact clobbering a
             # source file, found by the template's own guard test. app/public/
             # holds only generated output; point Cloudflare at that.
-            public = out.parent / "public"
-            public.mkdir(exist_ok=True)
-            (public / "index.html").write_bytes(out.read_bytes())
+            # (deploy copy now happens once, right after the export above)
             # Send a text message with the site link, not the raw HTML file.
             # The HTML file is 2MB and Telegram renders it as an interactive
             # document with CSS transitions (the "moving" effect the user saw).

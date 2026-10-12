@@ -192,3 +192,29 @@ def test_the_intraday_model_is_retired():
     from sigbot.export_app import RETIRED_MODELS
 
     assert "crypto15m" in RETIRED_MODELS
+
+
+def test_models_carry_operational_or_research_role(seeded):
+    """The exporter owns the operational-vs-research split so the UI does not
+    hard-code it. Stocks, News, Crypto and Ventures are operational; the Ideas
+    family (opportunity) is research-only and must not inflate the proof count."""
+    d = build_export(*seeded)
+    roles = {m["id"]: m.get("role") for m in d["models"]}
+    for mid in ("news", "stocks", "crypto", "ventures"):
+        assert roles[mid] == "operational", mid
+    assert roles["opportunity"] == "research"
+    assert sum(1 for m in d["models"] if m.get("role") == "operational") == 4
+    assert all(m.get("role") in ("operational", "research") for m in d["models"])
+
+
+def test_write_export_emits_matching_build_in_data_and_status(seeded, tmp_path):
+    """data.json and status.json must carry the SAME build id, so the dashboard
+    can refuse a data file that does not match what status announced."""
+    out = write_export(str(tmp_path / "app" / "data.json"),
+                       db_path=seeded[0], patterns_path=seeded[1],
+                       watchlist_path=seeded[2])
+    data = json.loads(out.read_text())
+    status = json.loads((out.parent / "status.json").read_text())
+    assert data.get("build"), "data.json has no build id"
+    assert data["build"] == status["build"], "data/status build ids differ"
+    assert status["generated_at"] == data["generated_at"]
