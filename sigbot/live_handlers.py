@@ -375,6 +375,30 @@ class RealSetupSources:
     candidate setups."""
     settings: object
 
+    def _note_scan(self, family, status, setups, t0, error=None, summary=None):
+        """Record this tick's scan outcome so it survives the run — record_skip
+        counters are in-memory only and never reach the durable health file.
+        Never raises: health recording must not break a scan."""
+        try:
+            import time as _t, re as _re
+            from datetime import datetime as _dt, timezone as _tz
+            rec = {"family": family, "status": status, "setups": int(setups),
+                   "duration_ms": int((_t.monotonic() - t0) * 1000),
+                   "at": _dt.now(_tz.utc).isoformat()}
+            if error:
+                rec["error"] = str(error)[:300]
+            if summary:
+                rec["summary"] = str(summary)[:300]
+                m = _re.search(r"scanned\s+([\d,]+)", str(summary))
+                if m:
+                    rec["scanned"] = int(m.group(1).replace(",", ""))
+            if not hasattr(self, "last_scans"):
+                self.last_scans = {}
+            self.last_scans[family] = rec
+        except Exception as exc:  # noqa: BLE001  # handled: health note is best-effort, recorded not raised
+            from .skips import record_skip
+            record_skip("scan_health_note", family, exc)
+
     def stocks(self) -> list[dict]:
         import sigbot.runner as R
         cap_holder = {}
@@ -417,6 +441,7 @@ class RealSetupSources:
         because record_skip's counters are in-memory only and never reach the
         tick log on their own."""
         from sigbot.run_ventures_live import run_ventures_live
+        import time as _time; _t0 = _time.monotonic()
         real = ShadowLedger(getattr(self.settings, "shadow_db", "shadow.db"))
         cap = _CapturingLedger(real)
         try:
@@ -424,6 +449,7 @@ class RealSetupSources:
         except Exception as exc:  # noqa: BLE001
             from .skips import record_skip
             record_skip("ventures_setup_scan", "ventures", exc)
+            self._note_scan("ventures", "SCAN_FAILED", 0, _t0, error=f"{type(exc).__name__}: {exc}")
             print(f"ventures: SCAN_FAILED \u2014 {type(exc).__name__}: {exc}")
             return []                      # fail closed: discard partial capture
         out = []
@@ -437,6 +463,7 @@ class RealSetupSources:
                         "thesis_id": c.get("dedup_key") or c["symbol"]})
         if summary:
             print(summary)                 # "ventures: scanned N, M sustained-inflection ..."
+        self._note_scan("ventures", "SCAN_OK", len(out), _t0, summary=summary)
         print(f"ventures: SCAN_OK \u2014 {len(out)} setup(s) ready this tick")
         return out
 
@@ -466,6 +493,7 @@ class RealSetupSources:
             def send(self, *a, **k):
                 return None
 
+        import time as _time; _t0 = _time.monotonic()
         scan_date = datetime.now(timezone.utc).strftime("%Y%m%d")
         cap = _CapturingLedger(
             ShadowLedger(getattr(self.settings, "shadow_db", "shadow.db")))
@@ -476,6 +504,7 @@ class RealSetupSources:
         except Exception as exc:  # noqa: BLE001
             from .skips import record_skip
             record_skip("news_setup_scan", "news", exc)
+            self._note_scan("news", "SCAN_FAILED", 0, _t0, error=f"{type(exc).__name__}: {exc}")
             print(f"news: SCAN_FAILED \u2014 {type(exc).__name__}: {exc}")
             return []                      # fail closed: discard partial capture
         finally:
@@ -498,6 +527,7 @@ class RealSetupSources:
                         "horizon_hours": c.get("horizon_hours") or 24,
                         "payload": c.get("payload", ""),
                         "event_id": event_id})
+        self._note_scan("news", "SCAN_OK", len(out), _t0)
         print(f"news: SCAN_OK \u2014 {len(out)} setup(s) ready this tick")
         return out
 
@@ -522,6 +552,7 @@ class RealSetupSources:
         no setups returned. Prints SCAN_OK (with count) / SCAN_FAILED each tick.
         """
         from sigbot.run_crypto_live import run_crypto_live
+        import time as _time; _t0 = _time.monotonic()
         real = ShadowLedger(getattr(self.settings, "shadow_db", "shadow.db"))
         cap = _CapturingLedger(real)
         try:
@@ -529,6 +560,7 @@ class RealSetupSources:
         except Exception as exc:  # noqa: BLE001
             from .skips import record_skip
             record_skip("crypto_setup_scan", "crypto", exc)
+            self._note_scan("crypto", "SCAN_FAILED", 0, _t0, error=f"{type(exc).__name__}: {exc}")
             print(f"crypto: SCAN_FAILED \u2014 {type(exc).__name__}: {exc}")
             return []                      # fail closed: discard partial capture
         out = []
@@ -543,6 +575,7 @@ class RealSetupSources:
                         "signal_instance": "coiled-spring"})
         if summary:
             print(summary)                 # "crypto: scanned N, M coiled-and-loaded ..."
+        self._note_scan("crypto", "SCAN_OK", len(out), _t0, summary=summary)
         print(f"crypto: SCAN_OK \u2014 {len(out)} setup(s) ready this tick")
         return out
 

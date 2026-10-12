@@ -498,6 +498,15 @@ def _dominant_side(ledger, model_id: str, symbol: str) -> str:
 # Which families count toward the operational verification ring, and which are
 # research-only (quarantined). The exporter owns this split so the UI never has
 # to hard-code it.
+def _read_health() -> dict | None:
+    """The durable per-family scan outcomes, if the coordinator wrote them."""
+    try:
+        from .scan_health import read_scan_health
+        return read_scan_health()
+    except Exception:  # noqa: BLE001  # handled: health is optional; absent renders as not-recorded
+        return None
+
+
 OPERATIONAL_MODELS = {"news", "stocks", "crypto", "ventures"}
 
 
@@ -741,6 +750,7 @@ def build_export(db_path: str = "shadow.db", patterns_path: str = "patterns.db",
         "paper": paper_state,
         "cycle": _cycle_info(),
         "benchmarks": _benchmark_info(paper_state or {}),
+        "health": _read_health(),
         "failures": failures,
         "alerts": all_alerts[:max_alerts],
         "patterns": patterns,

@@ -31,3 +31,4 @@ app/sigbot-report.html
 .wrangler/
 app/status.json
 app/sigbot-standalone.html
+scan_health.json

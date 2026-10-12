@@ -503,16 +503,37 @@ function researchSection(){
 }
 
 function healthSection(){
+  const h=DATA.health||{}, fam=Object.fromEntries((h.families||[]).map(f=>[f.family,f]));
   const ms=DATA.models||[];
-  const rows=ms.map(m=>{const ran=m.last_run&&!/No run recorded/i.test(m.last_run);
-    return `<tr><td><span class="sym">${esc(m.name)}</span>${isResearchModel(m)?' <span class="quar-tag">research</span>':''}</td>
-      <td>${ran?`<span class="tier TRADE">run recorded</span>`:`<span class="tier CAUTION">no model-run record</span>`}</td>
-      <td class="muted">${esc(m.last_run||"—")}</td></tr>`}).join("");
+  const rows=ms.map(m=>{
+    const f=fam[m.id]; let statusCell, detail="—", when="—";
+    if(f){
+      when=f.at?esc(f.at.slice(0,16).replace("T"," "))+" UTC":"—";
+      const dur=f.duration_ms!=null?` · ${(f.duration_ms/1000).toFixed(1)}s`:"";
+      if(f.status==="SCAN_FAILED"){
+        statusCell=`<span class="tier" style="color:var(--bad);background:color-mix(in srgb,var(--bad) 15%,transparent)">scan failed</span>`;
+        detail=esc(f.error||"error")+dur;
+      } else if((f.setups||0)>0){
+        statusCell=`<span class="tier TRADE">ran · ${f.setups} setup(s)</span>`;
+        detail=`scanned ${f.scanned??'—'}`+dur;
+      } else {
+        statusCell=`<span class="tier CAUTION">ran · 0 setups</span>`;
+        detail=`scanned ${f.scanned??'—'} — nothing cleared the bar`+dur;
+      }
+    } else {
+      const ran=m.last_run&&!/No run recorded/i.test(m.last_run);
+      statusCell= ran?`<span class="tier SILENT">ledger run only</span>`:`<span class="tier CAUTION">no scan recorded</span>`;
+      detail=esc(m.last_run||"—");
+    }
+    return `<tr><td><span class="sym">${esc(m.name)}</span>${isResearchModel(m)?' <span class="quar-tag">research</span>':''}</td><td>${statusCell}</td><td class="muted">${detail}</td><td class="faint">${when}</td></tr>`;
+  }).join("");
+  const stamp=h.generated_at?`as of ${esc(h.generated_at.slice(0,16).replace("T"," "))} UTC${h.build?` · build ${esc(String(h.build).slice(0,7))}`:""}`:"no scan health recorded yet";
   return `<section class="section">
-    <div class="card" style="border-color:color-mix(in srgb,var(--amber) 40%,transparent)">
-      <div class="eyebrow" style="color:var(--amber)">Known gap</div>
-      <p class="muted" style="margin:8px 0 0;font-size:13px;line-height:1.6">Durable per-family scan health is not persisted yet. This table reflects only whether each model has a recorded run in the ledger — a family can run through the coordinator and still show no record. A real System Health feed (SCAN_OK / SCAN_FAILED, provider reachability, skipped-candidate reasons, data freshness) is a backend change on the roadmap. Nothing here is inferred beyond the presence of a run record.</p></div>
-    <div class="tbl-wrap"><table><thead><tr><th>Family</th><th>Ledger status</th><th>Last recorded run</th></tr></thead><tbody>${rows}</tbody></table></div>
+    <div class="card"><div class="row-head"><h3>Scan status</h3><span class="count">${stamp}</span></div>
+      <div class="tbl-wrap" style="margin-top:12px;border:none"><table><thead><tr><th>Family</th><th>Last scan</th><th>Detail</th><th>When</th></tr></thead><tbody>${rows}</tbody></table></div></div>
+    <div class="card" style="border-color:color-mix(in srgb,var(--amber) 30%,transparent)">
+      <div class="eyebrow" style="color:var(--amber)">Still partial</div>
+      <p class="muted" style="margin:8px 0 0;font-size:13px;line-height:1.6">Per-family scan outcome (ran / zero-setup / failed), setup counts and the scanned-universe size are now persisted each tick, so a clean zero-setup scan, a failure, and a family that never ran are distinct here. Full provider-reachability detail and per-candidate skip reasons beyond the scanned count are not yet instrumented. Stocks scans inside its handler and reports via the ledger run line rather than a scan record.</p></div>
   </section>`;
 }
 

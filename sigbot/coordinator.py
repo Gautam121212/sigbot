@@ -133,6 +133,16 @@ def _run_operating_loop_tick() -> None:
     # so the scheduler emits PREDICT_CURRENT_SESSION every tick; pre-scan and set
     # the source. src.crypto() is fail-closed (returns [] on a scan error).
     crypto_setups = src.crypto()
+    # Persist this tick's per-family scan outcome (OK/zero-setup/FAILED) so the
+    # System Health page can tell them apart instead of inferring from the
+    # ledger. Best-effort: a health-write failure must never break the tick.
+    try:
+        from .scan_health import write_scan_health
+        from .export_app import _build_id
+        write_scan_health(getattr(src, "last_scans", {}), build=_build_id())
+    except Exception as exc:  # noqa: BLE001  # handled: scan_health is best-effort
+        from .skips import record_skip
+        record_skip("scan_health_write", "coordinator", exc)
     if _LOOP_INSTANCE is None:
         from .operating_loop_v2 import OperatingLoop
         ledger = ShadowLedger(SETTINGS.shadow_db)
