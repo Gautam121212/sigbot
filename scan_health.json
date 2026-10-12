@@ -1,29 +1,29 @@
 {
-  "generated_at": "2026-10-12T10:55:50.245675+00:00",
-  "build": "4a38d57d4890450d3baa07a15b466210c287f2fb",
+  "generated_at": "2026-10-12T20:58:33.901902+00:00",
+  "build": "e450f3b033427049fa0fa6cf651ffcf7c4ad79eb",
   "families": [
     {
       "family": "crypto",
       "status": "SCAN_OK",
       "setups": 0,
-      "duration_ms": 82296,
-      "at": "2026-10-12T10:55:50.245605+00:00",
-      "summary": "crypto: scanned 6, 0 coiled-and-loaded prediction(s) recorded (3-day horizon, resolves on the realised move)",
-      "scanned": 6
+      "duration_ms": 81108,
+      "at": "2026-10-12T20:58:33.901837+00:00",
+      "summary": "crypto: scanned 4, 0 coiled-and-loaded prediction(s) recorded (3-day horizon, resolves on the realised move)",
+      "scanned": 4
     },
     {
       "family": "news",
       "status": "SCAN_OK",
-      "setups": 3,
-      "duration_ms": 41036,
-      "at": "2026-10-12T10:54:27.946252+00:00"
+      "setups": 1,
+      "duration_ms": 56717,
+      "at": "2026-10-12T20:57:12.791261+00:00"
     },
     {
       "family": "ventures",
       "status": "SCAN_OK",
       "setups": 0,
-      "duration_ms": 16282,
-      "at": "2026-10-12T10:53:46.909693+00:00",
+      "duration_ms": 13073,
+      "at": "2026-10-12T20:56:16.073928+00:00",
       "summary": "ventures: scanned 29, 0 sustained-inflection prediction(s) recorded (90-day horizon, resolves on the move)",
       "scanned": 29
     }
